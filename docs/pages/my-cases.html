@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的案件 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cat-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+.cat-chip {
+  padding: 5px 2px; text-align: center; border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm); font-size: 11px; cursor: pointer; transition: var(--transition);
+}
+.cat-chip:hover { border-color: var(--primary); color: var(--primary); }
+.cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">我的案件</div>
+          <div class="page-desc" id="pageDesc">负责或参与的案件共 15 件</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm">📥 导出</button>
+          <button class="btn btn-primary btn-sm" onclick="openNewCaseModal()">➕ 新建案件</button>
+        </div>
+      </div>
+      
+      <div class="filter-bar">
+        <div class="filter-item active" data-filter="all" onclick="filterCases(this,'all')">全部</div>
+        <div class="filter-item" data-filter="国内案件" onclick="filterCases(this,'国内案件')">国内案件</div>
+        <div class="filter-item" data-filter="海外案件" onclick="filterCases(this,'海外案件')">海外案件</div>
+        <div class="filter-item" data-filter="审查中" onclick="filterCases(this,'审查中')">审查中</div>
+        <div class="filter-item" data-filter="答辩期" onclick="filterCases(this,'答辩期')">答辩期</div>
+        <div style="margin-left:auto; display:flex; gap:8px;">
+          <input type="text" class="search-input" placeholder="搜索案件编号或商标名称..." id="caseSearch" oninput="searchCases(this.value)">
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox"></th>
+                <th>案件编号</th>
+                <th>商标名称</th>
+                <th>业务类型</th>
+                <th>当前节点</th>
+                <th>官方绝限</th>
+                <th>内部期限</th>
+                <th>责任人</th>
+                <th style="text-align:right;">进度</th>
+              </tr>
+            </thead>
+            <tbody id="caseList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 新建案件模态框 -->
+<div class="modal-overlay" id="newCaseModal">
+  <div class="modal" style="max-width:720px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">➕ 新建案件</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">商标名称 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="caseName" placeholder="请输入商标名称">
+        </div>
+        <div class="form-section">
+          <label class="form-label">案件类别 <span class="required">*</span></label>
+          <select class="form-select" id="caseCategory">
+            <option value="国内案件">国内案件</option>
+            <option value="海外案件">海外案件</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">业务类型 <span class="required">*</span></label>
+          <select class="form-select" id="caseType">
+            <option>新申请</option>
+            <option>驳回复审</option>
+            <option>异议申请</option>
+            <option>异议答辩</option>
+            <option>无效宣告</option>
+            <option>撤三答辩</option>
+            <option>续展</option>
+            <option>行政诉讼</option>
+            <option>马德里申请</option>
+            <option>单一国家申请</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">代理律所 <span class="required">*</span></label>
+          <select class="form-select" id="caseAgent">
+            <option>金诚律师事务所</option>
+            <option>中誉知识产权</option>
+            <option>美国Baker律所</option>
+            <option>德国Müller事务所</option>
+            <option>日本东京特许事务所</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">尼斯分类（可多选） <span class="required">*</span></label>
+        <div class="cat-grid" id="newCaseCats"></div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">已选择：<span id="selectedCats" style="color:var(--primary);font-weight:600;">未选择</span></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-section">
+          <label class="form-label">申请日</label>
+          <input type="date" class="form-input" id="caseApplyDate">
+        </div>
+        <div class="form-section">
+          <label class="form-label">官方绝限</label>
+          <input type="date" class="form-input" id="caseDeadline">
+        </div>
+        <div class="form-section">
+          <label class="form-label">责任人 <span class="required">*</span></label>
+          <select class="form-select" id="caseOwner">
+            <option>张法务</option>
+            <option>李流程</option>
+            <option>王流程</option>
+            <option>赵法务</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">案件备注</label>
+        <textarea class="form-textarea" id="caseDesc" placeholder="补充案件背景、策略说明或其他信息..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitCase()">✅ 创建案件</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('my-cases');
+
+let currentCases = [...AppData.cases];
+let currentFilter = 'all';
+let selectedCats = [];
+
+function renderCases(list) {
+  const tbody = document.getElementById('caseList');
+  tbody.innerHTML = '';
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的案件</td></tr>';
+    return;
+  }
+  list.forEach(c => {
+    const internalDl = new Date(c.deadline);
+    internalDl.setDate(internalDl.getDate() - 3);
+    const intStr = c.deadline ? internalDl.toISOString().slice(0,10) : '-';
+    const urgent = c.deadline && c.deadline <= '2026-05-07';
+    tbody.innerHTML += `
+      <tr>
+        <td><input type="checkbox"></td>
+        <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">${c.id}</span></td>
+        <td><strong>${c.name}</strong></td>
+        <td><span class="tag tag-blue">${c.type}</span></td>
+        <td>${getStatusTag(c.status)}</td>
+        <td style="color:${urgent?'#ef4444':''};font-weight:${urgent?'600':'400'};">${c.deadline || '-'}</td>
+        <td>${intStr}</td>
+        <td>${c.owner}</td>
+        <td style="text-align:right;">
+          <div style="display:flex; align-items:center; gap:8px; justify-content:flex-end;">
+            <div class="progress-bar" style="width:60px;">
+              <div class="progress-fill" style="width:${c.progress}%; background:${c.progress>80?'#10b981':c.progress>40?'#2563eb':'#f59e0b'};"></div>
+            </div>
+            <span style="font-size:12px;font-weight:500;">${c.progress}%</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+  document.getElementById('pageDesc').textContent = `负责或参与的案件共 ${list.length} 件`;
+}
+
+renderCases(currentCases);
+
+function filterCases(el, type) {
+  document.querySelectorAll('.filter-bar .filter-item[data-filter]').forEach(item => item.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = type;
+  applyFilters();
+}
+
+function searchCases(keyword) {
+  applyFilters();
+}
+
+function applyFilters() {
+  let result = [...AppData.cases];
+  
+  if (currentFilter !== 'all') {
+    if (['国内案件','海外案件'].includes(currentFilter)) {
+      result = result.filter(c => c.category === currentFilter);
+    } else {
+      result = result.filter(c => c.status === currentFilter);
+    }
+  }
+  
+  const keyword = document.getElementById('caseSearch').value.trim().toLowerCase();
+  if (keyword) {
+    result = result.filter(c => c.id.toLowerCase().includes(keyword) || c.name.toLowerCase().includes(keyword));
+  }
+  
+  currentCases = result;
+  renderCases(result);
+}
+
+function openNewCaseModal() {
+  document.getElementById('newCaseModal').classList.add('active');
+  selectedCats = [];
+  renderCatGrid();
+  // 默认申请日为今天
+  document.getElementById('caseApplyDate').value = new Date().toISOString().slice(0,10);
+}
+
+function closeModal() {
+  document.getElementById('newCaseModal').classList.remove('active');
+}
+
+function renderCatGrid() {
+  const grid = document.getElementById('newCaseCats');
+  grid.innerHTML = '';
+  for (let i=1; i<=45; i++) {
+    grid.innerHTML += `<div class="cat-chip ${selectedCats.includes(i)?'active':''}" onclick="toggleCat(${i})">${i}</div>`;
+  }
+}
+
+function toggleCat(cat) {
+  if (selectedCats.includes(cat)) {
+    selectedCats = selectedCats.filter(c => c !== cat);
+  } else {
+    selectedCats.push(cat);
+  }
+  renderCatGrid();
+  document.getElementById('selectedCats').textContent = selectedCats.length ? '第' + selectedCats.join('类, 第') + '类' : '未选择';
+}
+
+function submitCase() {
+  const name = document.getElementById('caseName').value.trim();
+  const category = document.getElementById('caseCategory').value;
+  const type = document.getElementById('caseType').value;
+  const agent = document.getElementById('caseAgent').value;
+  const deadline = document.getElementById('caseDeadline').value;
+  const owner = document.getElementById('caseOwner').value;
+  
+  if (!name || selectedCats.length === 0) {
+    alert('请填写必填项（商标名称和尼斯分类）！');
+    return;
+  }
+  
+  const newId = 'TM-2026-00' + (AppData.cases.length + 51);
+  const newCase = {
+    id: newId,
+    name: name,
+    type: type,
+    category: category,
+    status: '受理中',
+    agent: agent,
+    deadline: deadline || '2026-12-31',
+    owner: owner,
+    progress: 5
+  };
+  
+  AppData.cases.unshift(newCase);
+  closeModal();
+  applyFilters();
+  alert('案件创建成功！案件编号：' + newId);
+  
+  document.getElementById('caseName').value = '';
+  document.getElementById('caseDesc').value = '';
+}
+</script>
+</body>
+</html>

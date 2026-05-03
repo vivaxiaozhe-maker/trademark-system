@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>律所协作中心 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+.invite-step {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.invite-step-num {
+  width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+.invite-step-title { font-weight: 600; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">律所协作中心</div>
+          <div class="page-desc">与外部律所的高效协作平台，当前 5 家律所合作中</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openInviteModal()">➕ 邀请律所</button>
+      </div>
+      
+      <div class="row row-4" style="margin-bottom:16px;">
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">合作律所</div>
+          <div class="kpi-value" style="font-size:22px;">5</div>
+        </div>
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">委托案件</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--primary);">109</div>
+        </div>
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">待回复沟通</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--warning);">7</div>
+        </div>
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">平均评分</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--success);">4.6</div>
+        </div>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('firms',this)">🏢 合作律所</div>
+        <div class="tab" onclick="switchTab('comm',this)">💬 咨询沟通</div>
+        <div class="tab" onclick="switchTab('files',this)">📁 文件交互</div>
+        <div class="tab" onclick="switchTab('deadlines',this)">📅 官文期限总览</div>
+      </div>
+      
+      <div id="firmsPanel">
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>律所名称</th>
+                  <th>委托案件数</th>
+                  <th>综合评分</th>
+                  <th>平均响应</th>
+                  <th>成功率</th>
+                  <th>费用等级</th>
+                  <th>合作状态</th>
+                  <th style="text-align:right;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="firmList"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="commPanel" style="display:none;">
+        <div class="row row-3">
+          <div class="card" style="grid-column: span 1;">
+            <div class="card-header"><div class="card-title">律所列表</div></div>
+            <div class="card-body" style="padding:0; max-height:500px; overflow-y:auto;">
+              <div style="padding:12px 16px; border-bottom:1px solid var(--border-color); background:#f8fafc; cursor:pointer;">
+                <div style="font-weight:600;">金诚律师事务所</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">3条未读 · 最后回复 10分钟前</div>
+              </div>
+              <div style="padding:12px 16px; border-bottom:1px solid var(--border-color); cursor:pointer;">
+                <div style="font-weight:600;">中誉知识产权</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">1条未读 · 最后回复 2小时前</div>
+              </div>
+              <div style="padding:12px 16px; border-bottom:1px solid var(--border-color); cursor:pointer;">
+                <div style="font-weight:600;">美国Baker律所</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">无未读 · 最后回复 昨天</div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="grid-column: span 2;">
+            <div class="card-header">
+              <div class="card-title">💬 与金诚律师事务所的沟通</div>
+              <span class="tag tag-green">在线</span>
+            </div>
+            <div class="card-body" style="height:380px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;">
+              <div style="align-self:flex-start; max-width:70%; background:#f1f5f9; padding:10px 14px; border-radius:12px 12px 12px 4px; font-size:13px;">
+                <div>张法务您好，云智商标的驳回复审材料已准备完毕，请查收附件中的理由书草稿。</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">金诚律所 · 10:30</div>
+              </div>
+              <div style="align-self:flex-end; max-width:70%; background:var(--primary); color:#fff; padding:10px 14px; border-radius:12px 12px 4px 12px; font-size:13px;">
+                <div>收到，我将在今天内完成审核。关于第35类的论点是否需要补充更多证据？</div>
+                <div style="font-size:11px; opacity:0.8; margin-top:4px;">张法务 · 10:45</div>
+              </div>
+              <div style="align-self:flex-start; max-width:70%; background:#f1f5f9; padding:10px 14px; border-radius:12px 12px 12px 4px; font-size:13px;">
+                <div>建议补充，我们可以提供2024年度的使用证据和销售数据，稍后上传。</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">金诚律所 · 11:00</div>
+              </div>
+            </div>
+            <div style="padding:12px 20px; border-top:1px solid var(--border-color); display:flex; gap:8px;">
+              <input type="text" style="flex:1; padding:8px 12px; border:1px solid var(--border-color); border-radius:var(--radius-md); outline:none;" placeholder="输入消息...">
+              <button class="btn btn-primary">发送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="filesPanel" style="display:none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📁 近期文件交互</div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>文件名称</th><th>案件</th><th>发送方</th><th>类型</th><th>时间</th><th>状态</th><th>操作</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>云智驳回复审理由书_v2.docx</strong></td>
+                  <td>TM-2026-0042</td>
+                  <td>金诚律所</td>
+                  <td><span class="tag tag-blue">理由书</span></td>
+                  <td>2026-05-03 10:30</td>
+                  <td><span class="tag tag-orange">待批注</span></td>
+                  <td><button class="btn btn-sm btn-primary" style="padding:4px 10px;">批注</button></td>
+                </tr>
+                <tr>
+                  <td><strong>智联异议答辩书.pdf</strong></td>
+                  <td>TM-2026-0031</td>
+                  <td>中誉知识产权</td>
+                  <td><span class="tag tag-blue">答辩书</span></td>
+                  <td>2026-05-01 16:45</td>
+                  <td><span class="tag tag-green">已通过</span></td>
+                  <td><button class="btn btn-sm btn-secondary" style="padding:4px 10px;">查看</button></td>
+                </tr>
+                <tr>
+                  <td><strong>星联续展缴费凭证.jpg</strong></td>
+                  <td>TM-2025-0098</td>
+                  <td>系统上传</td>
+                  <td><span class="tag tag-green">凭证</span></td>
+                  <td>2026-04-30 11:20</td>
+                  <td><span class="tag tag-green">已归档</span></td>
+                  <td><button class="btn btn-sm btn-secondary" style="padding:4px 10px;">下载</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="deadlinesPanel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📅 律所官文期限总览</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>案件</th><th>律所</th><th>官文类型</th><th>官方绝限</th><th>剩余天数</th><th>处理状态</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>云智</strong> <span style="font-family:monospace;font-size:11px;color:var(--primary);">TM-2026-0042</span></td>
+                  <td>金诚律师事务所</td>
+                  <td>驳回复审</td>
+                  <td style="color:#ef4444;font-weight:600;">2026-05-06</td>
+                  <td style="color:#ef4444;font-weight:600;">2天</td>
+                  <td><span class="tag tag-orange">材料准备中</span></td>
+                </tr>
+                <tr>
+                  <td><strong>智联</strong> <span style="font-family:monospace;font-size:11px;color:var(--primary);">TM-2026-0031</span></td>
+                  <td>中誉知识产权</td>
+                  <td>异议答辩</td>
+                  <td style="color:#ef4444;font-weight:600;">2026-05-07</td>
+                  <td style="color:#ef4444;font-weight:600;">3天</td>
+                  <td><span class="tag tag-green">已提交</span></td>
+                </tr>
+                <tr>
+                  <td><strong>海翼</strong> <span style="font-family:monospace;font-size:11px;color:var(--primary);">TM-2025-0189</span></td>
+                  <td>WIPO/当地所</td>
+                  <td>WIPO审查意见</td>
+                  <td style="color:#f59e0b;font-weight:600;">2026-05-15</td>
+                  <td style="color:#f59e0b;font-weight:600;">11天</td>
+                  <td><span class="tag tag-blue">待答复</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 邀请律所模态框 -->
+<div class="modal-overlay" id="inviteModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">➕ 邀请律所入驻</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="invite-step">
+        <div class="invite-step-num">1</div>
+        <div class="invite-step-title">填写律所基本信息</div>
+      </div>
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">律所名称 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="firmName" placeholder="请输入律所全称">
+        </div>
+        <div class="form-section">
+          <label class="form-label">律所类型 <span class="required">*</span></label>
+          <select class="form-select" id="firmType">
+            <option>国内代理所</option>
+            <option>国内律师事务所</option>
+            <option>海外代理所</option>
+            <option>海外律师事务所</option>
+            <option>知识产权服务机构</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">所在地区 <span class="required">*</span></label>
+          <select class="form-select" id="firmRegion">
+            <option>中国大陆</option>
+            <option>中国香港</option>
+            <option>美国</option>
+            <option>欧盟</option>
+            <option>日本</option>
+            <option>韩国</option>
+            <option>新加坡</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">主要业务领域</label>
+          <select class="form-select" id="firmField">
+            <option>商标全业务</option>
+            <option>商标申请+复审</option>
+            <option>争议解决（异议/无效/撤三）</option>
+            <option>行政诉讼</option>
+            <option>海外商标布局</option>
+            <option>综合知识产权</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="invite-step" style="margin-top:20px;">
+        <div class="invite-step-num">2</div>
+        <div class="invite-step-title">填写联系人信息</div>
+      </div>
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">联系人姓名 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="contactName" placeholder="请输入联系人姓名">
+        </div>
+        <div class="form-section">
+          <label class="form-label">职务</label>
+          <input type="text" class="form-input" id="contactTitle" placeholder="如：合伙人、资深律师">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">联系邮箱 <span class="required">*</span></label>
+          <input type="email" class="form-input" id="contactEmail" placeholder="example@lawfirm.com">
+        </div>
+        <div class="form-section">
+          <label class="form-label">联系电话</label>
+          <input type="text" class="form-input" id="contactPhone" placeholder="请输入联系电话">
+        </div>
+      </div>
+      
+      <div class="invite-step" style="margin-top:20px;">
+        <div class="invite-step-num">3</div>
+        <div class="invite-step-title">设置协作权限</div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">初始授权范围</label>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+            <input type="checkbox" checked> 查看委托案件信息
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+            <input type="checkbox" checked> 提交法律文件与证据
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+            <input type="checkbox" checked> 接收官文与期限提醒
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+            <input type="checkbox"> 查看费用信息
+          </label>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">邀请留言</label>
+        <textarea class="form-textarea" id="inviteMsg" placeholder="可填写对律所的简要介绍或协作期望...">诚邀贵所加入我们的商标协作平台，期待高效愉快的合作！</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitInvite()">📧 发送邀请</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('collab');
+
+const tbody = document.getElementById('firmList');
+AppData.lawFirms.forEach(f => {
+  tbody.innerHTML += `
+    <tr>
+      <td><strong>${f.name}</strong></td>
+      <td>${f.cases}</td>
+      <td><span style="color:#f59e0b;">★</span> ${f.rating}</td>
+      <td>${f.responseTime}</td>
+      <td>${f.successRate}</td>
+      <td>${f.feeLevel}</td>
+      <td>${getStatusTag(f.status)}</td>
+      <td style="text-align:right;">
+        <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">详情</button>
+        <button class="btn btn-sm btn-primary" style="padding:4px 10px;">沟通</button>
+      </td>
+    </tr>
+  `;
+});
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['firms','comm','files','deadlines'].forEach(p => {
+    document.getElementById(p+'Panel').style.display = p===tab?'block':'none';
+  });
+}
+
+function openInviteModal() {
+  document.getElementById('inviteModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('inviteModal').classList.remove('active');
+}
+
+function submitInvite() {
+  const name = document.getElementById('firmName').value.trim();
+  const contact = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  
+  if (!name || !contact || !email) {
+    alert('请填写必填项（律所名称、联系人姓名、联系邮箱）！');
+    return;
+  }
+  
+  const newFirm = {
+    name: name,
+    cases: 0,
+    rating: 0,
+    responseTime: '-',
+    successRate: '-',
+    feeLevel: '待评估',
+    status: '邀请中'
+  };
+  
+  AppData.lawFirms.push(newFirm);
+  
+  // Refresh table
+  tbody.innerHTML = '';
+  AppData.lawFirms.forEach(f => {
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${f.name}</strong></td>
+        <td>${f.cases}</td>
+        <td><span style="color:#f59e0b;">★</span> ${f.rating || '-'}</td>
+        <td>${f.responseTime}</td>
+        <td>${f.successRate}</td>
+        <td>${f.feeLevel}</td>
+        <td>${getStatusTag(f.status)}</td>
+        <td style="text-align:right;">
+          <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">详情</button>
+          <button class="btn btn-sm btn-primary" style="padding:4px 10px;">沟通</button>
+        </td>
+      </tr>
+    `;
+  });
+  
+  closeModal();
+  alert('邀请已发送至 ' + email + '，律所确认后即可开始协作！');
+  
+  document.getElementById('firmName').value = '';
+  document.getElementById('contactName').value = '';
+  document.getElementById('contactEmail').value = '';
+  document.getElementById('contactPhone').value = '';
+  document.getElementById('inviteMsg').value = '';
+}
+</script>
+</body>
+</html>

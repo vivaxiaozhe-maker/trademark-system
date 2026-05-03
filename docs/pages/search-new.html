@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新建检索 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 20px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light);
+}
+.form-textarea { min-height: 100px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+.radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+.radio-card {
+  flex: 1; min-width: 120px; padding: 14px; border: 2px solid var(--border-color);
+  border-radius: var(--radius-md); cursor: pointer; text-align: center;
+  transition: var(--transition); background: var(--bg-card);
+}
+.radio-card:hover { border-color: var(--primary-light); }
+.radio-card.active { border-color: var(--primary); background: var(--primary-light); }
+.radio-card .icon { font-size: 24px; margin-bottom: 6px; }
+.radio-card .label { font-size: 13px; font-weight: 600; }
+.radio-card .desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.cat-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+.cat-chip {
+  padding: 6px 4px; text-align: center; border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; transition: var(--transition);
+}
+.cat-chip:hover { border-color: var(--primary); color: var(--primary); }
+.cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.result-item {
+  padding: 14px; border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
+  transition: var(--transition); cursor: pointer;
+}
+.result-item:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+.result-sim { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+.result-sim.high { background: #fee2e2; color: #b91c1c; }
+.result-sim.medium { background: #fef3c7; color: #b45309; }
+.result-sim.low { background: #d1fae5; color: #047857; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">新建检索</div>
+          <div class="page-desc">商标近似检索与评估，支持国内及海外多法域检索</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="history.back()">← 返回</button>
+          <button class="btn btn-primary btn-sm">💾 保存草稿</button>
+        </div>
+      </div>
+      
+      <div class="row row-3">
+        <div style="grid-column: span 2;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">🔍 检索配置</div></div>
+            <div class="card-body">
+              <div class="form-section">
+                <label class="form-label">检索类型 <span class="required">*</span></label>
+                <div class="radio-group">
+                  <div class="radio-card active" onclick="selectRadio(this,'type','similar')">
+                    <div class="icon">🔎</div>
+                    <div class="label">近似检索</div>
+                    <div class="desc">相同/近似商标查询</div>
+                  </div>
+                  <div class="radio-card" onclick="selectRadio(this,'type','exact')">
+                    <div class="icon">🎯</div>
+                    <div class="label">相同检索</div>
+                    <div class="desc">完全匹配查询</div>
+                  </div>
+                  <div class="radio-card" onclick="selectRadio(this,'type','comprehensive')">
+                    <div class="icon">🌐</div>
+                    <div class="label">综合检索</div>
+                    <div class="desc">多维度全面分析</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-section">
+                <label class="form-label">检索范围 <span class="required">*</span></label>
+                <div class="radio-group">
+                  <div class="radio-card active" onclick="selectRadio(this,'scope','cn')">
+                    <div class="icon">🇨🇳</div>
+                    <div class="label">中国大陆</div>
+                  </div>
+                  <div class="radio-card" onclick="selectRadio(this,'scope','us')">
+                    <div class="icon">🇺🇸</div>
+                    <div class="label">美国</div>
+                  </div>
+                  <div class="radio-card" onclick="selectRadio(this,'scope','eu')">
+                    <div class="icon">🇪🇺</div>
+                    <div class="label">欧盟</div>
+                  </div>
+                  <div class="radio-card" onclick="selectRadio(this,'scope','global')">
+                    <div class="icon">🌍</div>
+                    <div class="label">全球</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-section">
+                <label class="form-label">商标名称 <span class="required">*</span></label>
+                <input type="text" class="form-input" placeholder="请输入待检索的商标名称" value="云智">
+                <div class="form-hint">支持中文、英文、数字及图形描述</div>
+              </div>
+              
+              <div class="form-section">
+                <label class="form-label">尼斯分类（可多选） <span class="required">*</span></label>
+                <div class="cat-grid" id="catGrid"></div>
+                <div class="form-hint" style="margin-top:8px;">已选择：<span id="selectedCats" style="color:var(--primary);font-weight:600;">第9类, 第35类, 第38类, 第42类</span></div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-section">
+                  <label class="form-label">申请人类型</label>
+                  <select class="form-select">
+                    <option>不限</option>
+                    <option>企业</option>
+                    <option>个人</option>
+                  </select>
+                </div>
+                <div class="form-section">
+                  <label class="form-label">商标状态</label>
+                  <select class="form-select">
+                    <option>全部状态</option>
+                    <option>有效注册</option>
+                    <option>申请中</option>
+                    <option>已失效</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-section">
+                <label class="form-label">检索备注</label>
+                <textarea class="form-textarea" placeholder="补充检索背景、目的或其他说明..."></textarea>
+              </div>
+              
+              <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:10px;">
+                <button class="btn btn-secondary">重置</button>
+                <button class="btn btn-primary" onclick="runSearch()">🔍 执行检索</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📋 检索历史</div></div>
+            <div class="card-body" style="padding:12px 0;">
+              <div style="padding:10px 16px; border-bottom:1px solid var(--border-color); cursor:pointer;">
+                <div style="font-weight:500; font-size:13px;">智联近似检索</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">2026-05-03 · 第9,35,38类 · 匹配3条</div>
+              </div>
+              <div style="padding:10px 16px; border-bottom:1px solid var(--border-color); cursor:pointer;">
+                <div style="font-weight:500; font-size:13px;">海翼全球检索</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">2026-05-01 · 第12,35类 · 匹配1条</div>
+              </div>
+              <div style="padding:10px 16px; cursor:pointer;">
+                <div style="font-weight:500; font-size:13px;">悦动相同检索</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">2026-04-28 · 第25类 · 匹配0条</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="searchResults" style="display:none;">
+        <div class="card">
+          <div class="card-header flex-between">
+            <div class="card-title">📊 检索结果（共匹配 3 条）</div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary btn-sm">📥 导出报告</button>
+              <button class="btn btn-primary btn-sm">➕ 生成评估报告</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="result-item">
+              <div class="result-sim high">95%</div>
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                  <strong style="font-size:15px;">云智科技</strong>
+                  <span class="tag tag-red">高风险</span>
+                  <span class="tag tag-blue">第9类</span>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                  申请号：78954321 · 申请人：深圳云智科技有限公司 · 状态：初审公告<br>
+                  申请日：2025-08-12 · 商品/服务：计算机软件、数据处理设备等
+                </div>
+              </div>
+              <button class="btn btn-sm btn-secondary" style="padding:4px 12px;">详情</button>
+            </div>
+            
+            <div class="result-item">
+              <div class="result-sim medium">78%</div>
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                  <strong style="font-size:15px;">智云</strong>
+                  <span class="tag tag-orange">中风险</span>
+                  <span class="tag tag-blue">第38类</span>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                  申请号：78951234 · 申请人：北京智云时代 · 状态：已注册<br>
+                  申请日：2024-03-20 · 商品/服务：电信服务、信息传输等
+                </div>
+              </div>
+              <button class="btn btn-sm btn-secondary" style="padding:4px 12px;">详情</button>
+            </div>
+            
+            <div class="result-item">
+              <div class="result-sim low">45%</div>
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                  <strong style="font-size:15px;">云智慧</strong>
+                  <span class="tag tag-green">低风险</span>
+                  <span class="tag tag-blue">第42类</span>
+                </div>
+                <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+                  申请号：78876543 · 申请人：上海云智慧科技 · 状态：已注册<br>
+                  申请日：2023-11-05 · 商品/服务：技术咨询、软件设计等
+                </div>
+              </div>
+              <button class="btn btn-sm btn-secondary" style="padding:4px 12px;">详情</button>
+            </div>
+            
+            <div style="margin-top:16px; padding:14px; background:#fef3c7; border-radius:var(--radius-md); border-left:4px solid #f59e0b;">
+              <div style="font-weight:600; color:#92400e; margin-bottom:4px;">⚠️ 检索结论</div>
+              <div style="font-size:13px; color:#78350f;">检测到1个高风险近似商标（相似度95%），建议调整商标设计或考虑购买/共存谈判。中风险商标1个，需进一步评估市场混淆可能性。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('search-new');
+
+// Render category chips
+const catGrid = document.getElementById('catGrid');
+const selected = [9,35,38,42];
+for (let i=1; i<=45; i++) {
+  const isActive = selected.includes(i);
+  catGrid.innerHTML += `<div class="cat-chip ${isActive?'active':''}" onclick="toggleCat(this,${i})">${i}</div>`;
+}
+
+function toggleCat(el, cat) {
+  el.classList.toggle('active');
+  const active = Array.from(document.querySelectorAll('.cat-chip.active')).map(c => parseInt(c.textContent));
+  document.getElementById('selectedCats').textContent = active.length ? '第' + active.join('类, 第') + '类' : '未选择';
+}
+
+function selectRadio(el, group, val) {
+  el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function runSearch() {
+  const panel = document.getElementById('searchResults');
+  panel.style.display = 'block';
+  panel.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生成报告 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.report-type-card {
+  padding: 20px; border: 2px solid var(--border-color); border-radius: var(--radius-lg);
+  cursor: pointer; transition: var(--transition); background: var(--bg-card);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.report-type-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.report-type-card.active { border-color: var(--primary); background: var(--primary-light); }
+.report-type-card .icon { font-size: 32px; }
+.report-type-card .title { font-weight: 600; font-size: 15px; }
+.report-type-card .desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+.report-preview {
+  background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+  padding: 32px; box-shadow: var(--shadow-sm);
+  min-height: 400px;
+}
+.report-preview-header {
+  text-align: center; padding-bottom: 20px; border-bottom: 2px solid var(--primary);
+  margin-bottom: 24px;
+}
+.report-preview-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+.report-preview-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.report-preview-section { margin-bottom: 24px; }
+.report-preview-section-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 10px; padding-left: 8px; border-left: 3px solid var(--primary); }
+.report-preview-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.report-preview-table th { background: var(--bg-body); padding: 8px 10px; text-align: left; font-weight: 600; border-bottom: 1px solid var(--border-color); }
+.report-preview-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); }
+
+.email-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; background: var(--primary-light); color: var(--primary-dark);
+  border-radius: 20px; font-size: 12px; font-weight: 500;
+}
+.email-chip .remove { cursor: pointer; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">生成报告</div>
+          <div class="page-desc">自定义生成商标管理分析报告，支持推送至指定邮箱</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="history.back()">← 返回</button>
+      </div>
+      
+      <div class="row row-3">
+        <div style="grid-column: span 1;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📊 选择报告类型</div></div>
+            <div class="card-body" style="display:flex; flex-direction:column; gap:10px;">
+              <div class="report-type-card active" onclick="selectReport(this,'overview')">
+                <div class="icon">📈</div>
+                <div class="title">商标全局概览报告</div>
+                <div class="desc">包含商标总量、地域分布、类型分析、趋势预测等核心指标</div>
+              </div>
+              <div class="report-type-card" onclick="selectReport(this,'risk')">
+                <div class="icon">⚠️</div>
+                <div class="title">品牌风险分析报告</div>
+                <div class="desc">风险预警清单、保护缺口识别、续展逾期提醒、冲突监测</div>
+              </div>
+              <div class="report-type-card" onclick="selectReport(this,'fee')">
+                <div class="icon">💰</div>
+                <div class="title">费用管理分析报告</div>
+                <div class="desc">预算执行情况、费用构成、律所性价比对比、ROI分析</div>
+              </div>
+              <div class="report-type-card" onclick="selectReport(this,'firm')">
+                <div class="icon">🏢</div>
+                <div class="title">律所绩效评估报告</div>
+                <div class="desc">律所合作数据、成功率、响应速度、服务质量综合评价</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card" style="margin-top:16px;">
+            <div class="card-header"><div class="card-title">📅 报告周期</div></div>
+            <div class="card-body">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;"><input type="radio" name="period" checked> 本月报告（2026年5月）</label>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;"><input type="radio" name="period"> 本季度报告（2026 Q2）</label>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;"><input type="radio" name="period"> 半年度报告（2026 H1）</label>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;"><input type="radio" name="period"> 年度报告（2026年度）</label>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px;"><input type="radio" name="period"> 自定义范围</label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card" style="margin-top:16px;">
+            <div class="card-header"><div class="card-title">📧 推送设置</div></div>
+            <div class="card-body">
+              <div style="margin-bottom:12px;">
+                <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">收件人邮箱</label>
+                <input type="text" id="emailInput" placeholder="输入邮箱后按回车添加" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;" onkeydown="addEmail(event)">
+              </div>
+              <div id="emailList" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                <div class="email-chip">zhang@company.com<span class="remove" onclick="this.parentElement.remove()">×</span></div>
+                <div class="email-chip">li@company.com<span class="remove" onclick="this.parentElement.remove()">×</span></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-muted);">
+                <input type="checkbox" id="scheduleSend" style="cursor:pointer;">
+                <label for="scheduleSend" style="cursor:pointer;">定时推送（每月1日自动生成并发送）</label>
+              </div>
+            </div>
+          </div>
+          
+          <div style="display:flex; gap:8px; margin-top:16px;">
+            <button class="btn btn-primary" style="flex:1;" onclick="generateReport()">📊 生成报告</button>
+            <button class="btn btn-secondary" style="flex:1;" onclick="pushToEmail()">📧 推送至邮箱</button>
+          </div>
+        </div>
+        
+        <div style="grid-column: span 2;">
+          <div class="card" style="height:100%;">
+            <div class="card-header flex-between">
+              <div class="card-title">👁️ 报告预览</div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-sm btn-secondary">📥 下载PDF</button>
+                <button class="btn btn-sm btn-secondary">📥 下载Word</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0; overflow:auto; max-height:calc(100vh - 240px);">
+              <div class="report-preview" id="reportPreview">
+                <div class="report-preview-header">
+                  <div class="report-preview-title">商标全局概览报告</div>
+                  <div class="report-preview-sub">科技创新集团 · 知识产权部 · 2026年5月</div>
+                </div>
+                
+                <div class="report-preview-section">
+                  <div class="report-preview-section-title">一、核心指标概览</div>
+                  <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px;">
+                    <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+                      <div style="font-size:24px; font-weight:700; color:var(--primary);">1,256</div>
+                      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">商标总量</div>
+                    </div>
+                    <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+                      <div style="font-size:24px; font-weight:700; color:var(--success);">986</div>
+                      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">有效商标</div>
+                    </div>
+                    <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+                      <div style="font-size:24px; font-weight:700; color:var(--warning);">210</div>
+                      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">审理中</div>
+                    </div>
+                    <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+                      <div style="font-size:24px; font-weight:700; color:var(--danger);">18</div>
+                      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">本周到期</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="report-preview-section">
+                  <div class="report-preview-section-title">二、案件状态分布</div>
+                  <table class="report-preview-table">
+                    <thead>
+                      <tr><th>状态</th><th>数量</th><th>占比</th><th>较上月</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>审查中</td><td>48</td><td>30.8%</td><td style="color:var(--success);">↑ 3</td></tr>
+                      <tr><td>已注册</td><td>86</td><td>55.1%</td><td style="color:var(--success);">↑ 5</td></tr>
+                      <tr><td>答辩期</td><td>12</td><td>7.7%</td><td style="color:var(--danger);">↓ 2</td></tr>
+                      <tr><td>已驳回</td><td>6</td><td>3.8%</td><td style="color:var(--success);">↓ 1</td></tr>
+                      <tr><td>其他</td><td>4</td><td>2.6%</td><td>-</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                
+                <div class="report-preview-section">
+                  <div class="report-preview-section-title">三、费用执行情况</div>
+                  <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
+                    <div style="flex:1;">
+                      <div class="flex-between" style="font-size:12px; margin-bottom:4px;"><span>年度预算</span><span style="font-weight:600;">¥2,800,000</span></div>
+                      <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#e2e8f0;"></div></div>
+                    </div>
+                    <div style="flex:1;">
+                      <div class="flex-between" style="font-size:12px; margin-bottom:4px;"><span>已执行</span><span style="font-weight:600; color:var(--primary);">¥1,865,000 (67%)</span></div>
+                      <div class="progress-bar"><div class="progress-fill" style="width:67%; background:var(--primary);"></div></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="report-preview-section">
+                  <div class="report-preview-section-title">四、主要风险预警</div>
+                  <div style="padding:12px; background:#fef3c7; border-radius:8px; border-left:3px solid var(--warning); margin-bottom:8px;">
+                    <div style="font-weight:600; font-size:13px; color:#92400e;">⚠️ 续展逾期风险</div>
+                    <div style="font-size:12px; color:#78350f; margin-top:4px;">星联商标第45类将于2026-06-01到期，尚未提交续展申请</div>
+                  </div>
+                  <div style="padding:12px; background:#fee2e2; border-radius:8px; border-left:3px solid var(--danger);">
+                    <div style="font-weight:600; font-size:13px; color:#991b1b;">🔴 保护缺口风险</div>
+                    <div style="font-size:12px; color:#7f1d1d; margin-top:4px;">云智品牌在第25类、第28类尚未注册，存在被抢注风险</div>
+                  </div>
+                </div>
+                
+                <div class="report-preview-section">
+                  <div class="report-preview-section-title">五、决策建议</div>
+                  <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
+                    1. 建议在印度和东南亚地区为云智品牌补充注册第9、35类商标<br>
+                    2. 驳回复审类案件建议优先分配给金诚律所（成功率92%）<br>
+                    3. Q2海外申请费用预计超预算15%，建议调整部分非紧急申请至Q3<br>
+                    4. 星联商标续展需立即启动，避免逾期失效
+                  </div>
+                </div>
+                
+                <div style="text-align:center; margin-top:32px; padding-top:20px; border-top:1px solid var(--border-color);">
+                  <div style="font-size:11px; color:var(--text-muted);">本报告由商标管理系统自动生成 · 生成时间：2026-05-04 10:30</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('report');
+
+let currentReport = 'overview';
+
+function selectReport(el, type) {
+  document.querySelectorAll('.report-type-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentReport = type;
+  // 实际应用中会切换报告预览内容
+  const titles = { overview: '商标全局概览报告', risk: '品牌风险分析报告', fee: '费用管理分析报告', firm: '律所绩效评估报告' };
+  document.querySelector('.report-preview-title').textContent = titles[type];
+}
+
+function addEmail(e) {
+  if (e.key === 'Enter') {
+    const val = e.target.value.trim();
+    if (val && val.includes('@')) {
+      const list = document.getElementById('emailList');
+      const chip = document.createElement('div');
+      chip.className = 'email-chip';
+      chip.innerHTML = val + '<span class="remove" onclick="this.parentElement.remove()">×</span>';
+      list.appendChild(chip);
+      e.target.value = '';
+    }
+  }
+}
+
+function generateReport() {
+  const preview = document.getElementById('reportPreview');
+  preview.style.opacity = '0.5';
+  preview.style.transform = 'scale(0.98)';
+  setTimeout(() => {
+    preview.style.transition = 'all 0.4s ease';
+    preview.style.opacity = '1';
+    preview.style.transform = 'scale(1)';
+    alert('报告已生成！可以预览、下载或推送至邮箱。');
+  }, 400);
+}
+
+function pushToEmail() {
+  const emails = Array.from(document.querySelectorAll('.email-chip')).map(c => c.textContent.replace('×','').trim());
+  if (emails.length === 0) {
+    alert('请至少添加一个收件人邮箱！');
+    return;
+  }
+  alert('报告已成功推送至：' + emails.join('、'));
+}
+</script>
+</body>
+</html>

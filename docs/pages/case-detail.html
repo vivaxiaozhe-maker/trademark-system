@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>案件详情 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.detail-header {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+}
+.detail-icon {
+  width: 64px; height: 64px; border-radius: 16px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: #fff; flex-shrink: 0;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.2);
+}
+.detail-title-area { flex: 1; }
+.detail-title { font-size: 22px; font-weight: 700; }
+.detail-sub { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+.detail-actions { display: flex; gap: 8px; }
+
+.info-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+.info-item {
+  padding: 14px; background: var(--bg-body); border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+.info-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.info-value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+.timeline-v2 { position: relative; padding-left: 28px; }
+.timeline-v2::before {
+  content: ""; position: absolute; left: 7px; top: 0; bottom: 0;
+  width: 2px; background: linear-gradient(180deg, var(--primary), var(--secondary));
+  border-radius: 2px;
+}
+.timeline-v2-item { position: relative; padding-bottom: 20px; }
+.timeline-v2-item::before {
+  content: ""; position: absolute; left: -24px; top: 2px;
+  width: 14px; height: 14px; border-radius: 50%; background: var(--bg-card);
+  border: 3px solid var(--primary); box-shadow: 0 0 0 3px var(--primary-light);
+}
+.timeline-v2-item.done::before { background: var(--primary); }
+.timeline-v2-item.current::before {
+  background: var(--primary);
+  animation: pulse-ring 2s infinite;
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(37,99,235,0); }
+  100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+}
+.timeline-v2-title { font-weight: 600; font-size: 13px; }
+.timeline-v2-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.timeline-v2-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; padding: 8px; background: var(--bg-body); border-radius: var(--radius-sm); }
+
+.doc-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  margin-bottom: 8px; cursor: pointer; transition: var(--transition);
+}
+.doc-item:hover { border-color: var(--primary); background: var(--primary-light); transform: translateX(4px); }
+.doc-icon { font-size: 20px; }
+.doc-info { flex: 1; }
+.doc-name { font-weight: 500; font-size: 13px; }
+.doc-meta { font-size: 11px; color: var(--text-muted); }
+
+.fee-progress {
+  display: flex; align-items: center; gap: 10px;
+}
+.fee-bar { flex: 1; height: 8px; background: var(--bg-body); border-radius: 4px; overflow: hidden; }
+.fee-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">案件详情</div>
+          <div class="page-desc">查看和管理案件全生命周期信息</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="history.back()">← 返回</button>
+          <button class="btn btn-primary btn-sm" onclick="openEditModal()">✏️ 编辑案件</button>
+        </div>
+      </div>
+      
+      <div class="detail-header">
+        <div class="detail-icon">☁️</div>
+        <div class="detail-title-area">
+          <div class="detail-title">云智 <span style="font-size:14px;color:var(--text-muted);font-weight:400;">TM-2026-0042</span></div>
+          <div class="detail-sub">驳回复审 · 国内案件 · 金诚律师事务所代理 · 负责人：张法务</div>
+        </div>
+        <div class="detail-actions">
+          <span class="tag tag-orange">审查中</span>
+          <span class="tag tag-red urgent-pulse">绝限 2天</span>
+        </div>
+      </div>
+      
+      <div class="info-grid" style="margin-bottom:20px;">
+        <div class="info-item">
+          <div class="info-label">尼斯分类</div>
+          <div class="info-value">第9, 35, 38, 42类</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">申请号</div>
+          <div class="info-value">TM-2026-0042</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">申请日</div>
+          <div class="info-value">2026-01-15</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">官方绝限</div>
+          <div class="info-value" style="color:var(--danger);">2026-05-06</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">内部期限</div>
+          <div class="info-value" style="color:var(--warning);">2026-05-03</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">当前进度</div>
+          <div class="info-value">65%</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">代理费</div>
+          <div class="info-value">¥85,000</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">官费</div>
+          <div class="info-value">¥1,500</div>
+        </div>
+      </div>
+      
+      <div class="row row-3">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📈 案件进度</div></div>
+          <div class="card-body">
+            <div class="timeline-v2">
+              <div class="timeline-v2-item done">
+                <div class="timeline-v2-title">案件创建</div>
+                <div class="timeline-v2-meta">2026-01-15 · 张法务</div>
+              </div>
+              <div class="timeline-v2-item done">
+                <div class="timeline-v2-title">材料准备</div>
+                <div class="timeline-v2-meta">2026-01-20 · 金诚律所</div>
+              </div>
+              <div class="timeline-v2-item done">
+                <div class="timeline-v2-title">提交申请</div>
+                <div class="timeline-v2-meta">2026-01-22 · 商标局受理</div>
+              </div>
+              <div class="timeline-v2-item done">
+                <div class="timeline-v2-title">形式审查</div>
+                <div class="timeline-v2-meta">2026-02-01 · 通过</div>
+              </div>
+              <div class="timeline-v2-item done">
+                <div class="timeline-v2-title">实质审查</div>
+                <div class="timeline-v2-meta">2026-03-15 · 驳回</div>
+                <div class="timeline-v2-desc">驳回原因：与在先商标"云智科技"（78954321）近似</div>
+              </div>
+              <div class="timeline-v2-item current">
+                <div class="timeline-v2-title">驳回复审材料准备</div>
+                <div class="timeline-v2-meta">进行中 · 绝限 2026-05-06</div>
+              </div>
+              <div class="timeline-v2-item">
+                <div class="timeline-v2-title">复审提交</div>
+                <div class="timeline-v2-meta">待进行</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><div class="card-title">📁 案件文档</div></div>
+          <div class="card-body">
+            <div class="doc-item">
+              <span class="doc-icon">📄</span>
+              <div class="doc-info">
+                <div class="doc-name">商标注册申请书.pdf</div>
+                <div class="doc-meta">官方文件 · 2026-01-22 · 2.3MB</div>
+              </div>
+              <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">下载</button>
+            </div>
+            <div class="doc-item">
+              <span class="doc-icon">📄</span>
+              <div class="doc-info">
+                <div class="doc-name">驳回通知书.pdf</div>
+                <div class="doc-meta">官方文件 · 2026-04-03 · 1.1MB</div>
+              </div>
+              <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">下载</button>
+            </div>
+            <div class="doc-item">
+              <span class="doc-icon">📝</span>
+              <div class="doc-info">
+                <div class="doc-name">驳回复审理由书_v2.docx</div>
+                <div class="doc-meta">律所提交 · 2026-05-03 · 待批注</div>
+              </div>
+              <button class="btn btn-sm btn-primary" style="padding:4px 10px;">批注</button>
+            </div>
+            <div class="doc-item">
+              <span class="doc-icon">🖼️</span>
+              <div class="doc-info">
+                <div class="doc-name">商标使用证据汇总.zip</div>
+                <div class="doc-meta">证据材料 · 2026-04-28 · 15.6MB</div>
+              </div>
+              <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">下载</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><div class="card-title">💰 费用明细</div></div>
+          <div class="card-body">
+            <div style="margin-bottom:14px;">
+              <div class="flex-between" style="margin-bottom:6px;">
+                <span style="font-size:13px;">代理费</span>
+                <span style="font-weight:600;">¥85,000</span>
+              </div>
+              <div class="fee-bar"><div class="fee-fill" style="width:85%; background:var(--primary);"></div></div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <div class="flex-between" style="margin-bottom:6px;">
+                <span style="font-size:13px;">官费</span>
+                <span style="font-weight:600;">¥1,500</span>
+              </div>
+              <div class="fee-bar"><div class="fee-fill" style="width:15%; background:var(--success);"></div></div>
+            </div>
+            <div style="padding-top:12px; border-top:1px solid var(--border-color);">
+              <div class="flex-between" style="margin-bottom:8px;">
+                <span style="font-size:13px; font-weight:600;">费用合计</span>
+                <span style="font-size:16px; font-weight:700; color:var(--primary);">¥86,500</span>
+              </div>
+              <div class="flex-between" style="margin-bottom:4px;">
+                <span style="font-size:12px; color:var(--text-muted);">已付款</span>
+                <span style="font-size:12px; color:var(--success);">¥1,500</span>
+              </div>
+              <div class="flex-between">
+                <span style="font-size:12px; color:var(--text-muted);">待付款</span>
+                <span style="font-size:12px; color:var(--warning);">¥85,000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header"><div class="card-title">💬 协作记录</div></div>
+        <div class="card-body">
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; gap:12px;">
+              <div class="avatar" style="width:36px;height:36px;font-size:12px;">金</div>
+              <div style="flex:1; padding:10px 14px; background:#f8fafc; border-radius:12px 12px 12px 4px;">
+                <div style="font-size:13px;">驳回复审理由书v2已提交，请法务审核。本次重点补充了第35类的使用证据和市场调研数据。</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">金诚律师事务所 · 2026-05-03 10:30</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:12px; flex-direction:row-reverse;">
+              <div class="avatar" style="width:36px;height:36px;font-size:12px;">张</div>
+              <div style="flex:1; padding:10px 14px; background:var(--primary); color:#fff; border-radius:12px 12px 4px 12px;">
+                <div style="font-size:13px;">收到，我将在今日内完成审核。关于证据链的完整性请再确认一下。</div>
+                <div style="font-size:11px; opacity:0.8; margin-top:4px;">张法务 · 2026-05-03 11:00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑案件模态框 -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">✏️ 编辑案件</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeEditModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px;">
+        <div class="form-section">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">商标名称</label>
+          <input type="text" class="form-input" value="云智" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;">
+        </div>
+        <div class="form-section">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">业务类型</label>
+          <select class="form-select" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;background:#fff;">
+            <option selected>驳回复审</option>
+            <option>新申请</option>
+            <option>异议答辩</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">当前状态</label>
+          <select class="form-select" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;background:#fff;">
+            <option selected>审查中</option>
+            <option>受理中</option>
+            <option>准备材料</option>
+            <option>已注册</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">代理律所</label>
+          <select class="form-select" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;background:#fff;">
+            <option selected>金诚律师事务所</option>
+            <option>中誉知识产权</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">官方绝限</label>
+          <input type="date" class="form-input" value="2026-05-06" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;">
+        </div>
+        <div class="form-section">
+          <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">责任人</label>
+          <select class="form-select" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;background:#fff;">
+            <option selected>张法务</option>
+            <option>李流程</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">案件备注</label>
+        <textarea style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;min-height:80px;resize:vertical;" placeholder="补充案件备注...">驳回原因：与在先商标近似，需补充使用证据</textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveEdit()">💾 保存修改</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('case-detail');
+
+function openEditModal() {
+  document.getElementById('editModal').classList.add('active');
+}
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('active');
+}
+function saveEdit() {
+  closeEditModal();
+  alert('案件信息已更新！');
+}
+</script>
+</body>
+</html>

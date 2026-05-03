@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>费用申请 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 20px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light);
+}
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+.radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+.radio-card {
+  flex: 1; min-width: 100px; padding: 14px; border: 2px solid var(--border-color);
+  border-radius: var(--radius-md); cursor: pointer; text-align: center;
+  transition: var(--transition); background: var(--bg-card);
+}
+.radio-card:hover { border-color: var(--primary-light); }
+.radio-card.active { border-color: var(--primary); background: var(--primary-light); }
+.radio-card .icon { font-size: 22px; margin-bottom: 6px; }
+.radio-card .label { font-size: 13px; font-weight: 600; }
+
+.fee-line {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr 40px;
+  gap: 10px; align-items: center; padding: 12px; background: var(--bg-body);
+  border-radius: var(--radius-md); margin-bottom: 8px;
+}
+.upload-zone {
+  border: 2px dashed var(--border-color); border-radius: var(--radius-lg);
+  padding: 32px; text-align: center; cursor: pointer; transition: var(--transition);
+  background: var(--bg-body);
+}
+.upload-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+
+.approver-chain { display: flex; align-items: center; gap: 12px; }
+.approver-node {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.approver-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 600; font-size: 13px;
+}
+.approver-arrow { color: var(--text-muted); font-size: 18px; }
+
+.budget-bar {
+  height: 8px; background: var(--bg-body); border-radius: 4px; overflow: hidden; margin-top: 6px;
+}
+.budget-fill { height: 100%; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">费用申请</div>
+          <div class="page-desc">预算申请与费用录入，支持多级审批流程</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="history.back()">← 返回</button>
+          <button class="btn btn-primary btn-sm">💾 保存草稿</button>
+        </div>
+      </div>
+      
+      <div class="row row-3">
+        <div style="grid-column: span 2;">
+          <div class="card">
+            <div class="card-header"><div class="card-title">💰 费用申请单</div></div>
+            <div class="card-body">
+              <div class="form-section">
+                <label class="form-label">申请类型 <span class="required">*</span></label>
+                <div class="radio-group">
+                  <div class="radio-card active" onclick="selectRadio(this,'applyType','budget')">
+                    <div class="icon">📋</div>
+                    <div class="label">预算申请</div>
+                  </div>
+                  <div class="radio-card" onclick="selectRadio(this,'applyType','reimburse')">
+                    <div class="icon">🧾</div>
+                    <div class="label">费用报销</div>
+                  </div>
+                  <div class="radio-card" onclick="selectRadio(this,'applyType','supplement')">
+                    <div class="icon">➕</div>
+                    <div class="label">追加预算</div>
+                  </div>
+                  <div class="radio-card" onclick="selectRadio(this,'applyType','advance')">
+                    <div class="icon">💵</div>
+                    <div class="label">预付款申请</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-section">
+                  <label class="form-label">关联案件 <span class="required">*</span></label>
+                  <select class="form-select">
+                    <option>请选择关联案件</option>
+                    <option>TM-2026-0042 云智-驳回复审</option>
+                    <option>TM-2026-0031 智联-异议答辩</option>
+                    <option>TM-2025-0189 海翼-马德里申请</option>
+                    <option>TM-2025-0098 星联-续展</option>
+                    <option>无特定案件（通用预算）</option>
+                  </select>
+                </div>
+                <div class="form-section">
+                  <label class="form-label">费用承担方</label>
+                  <select class="form-select">
+                    <option>知识产权部</option>
+                    <option>品牌管理部</option>
+                    <option>海外市场部</option>
+                  </select>
+                </div>
+                <div class="form-section">
+                  <label class="form-label">预算年度</label>
+                  <select class="form-select">
+                    <option>2026年度</option>
+                    <option>2027年度</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="form-section">
+                <div class="flex-between" style="margin-bottom:10px;">
+                  <label class="form-label" style="margin:0;">费用明细 <span class="required">*</span></label>
+                  <button class="btn btn-sm btn-secondary" onclick="addFeeLine()">➕ 添加明细</button>
+                </div>
+                <div id="feeLines">
+                  <div class="fee-line">
+                    <select class="form-select" style="min-width:0;">
+                      <option>代理费</option>
+                      <option>官费</option>
+                      <option>翻译费</option>
+                      <option>公证认证费</option>
+                      <option>差旅费</option>
+                      <option>其他</option>
+                    </select>
+                    <input type="number" class="form-input" placeholder="金额" value="85000">
+                    <select class="form-select" style="min-width:0;">
+                      <option>CNY</option>
+                      <option>USD</option>
+                      <option>EUR</option>
+                      <option>JPY</option>
+                    </select>
+                    <input type="text" class="form-input" placeholder="费用说明" value="云智驳回复审代理费">
+                    <div style="color:var(--text-muted);cursor:pointer;font-size:16px;">🗑️</div>
+                  </div>
+                  <div class="fee-line">
+                    <select class="form-select" style="min-width:0;">
+                      <option>官费</option>
+                      <option>代理费</option>
+                      <option>翻译费</option>
+                      <option>公证认证费</option>
+                      <option>差旅费</option>
+                      <option>其他</option>
+                    </select>
+                    <input type="number" class="form-input" placeholder="金额" value="1500">
+                    <select class="form-select" style="min-width:0;">
+                      <option>CNY</option>
+                      <option>USD</option>
+                      <option>EUR</option>
+                      <option>JPY</option>
+                    </select>
+                    <input type="text" class="form-input" placeholder="费用说明" value="驳回复审官费">
+                    <div style="color:var(--text-muted);cursor:pointer;font-size:16px;">🗑️</div>
+                  </div>
+                </div>
+                <div style="text-align:right; margin-top:10px; font-size:14px; font-weight:600;">
+                  合计：<span style="color:var(--primary);font-size:18px;">¥86,500</span>
+                </div>
+              </div>
+              
+              <div class="form-section">
+                <label class="form-label">附件上传</label>
+                <div class="upload-zone">
+                  <div style="font-size:28px; margin-bottom:8px;">📎</div>
+                  <div style="font-weight:500; margin-bottom:4px;">点击上传或拖拽文件至此</div>
+                  <div style="font-size:12px; color:var(--text-muted);">支持 PDF、JPG、PNG，单文件不超过 50MB</div>
+                </div>
+                <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                  <div style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:#dbeafe; border-radius:6px; font-size:12px;">
+                    <span>📄</span> 金诚律所报价单.pdf <span style="cursor:pointer; color:var(--danger);">×</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-section">
+                <label class="form-label">申请说明</label>
+                <textarea class="form-textarea" placeholder="请说明费用用途、必要性及预期成果..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div class="card-header"><div class="card-title">👤 审批流程</div></div>
+            <div class="card-body">
+              <div class="approver-chain" style="flex-direction:column; align-items:flex-start; gap:16px;">
+                <div class="approver-node" style="flex-direction:row; width:100%; gap:12px;">
+                  <div class="approver-avatar">张</div>
+                  <div style="flex:1;">
+                    <div style="font-weight:600; font-size:13px;">张法务（申请人）</div>
+                    <div style="font-size:11px; color:var(--text-muted);">知识产权部 · 高级法务经理</div>
+                  </div>
+                </div>
+                <div style="padding-left:20px; color:var(--text-muted);">↓</div>
+                <div class="approver-node" style="flex-direction:row; width:100%; gap:12px;">
+                  <div class="approver-avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706);">李</div>
+                  <div style="flex:1;">
+                    <div style="font-weight:600; font-size:13px;">李总监（部门审批）</div>
+                    <div style="font-size:11px; color:var(--text-muted);">知识产权部 · 部门总监</div>
+                  </div>
+                </div>
+                <div style="padding-left:20px; color:var(--text-muted);">↓</div>
+                <div class="approver-node" style="flex-direction:row; width:100%; gap:12px;">
+                  <div class="approver-avatar" style="background:linear-gradient(135deg,#10b981,#059669);">王</div>
+                  <div style="flex:1;">
+                    <div style="font-weight:600; font-size:13px;">王财务（财务审批）</div>
+                    <div style="font-size:11px; color:var(--text-muted);">财务部 · 费用审核专员</div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border-color);">
+                <label class="form-label" style="font-size:12px;">抄送人</label>
+                <input type="text" class="form-input" placeholder="输入姓名或邮箱添加抄送人" style="font-size:12px; padding:8px 10px;">
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header"><div class="card-title">💳 预算余量</div></div>
+            <div class="card-body">
+              <div style="margin-bottom:12px;">
+                <div class="flex-between" style="font-size:12px; margin-bottom:4px;">
+                  <span>年度预算</span><span style="font-weight:600;">¥2,800,000</span>
+                </div>
+                <div class="budget-bar"><div class="budget-fill" style="width:67%; background:#2563eb;"></div></div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <div class="flex-between" style="font-size:12px; margin-bottom:4px;">
+                  <span>已使用</span><span style="font-weight:600; color:var(--primary);">¥1,865,000 (67%)</span>
+                </div>
+                <div class="budget-bar"><div class="budget-fill" style="width:67%; background:#2563eb;"></div></div>
+              </div>
+              <div style="margin-bottom:12px;">
+                <div class="flex-between" style="font-size:12px; margin-bottom:4px;">
+                  <span>本次申请</span><span style="font-weight:600; color:var(--warning);">¥86,500</span>
+                </div>
+                <div class="budget-bar"><div class="budget-fill" style="width:3%; background:var(--warning);"></div></div>
+              </div>
+              <div>
+                <div class="flex-between" style="font-size:12px; margin-bottom:4px;">
+                  <span>申请后剩余</span><span style="font-weight:600; color:var(--success);">¥848,500</span>
+                </div>
+                <div class="budget-bar"><div class="budget-fill" style="width:30%; background:var(--success);"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display:flex; gap:10px; justify-content:center; margin:20px 0 40px;">
+        <button class="btn btn-secondary btn-lg">取消</button>
+        <button class="btn btn-primary btn-lg" onclick="submitApply()">✅ 提交申请</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('fee-apply');
+
+function selectRadio(el, group, val) {
+  el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function addFeeLine() {
+  const container = document.getElementById('feeLines');
+  const div = document.createElement('div');
+  div.className = 'fee-line';
+  div.innerHTML = `
+    <select class="form-select" style="min-width:0;">
+      <option>代理费</option><option>官费</option><option>翻译费</option>
+      <option>公证认证费</option><option>差旅费</option><option>其他</option>
+    </select>
+    <input type="number" class="form-input" placeholder="金额">
+    <select class="form-select" style="min-width:0;">
+      <option>CNY</option><option>USD</option><option>EUR</option><option>JPY</option>
+    </select>
+    <input type="text" class="form-input" placeholder="费用说明">
+    <div style="color:var(--text-muted);cursor:pointer;font-size:16px;" onclick="this.parentElement.remove()">🗑️</div>
+  `;
+  container.appendChild(div);
+}
+
+function submitApply() {
+  alert('费用申请已提交，审批流程已启动！');
+}
+</script>
+</body>
+</html>

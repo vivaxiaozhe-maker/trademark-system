@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抄送案件 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">抄送案件</div>
+          <div class="page-desc">您被抄送的案件共 6 件，仅查看权限</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>案件编号</th>
+                <th>商标名称</th>
+                <th>业务类型</th>
+                <th>当前节点</th>
+                <th>负责人</th>
+                <th>抄送时间</th>
+                <th style="text-align:right;">关注</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">TM-2026-0056</span></td>
+                <td><strong>悦动</strong></td>
+                <td><span class="tag tag-blue">新申请</span></td>
+                <td>受理中</td>
+                <td>王流程</td>
+                <td>2026-04-28</td>
+                <td style="text-align:right;"><button class="btn btn-sm btn-secondary" style="padding:4px 10px;font-size:12px;">⭐ 已关注</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">TM-2026-0071</span></td>
+                <td><strong>睿思</strong></td>
+                <td><span class="tag tag-blue">撤三答辩</span></td>
+                <td>证据收集</td>
+                <td>张法务</td>
+                <td>2026-04-25</td>
+                <td style="text-align:right;"><button class="btn btn-sm btn-secondary" style="padding:4px 10px;font-size:12px;">☆ 关注</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">TM-2025-0203</span></td>
+                <td><strong>启航</strong></td>
+                <td><span class="tag tag-blue">单一国家申请</span></td>
+                <td>审查中</td>
+                <td>李流程</td>
+                <td>2026-04-20</td>
+                <td style="text-align:right;"><button class="btn btn-sm btn-secondary" style="padding:4px 10px;font-size:12px;">☆ 关注</button></td>
+              </tr>
+              <tr>
+                <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">TM-2026-0012</span></td>
+                <td><strong>远见</strong></td>
+                <td><span class="tag tag-blue">异议申请</span></td>
+                <td>准备材料</td>
+                <td>赵法务</td>
+                <td>2026-04-15</td>
+                <td style="text-align:right;"><button class="btn btn-sm btn-secondary" style="padding:4px 10px;font-size:12px;">☆ 关注</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>initApp('cc');</script>
+</body>
+</html>
