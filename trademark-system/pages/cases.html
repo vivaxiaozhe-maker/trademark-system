@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>案件管理中心 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.cat-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+.cat-chip {
+  padding: 5px 2px; text-align: center; border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm); font-size: 11px; cursor: pointer; transition: var(--transition);
+}
+.cat-chip:hover { border-color: var(--primary); color: var(--primary); }
+.cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">案件管理中心</div>
+          <div class="page-desc">管理国内与海外商标案件的全生命周期</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm">📥 导出</button>
+          <button class="btn btn-secondary btn-sm">📤 批量导入</button>
+          <button class="btn btn-primary btn-sm" onclick="openNewCaseModal()">➕ 新建案件</button>
+        </div>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('domestic',this)">🇨🇳 国内案件</div>
+        <div class="tab" onclick="switchTab('overseas',this)">🌍 海外案件</div>
+        <div class="tab" onclick="switchTab('all',this)">📋 全部案件</div>
+      </div>
+      
+      <div class="filter-bar">
+        <div class="filter-item active" data-filter="all" onclick="filterCases(this,'all')">全部类型</div>
+        <div class="filter-item" data-filter="新申请" onclick="filterCases(this,'新申请')">新申请</div>
+        <div class="filter-item" data-filter="驳回复审" onclick="filterCases(this,'驳回复审')">驳回复审</div>
+        <div class="filter-item" data-filter="异议/无效" onclick="filterCases(this,'异议/无效')">异议/无效</div>
+        <div class="filter-item" data-filter="续展" onclick="filterCases(this,'续展')">续展</div>
+        <div class="filter-item" data-filter="撤三" onclick="filterCases(this,'撤三')">撤三</div>
+        <div class="filter-item" data-filter="诉讼" onclick="filterCases(this,'诉讼')">诉讼</div>
+        <div style="margin-left:auto; display:flex; gap:8px;">
+          <input type="text" class="search-input" placeholder="搜索案件编号、商标名称..." id="caseSearch" oninput="searchCases(this.value)">
+          <select class="filter-item" id="statusFilter" onchange="filterByStatus(this.value)">
+            <option value="all">全部状态</option>
+            <option value="审查中">审查中</option>
+            <option value="受理中">受理中</option>
+            <option value="答辩期">答辩期</option>
+            <option value="准备材料">准备材料</option>
+            <option value="待缴费">待缴费</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="kpi-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:16px;">
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">案件总数</div>
+          <div class="kpi-value" style="font-size:22px;">156</div>
+        </div>
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">审查中</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--primary);">48</div>
+        </div>
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">答辩期</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--warning);">12</div>
+        </div>
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">已注册</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--success);">86</div>
+        </div>
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">已驳回</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--danger);">6</div>
+        </div>
+        <div class="kpi-card" style="padding:14px;">
+          <div class="kpi-label">本周到期</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--warning);">5</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox"></th>
+                <th>案件编号</th>
+                <th>商标名称</th>
+                <th>图样</th>
+                <th>尼斯分类</th>
+                <th>业务类型</th>
+                <th>当前状态</th>
+                <th>代理律所</th>
+                <th>官方绝限</th>
+                <th>责任人</th>
+                <th style="text-align:right;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="caseTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 新建案件模态框 -->
+<div class="modal-overlay" id="newCaseModal">
+  <div class="modal" style="max-width:720px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">➕ 新建案件</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">商标名称 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="caseName" placeholder="请输入商标名称">
+        </div>
+        <div class="form-section">
+          <label class="form-label">案件类别 <span class="required">*</span></label>
+          <select class="form-select" id="caseCategory">
+            <option value="国内案件">国内案件</option>
+            <option value="海外案件">海外案件</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">业务类型 <span class="required">*</span></label>
+          <select class="form-select" id="caseType">
+            <option>新申请</option>
+            <option>驳回复审</option>
+            <option>异议申请</option>
+            <option>异议答辩</option>
+            <option>无效宣告</option>
+            <option>撤三答辩</option>
+            <option>续展</option>
+            <option>行政诉讼</option>
+            <option>马德里申请</option>
+            <option>单一国家申请</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">代理律所 <span class="required">*</span></label>
+          <select class="form-select" id="caseAgent">
+            <option>金诚律师事务所</option>
+            <option>中誉知识产权</option>
+            <option>美国Baker律所</option>
+            <option>德国Müller事务所</option>
+            <option>日本东京特许事务所</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">尼斯分类（可多选） <span class="required">*</span></label>
+        <div class="cat-grid" id="newCaseCats"></div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">已选择：<span id="selectedCats" style="color:var(--primary);font-weight:600;">未选择</span></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-section">
+          <label class="form-label">申请日</label>
+          <input type="date" class="form-input" id="caseApplyDate">
+        </div>
+        <div class="form-section">
+          <label class="form-label">官方绝限</label>
+          <input type="date" class="form-input" id="caseDeadline">
+        </div>
+        <div class="form-section">
+          <label class="form-label">责任人 <span class="required">*</span></label>
+          <select class="form-select" id="caseOwner">
+            <option>张法务</option>
+            <option>李流程</option>
+            <option>王流程</option>
+            <option>赵法务</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">案件备注</label>
+        <textarea class="form-textarea" id="caseDesc" placeholder="补充案件背景、策略说明或其他信息..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitCase()">✅ 创建案件</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('cases');
+
+const caseData = [
+  { id: "TM-2026-0042", name: "云智", img: "☁️", cats: "9,35,38,42", type: "驳回复审", status: "审查中", agent: "金诚律师事务所", deadline: "2026-05-06", owner: "张法务" },
+  { id: "TM-2026-0031", name: "智联", img: "🔌", cats: "9,35,38", type: "异议答辩", status: "答辩期", agent: "中誉知识产权", deadline: "2026-05-07", owner: "张法务" },
+  { id: "TM-2026-0056", name: "悦动", img: "👟", cats: "25,35", type: "新申请", status: "受理中", agent: "中誉知识产权", deadline: "2026-06-01", owner: "王流程" },
+  { id: "TM-2026-0028", name: "明达", img: "💡", cats: "35,36,42", type: "不予注册复审", status: "准备材料", agent: "金诚律师事务所", deadline: "2026-05-22", owner: "张法务" },
+  { id: "TM-2025-0098", name: "星联", img: "⭐", cats: "9,35,38,41,42,45", type: "续展", status: "待缴费", agent: "金诚律师事务所", deadline: "2026-05-10", owner: "张法务" },
+  { id: "TM-2026-0071", name: "睿思", img: "🧠", cats: "9,35,38,42", type: "撤三答辩", status: "证据收集", agent: "中誉知识产权", deadline: "2026-06-10", owner: "张法务" },
+  { id: "TM-2026-0012", name: "远见", img: "👁️", cats: "35,42", type: "异议申请", status: "准备材料", agent: "金诚律师事务所", deadline: "2026-06-15", owner: "赵法务" },
+  { id: "TM-2025-0156", name: "Horizon", img: "🌅", cats: "9,38", type: "行政诉讼", status: "一审中", agent: "中誉知识产权", deadline: "2026-07-01", owner: "张法务" }
+];
+
+const overseasData = [
+  { id: "TM-2025-0189", name: "海翼", img: "🌊", cats: "12,35,37", type: "马德里申请", status: "WIPO审查", agent: "WIPO", deadline: "2026-05-15", owner: "李流程" },
+  { id: "TM-2025-0203", name: "启航", img: "🚀", cats: "35,39", type: "单一国家申请", status: "USPTO审查", agent: "美国Baker律所", deadline: "2026-06-20", owner: "李流程" },
+  { id: "TM-2025-0218", name: "欧陆", img: "🏰", cats: "35,36", type: "EUIPO申请", status: "审查中", agent: "德国Müller事务所", deadline: "2026-08-10", owner: "李流程" },
+  { id: "TM-2026-0033", name: "樱之", img: "🌸", cats: "25,35", type: "JPO申请", status: "受理中", agent: "日本东京特许事务所", deadline: "2026-09-01", owner: "李流程" }
+];
+
+let currentTab = 'domestic';
+let currentFilter = 'all';
+let currentStatusFilter = 'all';
+let searchKeyword = '';
+let selectedCats = [];
+let allCases = [...caseData, ...overseasData];
+
+function renderTable(data) {
+  const tbody = document.getElementById('caseTable');
+  tbody.innerHTML = '';
+  if (data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的案件</td></tr>';
+    return;
+  }
+  data.forEach(c => {
+    const urgent = c.deadline <= '2026-05-07';
+    tbody.innerHTML += `
+      <tr>
+        <td><input type="checkbox"></td>
+        <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">${c.id}</span></td>
+        <td><strong>${c.name}</strong></td>
+        <td><div style="width:36px;height:36px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;">${c.img}</div></td>
+        <td><span style="font-size:12px;color:var(--text-secondary);">${c.cats}</span></td>
+        <td><span class="tag tag-blue">${c.type}</span></td>
+        <td>${getStatusTag(c.status)}</td>
+        <td>${c.agent}</td>
+        <td style="color:${urgent?'#ef4444':''};font-weight:${urgent?'600':'400'};">${c.deadline}</td>
+        <td>${c.owner}</td>
+        <td style="text-align:right;">
+          <button class="btn btn-sm btn-secondary" style="padding:4px 10px;" onclick="navigateTo('case-detail.html')">详情</button>
+          <button class="btn btn-sm btn-primary" style="padding:4px 10px;" onclick="navigateTo('case-detail.html')">编辑</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function getCurrentData() {
+  let data = currentTab === 'domestic' ? caseData : currentTab === 'overseas' ? overseasData : allCases;
+  
+  if (currentFilter !== 'all') {
+    data = data.filter(c => c.type.includes(currentFilter) || (currentFilter === '异议/无效' && (c.type.includes('异议') || c.type.includes('无效'))));
+  }
+  
+  if (currentStatusFilter !== 'all') {
+    data = data.filter(c => c.status === currentStatusFilter);
+  }
+  
+  if (searchKeyword) {
+    const kw = searchKeyword.toLowerCase();
+    data = data.filter(c => c.id.toLowerCase().includes(kw) || c.name.toLowerCase().includes(kw) || c.type.toLowerCase().includes(kw));
+  }
+  
+  return data;
+}
+
+renderTable(getCurrentData());
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentTab = tab;
+  renderTable(getCurrentData());
+}
+
+function filterCases(el, type) {
+  document.querySelectorAll('.filter-bar .filter-item[data-filter]').forEach(item => item.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = type;
+  renderTable(getCurrentData());
+}
+
+function filterByStatus(status) {
+  currentStatusFilter = status;
+  renderTable(getCurrentData());
+}
+
+function searchCases(keyword) {
+  searchKeyword = keyword;
+  renderTable(getCurrentData());
+}
+
+function openNewCaseModal() {
+  document.getElementById('newCaseModal').classList.add('active');
+  selectedCats = [];
+  renderCatGrid();
+  document.getElementById('caseApplyDate').value = new Date().toISOString().slice(0,10);
+}
+
+function closeModal() {
+  document.getElementById('newCaseModal').classList.remove('active');
+}
+
+function renderCatGrid() {
+  const grid = document.getElementById('newCaseCats');
+  grid.innerHTML = '';
+  for (let i=1; i<=45; i++) {
+    grid.innerHTML += `<div class="cat-chip ${selectedCats.includes(i)?'active':''}" onclick="toggleCat(${i})">${i}</div>`;
+  }
+}
+
+function toggleCat(cat) {
+  if (selectedCats.includes(cat)) {
+    selectedCats = selectedCats.filter(c => c !== cat);
+  } else {
+    selectedCats.push(cat);
+  }
+  renderCatGrid();
+  document.getElementById('selectedCats').textContent = selectedCats.length ? '第' + selectedCats.join('类, 第') + '类' : '未选择';
+}
+
+function submitCase() {
+  const name = document.getElementById('caseName').value.trim();
+  const category = document.getElementById('caseCategory').value;
+  const type = document.getElementById('caseType').value;
+  const agent = document.getElementById('caseAgent').value;
+  const deadline = document.getElementById('caseDeadline').value;
+  const owner = document.getElementById('caseOwner').value;
+  
+  if (!name || selectedCats.length === 0) {
+    alert('请填写必填项（商标名称和尼斯分类）！');
+    return;
+  }
+  
+  const newId = 'TM-2026-00' + (allCases.length + 51);
+  const newCase = {
+    id: newId, name: name, img: '🆕', cats: selectedCats.join(','),
+    type: type, status: '受理中', agent: agent, deadline: deadline || '2026-12-31', owner: owner
+  };
+  
+  if (category === '国内案件') {
+    caseData.unshift(newCase);
+  } else {
+    overseasData.unshift(newCase);
+  }
+  allCases = [...caseData, ...overseasData];
+  
+  closeModal();
+  renderTable(getCurrentData());
+  alert('案件创建成功！案件编号：' + newId);
+  
+  document.getElementById('caseName').value = '';
+  document.getElementById('caseDesc').value = '';
+}
+
+const params = new URLSearchParams(location.search);
+const tab = params.get('tab');
+if (tab === 'overseas') {
+  document.querySelectorAll('.tab')[1].click();
+}
+</script>
+</body>
+</html>

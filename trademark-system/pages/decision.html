@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理决策中心 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">管理决策中心</div>
+          <div class="page-desc">数据驱动的商标资产管理决策支持</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="navigateTo('report.html')">📊 生成报告</button>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('global',this)">🌐 商标全局视图</div>
+        <div class="tab" onclick="switchTab('risk',this)">⚠️ 品牌风险地图</div>
+        <div class="tab" onclick="switchTab('firm',this)">🏢 律所管理</div>
+        <div class="tab" onclick="switchTab('fee',this)">💰 费用管理</div>
+        <div class="tab" onclick="switchTab('intel',this)">🧠 案件智能分析</div>
+      </div>
+      
+      <div id="globalPanel">
+        <div class="kpi-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:16px;">
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">商标总量</div><div class="kpi-value" style="font-size:22px;">1,256</div></div>
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">有效商标</div><div class="kpi-value" style="font-size:22px; color:var(--success);">986</div></div>
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">审理中</div><div class="kpi-value" style="font-size:22px; color:var(--primary);">210</div></div>
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">海外布局</div><div class="kpi-value" style="font-size:22px; color:var(--info);">128</div></div>
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">年度预算执行</div><div class="kpi-value" style="font-size:22px; color:var(--warning);">67%</div></div>
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">本周到期</div><div class="kpi-value" style="font-size:22px; color:var(--danger);">18</div></div>
+        </div>
+        <div class="row row-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">地域分布热力</div></div>
+            <div class="card-body">
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; align-items:center; gap:12px;"><span style="width:60px; font-size:13px; font-weight:500;">中国大陆</span><div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:78%; background:#2563eb;"></div></div><span style="width:40px; text-align:right; font-size:13px; font-weight:600;">78%</span></div>
+                <div style="display:flex; align-items:center; gap:12px;"><span style="width:60px; font-size:13px; font-weight:500;">美国</span><div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:45%; background:#0ea5e9;"></div></div><span style="width:40px; text-align:right; font-size:13px; font-weight:600;">45%</span></div>
+                <div style="display:flex; align-items:center; gap:12px;"><span style="width:60px; font-size:13px; font-weight:500;">欧盟</span><div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:32%; background:#10b981;"></div></div><span style="width:40px; text-align:right; font-size:13px; font-weight:600;">32%</span></div>
+                <div style="display:flex; align-items:center; gap:12px;"><span style="width:60px; font-size:13px; font-weight:500;">日本</span><div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:18%; background:#f59e0b;"></div></div><span style="width:40px; text-align:right; font-size:13px; font-weight:600;">18%</span></div>
+                <div style="display:flex; align-items:center; gap:12px;"><span style="width:60px; font-size:13px; font-weight:500;">韩国</span><div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:12%; background:#8b5cf6;"></div></div><span style="width:40px; text-align:right; font-size:13px; font-weight:600;">12%</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">商标类型分布</div></div>
+            <div class="card-body"><div class="chart-container" id="typeDist"></div></div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="riskPanel" style="display:none;">
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-header"><div class="card-title">⚠️ 风险预警清单</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>风险类型</th><th>品牌/案件</th><th>风险描述</th><th>影响程度</th><th>建议措施</th><th>处理状态</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="tag tag-red">续展逾期</span></td>
+                  <td><strong>星联</strong></td>
+                  <td>第45类商标将于2026-06-01到期，尚未提交续展申请</td>
+                  <td><span class="tag tag-red">高</span></td>
+                  <td>立即启动续展流程</td>
+                  <td><span class="tag tag-orange">处理中</span></td>
+                </tr>
+                <tr>
+                  <td><span class="tag tag-orange">保护缺口</span></td>
+                  <td><strong>云智</strong></td>
+                  <td>第25类、第28类尚未注册，存在被抢注风险</td>
+                  <td><span class="tag tag-orange">中</span></td>
+                  <td>补充布局申请</td>
+                  <td><span class="tag tag-blue">评估中</span></td>
+                </tr>
+                <tr>
+                  <td><span class="tag tag-orange">冲突预警</span></td>
+                  <td><strong>智联</strong></td>
+                  <td>监测到近似商标"智连"在第38类申请中</td>
+                  <td><span class="tag tag-orange">中</span></td>
+                  <td>启动异议程序</td>
+                  <td><span class="tag tag-gray">待决策</span></td>
+                </tr>
+                <tr>
+                  <td><span class="tag tag-blue">使用证据</span></td>
+                  <td><strong>海翼</strong></td>
+                  <td>美国商标使用证据即将到期（第5-6年宣誓）</td>
+                  <td><span class="tag tag-blue">低</span></td>
+                  <td>收集使用证据</td>
+                  <td><span class="tag tag-blue">计划中</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="firmPanel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">律所绩效评估</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>律所</th><th>案件数</th><th>成功率</th><th>响应速度</th><th>费用性价比</th><th>客户评分</th><th>综合评级</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>金诚律师事务所</strong></td>
+                  <td>45</td>
+                  <td style="color:var(--success);font-weight:600;">92%</td>
+                  <td>2.3小时</td>
+                  <td>★★★☆</td>
+                  <td><span style="color:#f59e0b;">★</span> 4.8</td>
+                  <td><span class="tag tag-green">A+</span></td>
+                </tr>
+                <tr>
+                  <td><strong>中誉知识产权</strong></td>
+                  <td>38</td>
+                  <td style="color:var(--success);font-weight:600;">88%</td>
+                  <td>4.1小时</td>
+                  <td>★★★★</td>
+                  <td><span style="color:#f59e0b;">★</span> 4.5</td>
+                  <td><span class="tag tag-green">A</span></td>
+                </tr>
+                <tr>
+                  <td><strong>美国Baker律所</strong></td>
+                  <td>12</td>
+                  <td style="color:var(--success);font-weight:600;">90%</td>
+                  <td>8.5小时</td>
+                  <td>★★★☆</td>
+                  <td><span style="color:#f59e0b;">★</span> 4.7</td>
+                  <td><span class="tag tag-green">A</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="feePanel" style="display:none;">
+        <div class="row row-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">预算执行偏差</div></div>
+            <div class="card-body"><div class="chart-container" id="budgetDev"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">费用趋势预测</div></div>
+            <div class="card-body"><div class="chart-container" id="feeForecast"></div></div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="intelPanel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">🧠 智能建议</div></div>
+          <div class="card-body">
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="padding:14px; background:#eff6ff; border-radius:10px; border-left:4px solid #2563eb;">
+                <div style="font-weight:600; color:#1e40af; margin-bottom:4px;">📌 布局优化建议</div>
+                <div style="font-size:13px; color:#334155;">基于品牌"云智"的当前保护范围和市场扩展计划，建议在印度和东南亚地区补充注册，预计投入¥80,000，可覆盖3个核心类别。</div>
+              </div>
+              <div style="padding:14px; background:#f0fdf4; border-radius:10px; border-left:4px solid #10b981;">
+                <div style="font-weight:600; color:#047857; margin-bottom:4px;">📌 律所优化建议</div>
+                <div style="font-size:13px; color:#334155;">驳回复审类案件金诚律所成功率(92%)显著高于中誉(82%)，建议增加金诚的复审类案件分配比例。</div>
+              </div>
+              <div style="padding:14px; background:#fffbeb; border-radius:10px; border-left:4px solid #f59e0b;">
+                <div style="font-weight:600; color:#b45309; margin-bottom:4px;">📌 费用预警</div>
+                <div style="font-size:13px; color:#334155;">Q2海外申请费用预计超预算15%，建议调整部分非紧急申请的提交时间至Q3。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('decision');
+
+drawPieChart('typeDist', [520,310,280,146], ['文字商标','图形商标','组合商标','立体商标'], ['#2563eb','#0ea5e9','#10b981','#f59e0b']);
+drawBarChart('budgetDev', [95,102,88,110,105,98], ['1月','2月','3月','4月','5月','6月'], ['#10b981','#10b981','#ef4444','#ef4444','#f59e0b','#10b981']);
+drawLineChart('feeForecast', [320000,340000,310000,360000,380000,400000,420000], ['1月','2月','3月','4月','5月','6月','7月'], '#2563eb');
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['global','risk','firm','fee','intel'].forEach(p => {
+    document.getElementById(p+'Panel').style.display = p===tab?'block':'none';
+  });
+}
+</script>
+</body>
+</html>

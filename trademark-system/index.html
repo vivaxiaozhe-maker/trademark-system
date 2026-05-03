@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商标管理系统 - 仪表盘</title>
+<link rel="stylesheet" href="css/common.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">仪表盘</div>
+          <div class="page-desc">欢迎回来，张法务。今日有 3 项紧急待办事项需要处理。</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm">📅 今日：2026年5月4日</button>
+          <button class="btn btn-primary btn-sm" onclick="showQuickCreate()">➕ 快速创建</button>
+        </div>
+      </div>
+      
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card fade-in" style="animation-delay:0s" onclick="navigateTo('pages/my-cases.html')">
+          <div class="kpi-header">
+            <span class="kpi-label">待处理案件</span>
+            <div class="kpi-icon blue">📋</div>
+          </div>
+          <div class="kpi-value">42</div>
+          <div class="kpi-footer">
+            <span class="kpi-trend up">↑ 5</span>
+            <span style="color:var(--text-muted);">较上周</span>
+          </div>
+        </div>
+        <div class="kpi-card fade-in" style="animation-delay:0.05s" onclick="navigateTo('pages/todo.html')">
+          <div class="kpi-header">
+            <span class="kpi-label">本周到期期限</span>
+            <div class="kpi-icon orange">⏰</div>
+          </div>
+          <div class="kpi-value">18</div>
+          <div class="kpi-footer">
+            <span class="kpi-trend down">↓ 2</span>
+            <span style="color:var(--text-muted);">较上周</span>
+          </div>
+        </div>
+        <div class="kpi-card fade-in" style="animation-delay:0.1s" onclick="navigateTo('pages/brand.html')">
+          <div class="kpi-header">
+            <span class="kpi-label">在册商标总量</span>
+            <div class="kpi-icon green">🏷️</div>
+          </div>
+          <div class="kpi-value">1,256</div>
+          <div class="kpi-footer">
+            <span class="kpi-trend up">↑ 12</span>
+            <span style="color:var(--text-muted);">本月新增</span>
+          </div>
+        </div>
+        <div class="kpi-card fade-in" style="animation-delay:0.15s" onclick="navigateTo('pages/cases.html?tab=domestic')">
+          <div class="kpi-header">
+            <span class="kpi-label">本月新申请</span>
+            <div class="kpi-icon purple">📝</div>
+          </div>
+          <div class="kpi-value">23</div>
+          <div class="kpi-footer">
+            <span class="kpi-trend up">↑ 8</span>
+            <span style="color:var(--text-muted);">较上月</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row row-3">
+        <!-- 期限预警 -->
+        <div class="card fade-in" style="animation-delay:0.2s">
+          <div class="card-header">
+            <div class="card-title">⏰ 期限预警</div>
+            <a href="pages/todo.html" style="font-size:12px;color:var(--primary);font-weight:500;">查看全部 →</a>
+          </div>
+          <div class="card-body" style="padding:12px 0;">
+            <table class="data-table">
+              <tbody id="deadlineTable"></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- 案件趋势 -->
+        <div class="card fade-in" style="animation-delay:0.25s">
+          <div class="card-header">
+            <div class="card-title">📈 案件趋势</div>
+            <select style="border:1px solid var(--border-color);border-radius:6px;padding:4px 8px;font-size:12px;outline:none;">
+              <option>近6个月</option>
+              <option>近12个月</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="trendChart"></div>
+          </div>
+        </div>
+        
+        <!-- 业务类型分布 -->
+        <div class="card fade-in" style="animation-delay:0.3s">
+          <div class="card-header">
+            <div class="card-title">🥧 业务类型分布</div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="pieChart"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row row-2">
+        <!-- 待办事项 -->
+        <div class="card fade-in" style="animation-delay:0.35s">
+          <div class="card-header">
+            <div class="card-title">📌 待办事项（前5项）</div>
+            <a href="pages/todo.html" style="font-size:12px;color:var(--primary);font-weight:500;">查看全部 →</a>
+          </div>
+          <div class="card-body" style="padding:12px 0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>任务</th><th>类型</th><th>优先级</th><th>截止日</th></tr>
+              </thead>
+              <tbody id="todoTable"></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- 快捷操作 -->
+        <div class="card fade-in" style="animation-delay:0.4s">
+          <div class="card-header">
+            <div class="card-title">🚀 快捷操作</div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px;">
+              <div class="quick-btn" onclick="navigateTo('pages/cases.html')">
+                <div style="width:48px;height:48px;border-radius:12px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">➕</div>
+                <div style="text-align:center;font-size:12px;font-weight:500;">新建案件</div>
+              </div>
+              <div class="quick-btn" onclick="navigateTo('pages/brand-map.html')">
+                <div style="width:48px;height:48px;border-radius:12px;background:#d1fae5;color:var(--success);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">🏷️</div>
+                <div style="text-align:center;font-size:12px;font-weight:500;">品牌图谱</div>
+              </div>
+              <div class="quick-btn" onclick="navigateTo('pages/fees.html')">
+                <div style="width:48px;height:48px;border-radius:12px;background:#fef3c7;color:var(--warning);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">💰</div>
+                <div style="text-align:center;font-size:12px;font-weight:500;">费用录入</div>
+              </div>
+              <div class="quick-btn" onclick="navigateTo('pages/monitor.html')">
+                <div style="width:48px;height:48px;border-radius:12px;background:#ede9fe;color:var(--info);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">🔍</div>
+                <div style="text-align:center;font-size:12px;font-weight:500;">商标监测</div>
+              </div>
+              <div class="quick-btn" onclick="navigateTo('pages/collab.html')">
+                <div style="width:48px;height:48px;border-radius:12px;background:#fce7f3;color:#db2777;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">🤝</div>
+                <div style="text-align:center;font-size:12px;font-weight:500;">律所沟通</div>
+              </div>
+              <div class="quick-btn" onclick="navigateTo('pages/decision.html')">
+                <div style="width:48px;height:48px;border-radius:12px;background:#e0f2fe;color:#0284c7;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">📊</div>
+                <div style="text-align:center;font-size:12px;font-weight:500;">决策报表</div>
+              </div>
+              <div class="quick-btn">
+                <div style="width:48px;height:48px;border-radius:12px;background:#f3f4f6;color:#6b7280;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">📤</div>
+                <div style="text-align:center;font-size:12px;font-weight:500;">数据导出</div>
+              </div>
+              <div class="quick-btn">
+                <div style="width:48px;height:48px;border-radius:12px;background:#f3f4f6;color:#6b7280;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">⚙️</div>
+                <div style="text-align:center;font-size:12px;font-weight:500;">系统设置</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 近期动态 -->
+      <div class="card fade-in" style="animation-delay:0.45s">
+        <div class="card-header">
+          <div class="card-title">📰 近期动态</div>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item done">
+              <div class="timeline-title">商标"云智"收到驳回通知书</div>
+              <div class="timeline-time">2026-05-03 14:30 · 案件 TM-2026-0042</div>
+            </div>
+            <div class="timeline-item done">
+              <div class="timeline-title">马德里申请"海翼"进入WIPO审查阶段</div>
+              <div class="timeline-time">2026-05-02 09:15 · 案件 TM-2025-0189</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-title">金诚律所提交异议答辩书（智联）</div>
+              <div class="timeline-time">2026-05-01 16:45 · 案件 TM-2026-0031</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-title">星联商标续展官费已缴纳</div>
+              <div class="timeline-time">2026-04-30 11:20 · 案件 TM-2025-0098</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="quickCreateModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div style="font-weight:600;">快速创建</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px;">
+        <div style="padding:20px; border:1px solid var(--border-color); border-radius:var(--radius-md); text-align:center; cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'" onclick="navigateTo('pages/cases.html')">
+          <div style="font-size:28px;margin-bottom:8px;">⚖️</div>
+          <div style="font-weight:600;">新建案件</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">商标申请、复审、异议等</div>
+        </div>
+        <div style="padding:20px; border:1px solid var(--border-color); border-radius:var(--radius-md); text-align:center; cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'" onclick="navigateTo('pages/search-new.html')">
+          <div style="font-size:28px;margin-bottom:8px;">📋</div>
+          <div style="font-weight:600;">新建检索</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">商标近似检索与评估</div>
+        </div>
+        <div style="padding:20px; border:1px solid var(--border-color); border-radius:var(--radius-md); text-align:center; cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'" onclick="navigateTo('pages/fee-apply.html')">
+          <div style="font-size:28px;margin-bottom:8px;">💰</div>
+          <div style="font-weight:600;">费用申请</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">预算申请与费用录入</div>
+        </div>
+        <div style="padding:20px; border:1px solid var(--border-color); border-radius:var(--radius-md); text-align:center; cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'" onclick="navigateTo('pages/doc-new.html')">
+          <div style="font-size:28px;margin-bottom:8px;">📄</div>
+          <div style="font-weight:600;">新建文档</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">法律文件、证据材料</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+initApp('dashboard');
+
+// Render deadline table
+const dlBody = document.getElementById('deadlineTable');
+AppData.deadlines.slice(0,4).forEach(d => {
+  const color = d.level==='urgent' ? '#ef4444' : d.level==='high' ? '#f59e0b' : '#64748b';
+  dlBody.innerHTML += `
+    <tr>
+      <td style="padding:10px 16px;">
+        <div style="font-weight:500;">${d.name}</div>
+        <div style="font-size:11px;color:var(--text-muted);">${d.type}</div>
+      </td>
+      <td style="padding:10px 16px; text-align:right;">
+        <div style="font-weight:600;color:${color};font-size:15px;">${d.days}天</div>
+        <div style="font-size:11px;color:var(--text-muted);">${d.date}</div>
+      </td>
+    </tr>
+  `;
+});
+
+// Render todo table
+const todoBody = document.getElementById('todoTable');
+AppData.todos.slice(0,5).forEach(t => {
+  todoBody.innerHTML += `
+    <tr>
+      <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.title}</td>
+      <td><span class="tag tag-gray">${t.type}</span></td>
+      <td>${getPriorityTag(t.priority)}</td>
+      <td style="color:${t.priority==='urgent'?'#ef4444':''};font-weight:500;">${t.deadline}</td>
+    </tr>
+  `;
+});
+
+// Charts
+drawLineChart('trendChart', [18, 22, 19, 25, 30, 28], ['12月','1月','2月','3月','4月','5月'], '#2563eb');
+drawPieChart('pieChart', [35, 28, 18, 12, 7], ['新申请','驳回复审','异议/无效','续展','其他'], ['#2563eb','#0ea5e9','#10b981','#f59e0b','#94a3b8']);
+
+function showQuickCreate() {
+  document.getElementById('quickCreateModal').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('quickCreateModal').classList.remove('active');
+}
+</script>
+</body>
+</html>

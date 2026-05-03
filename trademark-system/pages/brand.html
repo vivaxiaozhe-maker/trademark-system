@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品牌管理 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.cat-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
+.cat-chip {
+  padding: 5px 2px; text-align: center; border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm); font-size: 11px; cursor: pointer; transition: var(--transition);
+}
+.cat-chip:hover { border-color: var(--primary); color: var(--primary); }
+.cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.upload-zone {
+  border: 2px dashed var(--border-color); border-radius: var(--radius-lg);
+  padding: 24px; text-align: center; cursor: pointer; transition: var(--transition);
+  background: var(--bg-body);
+}
+.upload-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">品牌管理</div>
+          <div class="page-desc">管理内部品牌资产与外部授权合作</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openNewBrandModal()">➕ 新增品牌</button>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('internal',this)">🏢 内部品牌</div>
+        <div class="tab" onclick="switchTab('external',this)">🤝 外部合作</div>
+      </div>
+      
+      <div id="internalPanel">
+        <div class="kpi-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom:16px;">
+          <div class="kpi-card" style="padding:14px;">
+            <div class="kpi-label">品牌总数</div>
+            <div class="kpi-value" style="font-size:22px;">8</div>
+          </div>
+          <div class="kpi-card" style="padding:14px;">
+            <div class="kpi-label">注册类别数</div>
+            <div class="kpi-value" style="font-size:22px; color:var(--primary);">32</div>
+          </div>
+          <div class="kpi-card" style="padding:14px;">
+            <div class="kpi-label">有效商标</div>
+            <div class="kpi-value" style="font-size:22px; color:var(--success);">24</div>
+          </div>
+          <div class="kpi-card" style="padding:14px;">
+            <div class="kpi-label">待审商标</div>
+            <div class="kpi-value" style="font-size:22px; color:var(--warning);">7</div>
+          </div>
+          <div class="kpi-card" style="padding:14px;">
+            <div class="kpi-label">即将到期</div>
+            <div class="kpi-value" style="font-size:22px; color:var(--danger);">1</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">品牌资产列表</div>
+            <a href="brand-map.html" style="font-size:13px;color:var(--primary);font-weight:500;">查看品牌图谱 →</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>品牌名称</th>
+                  <th>注册类别</th>
+                  <th>商标总数</th>
+                  <th>已注册</th>
+                  <th>审理中</th>
+                  <th>已失效</th>
+                  <th>风险等级</th>
+                  <th style="text-align:right;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="brandList"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="externalPanel" style="display:none;">
+        <div class="row row-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">📤 授权他方</div></div>
+            <div class="card-body" style="padding:0;">
+              <table class="data-table">
+                <thead>
+                  <tr><th>品牌</th><th>被授权方</th><th>类别</th><th>授权期限</th><th>状态</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>云智</strong></td>
+                    <td>深圳云科有限公司</td>
+                    <td>第9类</td>
+                    <td>2024.01-2027.01</td>
+                    <td><span class="tag tag-green">有效</span></td>
+                  </tr>
+                  <tr>
+                    <td><strong>智联</strong></td>
+                    <td>北京互联科技</td>
+                    <td>第38类</td>
+                    <td>2023.06-2026.06</td>
+                    <td><span class="tag tag-orange">即将到期</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">📥 他方授权</div></div>
+            <div class="card-body" style="padding:0;">
+              <table class="data-table">
+                <thead>
+                  <tr><th>品牌</th><th>授权方</th><th>类别</th><th>授权期限</th><th>状态</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>鸿蒙</strong></td>
+                    <td>华为技术有限公司</td>
+                    <td>第9类</td>
+                    <td>2025.01-2028.01</td>
+                    <td><span class="tag tag-green">有效</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 新增品牌模态框 -->
+<div class="modal-overlay" id="newBrandModal">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">➕ 新增品牌</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">品牌名称 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="brandName" placeholder="请输入品牌名称">
+        </div>
+        <div class="form-section">
+          <label class="form-label">品牌英文名称</label>
+          <input type="text" class="form-input" id="brandNameEn" placeholder="English name (optional)">
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">品牌图样上传</label>
+        <div class="upload-zone">
+          <div style="font-size:28px; margin-bottom:8px;">🖼️</div>
+          <div style="font-weight:500; margin-bottom:4px;">点击上传或拖拽图片至此</div>
+          <div style="font-size:12px; color:var(--text-muted);">支持 JPG、PNG、GIF，建议尺寸 300×300 像素</div>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">尼斯分类（可多选） <span class="required">*</span></label>
+        <div class="cat-grid" id="brandCats"></div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">已选择：<span id="selectedCats" style="color:var(--primary);font-weight:600;">未选择</span></div>
+      </div>
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">品牌所属事业部</label>
+          <select class="form-select" id="brandDept">
+            <option>集团总部</option>
+            <option>消费电子事业部</option>
+            <option>企业服务事业部</option>
+            <option>海外业务部</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">品牌等级</label>
+          <select class="form-select" id="brandLevel">
+            <option value="core">核心品牌</option>
+            <option value="important">重要品牌</option>
+            <option value="general">一般品牌</option>
+            <option value="defensive">防御品牌</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">品牌描述</label>
+        <textarea class="form-textarea" id="brandDesc" placeholder="描述品牌定位、使用范围、历史背景等信息..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitBrand()">✅ 创建品牌</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('brand');
+
+let selectedCats = [];
+
+function renderBrands() {
+  const tbody = document.getElementById('brandList');
+  tbody.innerHTML = '';
+  AppData.brands.forEach(b => {
+    const riskColor = b.risk==='high'?'tag-red':b.risk==='medium'?'tag-orange':'tag-green';
+    const riskText = b.risk==='high'?'高':b.risk==='medium'?'中':'低';
+    tbody.innerHTML += `
+      <tr>
+        <td><strong style="font-size:15px;">${b.name}</strong></td>
+        <td><span style="font-size:12px;color:var(--text-secondary);">${b.categories.join(', ')}</span></td>
+        <td>${b.total}</td>
+        <td style="color:var(--success);font-weight:600;">${b.registered}</td>
+        <td style="color:var(--primary);font-weight:600;">${b.pending}</td>
+        <td style="color:var(--danger);font-weight:600;">${b.expired}</td>
+        <td><span class="tag ${riskColor}">${riskText}</span></td>
+        <td style="text-align:right;">
+          <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">详情</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+renderBrands();
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('internalPanel').style.display = tab==='internal'?'block':'none';
+  document.getElementById('externalPanel').style.display = tab==='external'?'block':'none';
+}
+
+const params = new URLSearchParams(location.search);
+if (params.get('tab') === 'external') {
+  document.querySelectorAll('.tab')[1].click();
+}
+
+function openNewBrandModal() {
+  document.getElementById('newBrandModal').classList.add('active');
+  selectedCats = [];
+  renderCatGrid();
+}
+
+function closeModal() {
+  document.getElementById('newBrandModal').classList.remove('active');
+}
+
+function renderCatGrid() {
+  const grid = document.getElementById('brandCats');
+  grid.innerHTML = '';
+  for (let i=1; i<=45; i++) {
+    grid.innerHTML += `<div class="cat-chip ${selectedCats.includes(i)?'active':''}" onclick="toggleCat(${i})">${i}</div>`;
+  }
+}
+
+function toggleCat(cat) {
+  if (selectedCats.includes(cat)) {
+    selectedCats = selectedCats.filter(c => c !== cat);
+  } else {
+    selectedCats.push(cat);
+  }
+  renderCatGrid();
+  document.getElementById('selectedCats').textContent = selectedCats.length ? '第' + selectedCats.join('类, 第') + '类' : '未选择';
+}
+
+function submitBrand() {
+  const name = document.getElementById('brandName').value.trim();
+  if (!name || selectedCats.length === 0) {
+    alert('请填写品牌名称并选择尼斯分类！');
+    return;
+  }
+  
+  const newBrand = {
+    name: name,
+    categories: [...selectedCats],
+    total: selectedCats.length,
+    registered: 0,
+    pending: selectedCats.length,
+    expired: 0,
+    risk: 'low'
+  };
+  
+  AppData.brands.push(newBrand);
+  closeModal();
+  renderBrands();
+  alert('品牌「' + name + '」创建成功！');
+  
+  document.getElementById('brandName').value = '';
+  document.getElementById('brandNameEn').value = '';
+  document.getElementById('brandDesc').value = '';
+}
+</script>
+</body>
+</html>

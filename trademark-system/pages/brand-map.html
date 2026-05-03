@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品牌图谱 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.matrix-grid { display:grid; grid-template-columns: 120px repeat(15, 1fr); gap:3px; }
+.matrix-header { background:var(--bg-body); padding:8px 4px; text-align:center; font-size:11px; font-weight:600; color:var(--text-secondary); border-radius:4px; }
+.matrix-brand { display:flex; align-items:center; padding:0 12px; font-weight:600; font-size:13px; background:#f8fafc; border-radius:4px; }
+.matrix-cell { height:36px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:600; cursor:pointer; transition:all 0.15s; position:relative; }
+.matrix-cell.registered { background:#d1fae5; color:#047857; }
+.matrix-cell.pending { background:#dbeafe; color:#1d4ed8; }
+.matrix-cell.expired { background:#e2e8f0; color:#64748b; }
+.matrix-cell.empty { background:#fff1f2; color:#fda4af; border:1px dashed #fecdd3; }
+.matrix-cell:hover { transform:scale(1.15); z-index:10; box-shadow:0 4px 12px rgba(0,0,0,0.15); }
+.matrix-cell .tooltip { position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:6px 10px; border-radius:6px; font-size:11px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity 0.2s; margin-bottom:6px; }
+.matrix-cell:hover .tooltip { opacity:1; }
+.cat-group { margin-bottom:24px; }
+.cat-group-title { font-size:14px; font-weight:600; margin-bottom:10px; color:var(--text-primary); display:flex; align-items:center; gap:8px; }
+.cat-group-title::before { content:""; width:4px; height:16px; background:var(--primary); border-radius:2px; }
+
+/* Timeline View */
+.timeline-year { font-size:18px; font-weight:700; color:var(--primary); margin:20px 0 12px; padding-left:12px; border-left:4px solid var(--primary); }
+.timeline-events { display:flex; flex-direction:column; gap:10px; }
+.timeline-event {
+  display:flex; align-items:center; gap:14px; padding:14px 16px;
+  background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md);
+  transition:var(--transition); cursor:pointer;
+}
+.timeline-event:hover { border-color:var(--primary); box-shadow:var(--shadow-sm); }
+.timeline-event-dot { width:12px; height:12px; border-radius:50%; background:var(--primary); flex-shrink:0; }
+.timeline-event-date { width:90px; font-size:13px; font-weight:600; color:var(--text-secondary); flex-shrink:0; }
+.timeline-event-content { flex:1; }
+.timeline-event-title { font-weight:600; font-size:14px; }
+.timeline-event-desc { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.timeline-event-tag { flex-shrink:0; }
+
+/* Region View */
+.region-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; }
+.region-card {
+  background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg);
+  padding:18px; transition:var(--transition); cursor:pointer;
+}
+.region-card:hover { border-color:var(--primary); box-shadow:var(--shadow-md); transform:translateY(-2px); }
+.region-flag { font-size:28px; margin-bottom:8px; }
+.region-name { font-weight:600; font-size:15px; margin-bottom:4px; }
+.region-count { font-size:24px; font-weight:700; color:var(--primary); line-height:1; }
+.region-detail { font-size:12px; color:var(--text-muted); margin-top:8px; display:flex; flex-direction:column; gap:4px; }
+.region-bar { height:5px; background:var(--bg-body); border-radius:3px; overflow:hidden; margin-top:6px; }
+.region-fill { height:100%; border-radius:3px; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">品牌图谱</div>
+          <div class="page-desc">45类矩阵式品牌资产分布视图，空白单元格为 protection gap</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm">📊 导出图谱</button>
+        </div>
+      </div>
+      
+      <div class="filter-bar">
+        <div class="filter-item active" onclick="switchView('matrix',this)">矩阵视图</div>
+        <div class="filter-item" onclick="switchView('timeline',this)">时间轴视图</div>
+        <div class="filter-item" onclick="switchView('region',this)">地域分布</div>
+        <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+          <span style="display:flex; align-items:center; gap:4px; font-size:12px;"><span style="width:10px;height:10px;background:#d1fae5;border-radius:2px;"></span> 有效</span>
+          <span style="display:flex; align-items:center; gap:4px; font-size:12px;"><span style="width:10px;height:10px;background:#dbeafe;border-radius:2px;"></span> 在审</span>
+          <span style="display:flex; align-items:center; gap:4px; font-size:12px;"><span style="width:10px;height:10px;background:#e2e8f0;border-radius:2px;"></span> 失效</span>
+          <span style="display:flex; align-items:center; gap:4px; font-size:12px;"><span style="width:10px;height:10px;background:#fff1f2;border:1px dashed #fecdd3;border-radius:2px;"></span> 缺口</span>
+        </div>
+      </div>
+      
+      <!-- 矩阵视图 -->
+      <div id="matrixView">
+        <div class="card">
+          <div class="card-body">
+            <div class="cat-group">
+              <div class="cat-group-title">第1类 - 第15类（化工、医药、五金、珠宝、乐器）</div>
+              <div class="matrix-grid" id="matrix1"></div>
+            </div>
+            <div class="cat-group">
+              <div class="cat-group-title">第16类 - 第30类（文具、橡胶、皮革、建材、家具、食品）</div>
+              <div class="matrix-grid" id="matrix2"></div>
+            </div>
+            <div class="cat-group">
+              <div class="cat-group-title">第31类 - 第45类（农林、啤酒、广告、金融、物流、教育、科技、餐饮、医疗、法律）</div>
+              <div class="matrix-grid" id="matrix3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 时间轴视图 -->
+      <div id="timelineView" style="display:none;">
+        <div class="card">
+          <div class="card-body">
+            <div class="timeline-year">2026年</div>
+            <div class="timeline-events">
+              <div class="timeline-event">
+                <div class="timeline-event-dot"></div>
+                <div class="timeline-event-date">2026-05</div>
+                <div class="timeline-event-content">
+                  <div class="timeline-event-title">悦动商标新申请提交</div>
+                  <div class="timeline-event-desc">第25类、第35类 · 中誉知识产权代理 · 申请号：TM-2026-0056</div>
+                </div>
+                <div class="timeline-event-tag"><span class="tag tag-blue">新申请</span></div>
+              </div>
+              <div class="timeline-event">
+                <div class="timeline-event-dot" style="background:var(--warning);"></div>
+                <div class="timeline-event-date">2026-04</div>
+                <div class="timeline-event-content">
+                  <div class="timeline-event-title">云智商标收到驳回通知书</div>
+                  <div class="timeline-event-desc">第9,35,38,42类 · 驳回原因：与在先商标近似 · 绝限：2026-05-06</div>
+                </div>
+                <div class="timeline-event-tag"><span class="tag tag-orange">驳回复审</span></div>
+              </div>
+              <div class="timeline-event">
+                <div class="timeline-event-dot" style="background:var(--success);"></div>
+                <div class="timeline-event-date">2026-03</div>
+                <div class="timeline-event-content">
+                  <div class="timeline-event-title">星联商标续展官费缴纳</div>
+                  <div class="timeline-event-desc">第9,35,38,41,42,45类 · 续展有效期延长至2036年</div>
+                </div>
+                <div class="timeline-event-tag"><span class="tag tag-green">续展</span></div>
+              </div>
+            </div>
+            
+            <div class="timeline-year">2025年</div>
+            <div class="timeline-events">
+              <div class="timeline-event">
+                <div class="timeline-event-dot" style="background:var(--info);"></div>
+                <div class="timeline-event-date">2025-11</div>
+                <div class="timeline-event-content">
+                  <div class="timeline-event-title">海翼马德里国际申请提交</div>
+                  <div class="timeline-event-desc">第12,35,37类 · 指定8国 · WIPO申请号：TM-2025-0189</div>
+                </div>
+                <div class="timeline-event-tag"><span class="tag tag-blue">马德里申请</span></div>
+              </div>
+              <div class="timeline-event">
+                <div class="timeline-event-dot" style="background:var(--success);"></div>
+                <div class="timeline-event-date">2025-08</div>
+                <div class="timeline-event-content">
+                  <div class="timeline-event-title">智联商标注册公告</div>
+                  <div class="timeline-event-desc">第9,35,38,42,45类 · 注册有效期：2025-08-15 至 2035-08-14</div>
+                </div>
+                <div class="timeline-event-tag"><span class="tag tag-green">注册公告</span></div>
+              </div>
+              <div class="timeline-event">
+                <div class="timeline-event-dot"></div>
+                <div class="timeline-event-date">2025-03</div>
+                <div class="timeline-event-content">
+                  <div class="timeline-event-title">启航美国单一国家申请</div>
+                  <div class="timeline-event-desc">第35,39类 · 美国Baker律所代理 · USPTO受理中</div>
+                </div>
+                <div class="timeline-event-tag"><span class="tag tag-blue">海外申请</span></div>
+              </div>
+            </div>
+            
+            <div class="timeline-year">2024年</div>
+            <div class="timeline-events">
+              <div class="timeline-event">
+                <div class="timeline-event-dot" style="background:var(--success);"></div>
+                <div class="timeline-event-date">2024-06</div>
+                <div class="timeline-event-content">
+                  <div class="timeline-event-title">云智商标初审公告</div>
+                  <div class="timeline-event-desc">第9,35,38,42类 · 公告期：2024-06-01 至 2024-08-31</div>
+                </div>
+                <div class="timeline-event-tag"><span class="tag tag-green">初审公告</span></div>
+              </div>
+              <div class="timeline-event">
+                <div class="timeline-event-dot"></div>
+                <div class="timeline-event-date">2024-01</div>
+                <div class="timeline-event-content">
+                  <div class="timeline-event-title">明达商标新申请提交</div>
+                  <div class="timeline-event-desc">第35,36,42类 · 金诚律师事务所代理</div>
+                </div>
+                <div class="timeline-event-tag"><span class="tag tag-blue">新申请</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 地域分布视图 -->
+      <div id="regionView" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">🌍 品牌地域分布</div></div>
+          <div class="card-body">
+            <div class="region-grid" id="regionGrid"></div>
+            
+            <div style="margin-top:24px; padding-top:24px; border-top:1px solid var(--border-color);">
+              <div class="card-title" style="margin-bottom:14px;">📊 地域布局分析</div>
+              <div class="row row-2">
+                <div>
+                  <div style="display:flex; flex-direction:column; gap:12px;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <span style="width:80px; font-size:13px; font-weight:500;">中国大陆</span>
+                      <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:95%; background:#2563eb;"></div></div>
+                      <span style="width:40px; text-align:right; font-size:13px; font-weight:600;">32类</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <span style="width:80px; font-size:13px; font-weight:500;">美国</span>
+                      <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:65%; background:#0ea5e9;"></div></div>
+                      <span style="width:40px; text-align:right; font-size:13px; font-weight:600;">18类</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <span style="width:80px; font-size:13px; font-weight:500;">欧盟</span>
+                      <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:50%; background:#10b981;"></div></div>
+                      <span style="width:40px; text-align:right; font-size:13px; font-weight:600;">12类</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <span style="width:80px; font-size:13px; font-weight:500;">日本</span>
+                      <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:35%; background:#f59e0b;"></div></div>
+                      <span style="width:40px; text-align:right; font-size:13px; font-weight:600;">8类</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                      <span style="width:80px; font-size:13px; font-weight:500;">韩国</span>
+                      <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:25%; background:#8b5cf6;"></div></div>
+                      <span style="width:40px; text-align:right; font-size:13px; font-weight:600;">6类</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div style="padding:16px; background:#f8fafc; border-radius:var(--radius-md); border-left:4px solid var(--primary);">
+                    <div style="font-weight:600; margin-bottom:8px;">📌 布局建议</div>
+                    <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
+                      1. 云智品牌在印度、东南亚尚未布局，建议优先补充第9、35类注册<br>
+                      2. 智联品牌美国注册存在缺口（第42类未覆盖），建议补充<br>
+                      3. 海翼品牌欧盟已覆盖核心类别，可评估扩展至第39类<br>
+                      4. 星联品牌日本即将到期（2027-03），建议提前启动续展
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('brand-map');
+
+const brands = AppData.brands;
+const brandReg = {};
+brands.forEach(b => {
+  b.categories.forEach(c => {
+    if (!brandReg[c]) brandReg[c] = [];
+    brandReg[c].push({ name: b.name, status: b.registered > 0 ? 'registered' : 'pending' });
+  });
+});
+
+function renderMatrix(containerId, startCat, endCat) {
+  const el = document.getElementById(containerId);
+  let html = '<div class="matrix-header">品牌 \\ 类别</div>';
+  for (let i = startCat; i <= endCat; i++) {
+    html += `<div class="matrix-header">${i}</div>`;
+  }
+  
+  brands.forEach(b => {
+    html += `<div class="matrix-brand">${b.name}</div>`;
+    for (let i = startCat; i <= endCat; i++) {
+      const has = b.categories.includes(i);
+      const cls = has ? (b.registered > 0 ? 'registered' : 'pending') : 'empty';
+      const txt = has ? (b.registered > 0 ? '✓' : '···') : '+';
+      const tip = has ? `${b.name} 第${i}类` : `缺口：${b.name} 第${i}类`;
+      html += `<div class="matrix-cell ${cls}">${txt}<div class="tooltip">${tip}</div></div>`;
+    }
+  });
+  
+  el.innerHTML = html;
+}
+
+renderMatrix('matrix1', 1, 15);
+renderMatrix('matrix2', 16, 30);
+renderMatrix('matrix3', 31, 45);
+
+// Region data
+const regionData = [
+  { flag: '🇨🇳', name: '中国大陆', total: 32, registered: 24, pending: 7, expired: 1, pct: 95 },
+  { flag: '🇺🇸', name: '美国', total: 18, registered: 14, pending: 3, expired: 1, pct: 65 },
+  { flag: '🇪🇺', name: '欧盟', total: 12, registered: 10, pending: 2, expired: 0, pct: 50 },
+  { flag: '🇯🇵', name: '日本', total: 8, registered: 7, pending: 1, expired: 0, pct: 35 },
+  { flag: '🇰🇷', name: '韩国', total: 6, registered: 5, pending: 1, expired: 0, pct: 25 },
+  { flag: '🇸🇬', name: '新加坡', total: 4, registered: 3, pending: 1, expired: 0, pct: 15 },
+  { flag: '🇦🇺', name: '澳大利亚', total: 3, registered: 2, pending: 1, expired: 0, pct: 10 },
+  { flag: '🇨🇦', name: '加拿大', total: 2, registered: 1, pending: 1, expired: 0, pct: 8 }
+];
+
+function renderRegions() {
+  const grid = document.getElementById('regionGrid');
+  let html = '';
+  regionData.forEach(r => {
+    html += `
+      <div class="region-card">
+        <div class="region-flag">${r.flag}</div>
+        <div class="region-name">${r.name}</div>
+        <div class="region-count">${r.total}<span style="font-size:13px;color:var(--text-muted);font-weight:400;"> 类</span></div>
+        <div class="region-detail">
+          <span>✅ 有效 ${r.registered} · ⏳ 在审 ${r.pending} · ❌ 失效 ${r.expired}</span>
+        </div>
+        <div class="region-bar"><div class="region-fill" style="width:${r.pct}%; background:linear-gradient(90deg,var(--primary),var(--secondary));"></div></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">布局完整度 ${r.pct}%</div>
+      </div>
+    `;
+  });
+  grid.innerHTML = html;
+}
+renderRegions();
+
+function switchView(view, el) {
+  document.querySelectorAll('.filter-bar .filter-item').forEach(item => item.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('matrixView').style.display = view === 'matrix' ? 'block' : 'none';
+  document.getElementById('timelineView').style.display = view === 'timeline' ? 'block' : 'none';
+  document.getElementById('regionView').style.display = view === 'region' ? 'block' : 'none';
+}
+</script>
+</body>
+</html>

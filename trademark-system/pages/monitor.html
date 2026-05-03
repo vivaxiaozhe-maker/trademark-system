@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>监测中心 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">监测中心</div>
+          <div class="page-desc">全方位商标监测与风险预警体系</div>
+        </div>
+        <button class="btn btn-primary btn-sm">➕ 新增监测任务</button>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('tm',this)">🏷️ 商标监测</div>
+        <div class="tab" onclick="switchTab('entity',this)">🏢 主体监测</div>
+        <div class="tab" onclick="switchTab('case',this)">⚖️ 重点案件监测</div>
+        <div class="tab" onclick="switchTab('opp',this)">⚔️ 异议监测</div>
+      </div>
+      
+      <div id="tmPanel">
+        <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom:16px;">
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">监测任务</div><div class="kpi-value" style="font-size:22px;">12</div></div>
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">今日匹配</div><div class="kpi-value" style="font-size:22px; color:var(--danger);">9</div></div>
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">高风险预警</div><div class="kpi-value" style="font-size:22px; color:var(--warning);">3</div></div>
+          <div class="kpi-card" style="padding:14px;"><div class="kpi-label">已处理</div><div class="kpi-value" style="font-size:22px; color:var(--success);">156</div></div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><div class="card-title">监测结果列表</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>监测关键词</th><th>匹配商标</th><th>申请号</th><th>申请人</th><th>类别</th><th>相似度</th><th>风险等级</th><th>监测时间</th><th>操作</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>云智</strong></td>
+                  <td>云智科技</td>
+                  <td>78954321</td>
+                  <td>深圳云智科技有限公司</td>
+                  <td>第9类</td>
+                  <td><span style="color:var(--danger);font-weight:600;">95%</span></td>
+                  <td><span class="tag tag-red">高</span></td>
+                  <td>2026-05-03</td>
+                  <td><button class="btn btn-sm btn-primary" style="padding:4px 10px;">分析</button></td>
+                </tr>
+                <tr>
+                  <td><strong>云智</strong></td>
+                  <td>智云</td>
+                  <td>78951234</td>
+                  <td>北京智云时代</td>
+                  <td>第38类</td>
+                  <td><span style="color:var(--warning);font-weight:600;">78%</span></td>
+                  <td><span class="tag tag-orange">中</span></td>
+                  <td>2026-05-03</td>
+                  <td><button class="btn btn-sm btn-primary" style="padding:4px 10px;">分析</button></td>
+                </tr>
+                <tr>
+                  <td><strong>智联</strong></td>
+                  <td>智连</td>
+                  <td>78890123</td>
+                  <td>广州智连科技</td>
+                  <td>第38类</td>
+                  <td><span style="color:var(--warning);font-weight:600;">82%</span></td>
+                  <td><span class="tag tag-orange">中</span></td>
+                  <td>2026-05-02</td>
+                  <td><button class="btn btn-sm btn-primary" style="padding:4px 10px;">分析</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="entityPanel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">主体监测配置</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>监测主体</th><th>主体类型</th><th>监测范围</th><th>新增商标</th><th>状态变更</th><th>最后更新</th><th>操作</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>竞争对手A</strong></td>
+                  <td><span class="tag tag-red">竞争对手</span></td>
+                  <td>全球</td>
+                  <td style="color:var(--danger);font-weight:600;">+5</td>
+                  <td>2</td>
+                  <td>2026-05-03</td>
+                  <td><button class="btn btn-sm btn-secondary" style="padding:4px 10px;">详情</button></td>
+                </tr>
+                <tr>
+                  <td><strong>合作伙伴B</strong></td>
+                  <td><span class="tag tag-blue">合作伙伴</span></td>
+                  <td>中国+美国</td>
+                  <td style="color:var(--success);font-weight:600;">+1</td>
+                  <td>0</td>
+                  <td>2026-05-02</td>
+                  <td><button class="btn btn-sm btn-secondary" style="padding:4px 10px;">详情</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="casePanel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">重点案件监控</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>案件</th><th>类型</th><th>当前阶段</th><th>关键期限</th><th>剩余天数</th><th>影响评估</th><th>监控状态</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>云智-驳回复审</strong></td>
+                  <td><span class="tag tag-blue">驳回复审</span></td>
+                  <td>材料准备</td>
+                  <td style="color:var(--danger);font-weight:600;">2026-05-06</td>
+                  <td style="color:var(--danger);font-weight:600;">2天</td>
+                  <td><span class="tag tag-red">核心品牌</span></td>
+                  <td><span class="tag tag-orange">预警中</span></td>
+                </tr>
+                <tr>
+                  <td><strong>智联-异议答辩</strong></td>
+                  <td><span class="tag tag-orange">异议答辩</span></td>
+                  <td>已提交</td>
+                  <td style="color:var(--danger);font-weight:600;">2026-05-07</td>
+                  <td style="color:var(--danger);font-weight:600;">3天</td>
+                  <td><span class="tag tag-orange">重要</span></td>
+                  <td><span class="tag tag-orange">预警中</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="oppPanel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">异议监测</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>被异议商标</th><th>异议人</th><th>异议理由</th><th>答辩期限</th><th>应对策略</th><th>状态</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>智联</strong> <span style="font-size:11px;color:var(--primary);">TM-2026-0031</span></td>
+                  <td>某科技公司</td>
+                  <td>近似商标，容易引起混淆</td>
+                  <td style="color:var(--danger);font-weight:600;">2026-05-07</td>
+                  <td>提交使用证据+不近似论述</td>
+                  <td><span class="tag tag-orange">答辩准备中</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('monitor');
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['tm','entity','case','opp'].forEach(p => {
+    document.getElementById(p+'Panel').style.display = p===tab?'block':'none';
+  });
+}
+</script>
+</body>
+</html>
