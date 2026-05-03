@@ -68,7 +68,7 @@ function renderSidebar(activePage) {
       
       html += `
         <div class="nav-item ${isActive ? 'active' : ''} ${openClass} ${hasChildren ? 'has-children' : ''}" 
-             onclick="${hasChildren ? `toggleSubNav(this)` : `navigateTo(resolveHref('${item.href}'))`}">
+             onclick="${hasChildren ? `toggleSubNav(this)` : `closeMobileSidebar();navigateTo(resolveHref('${item.href}'))`}">
           <span class="icon">${item.icon}</span>
           <span class="label">${item.label}</span>
           ${hasChildren ? '<span class="arrow">▶</span>' : ''}
@@ -80,7 +80,7 @@ function renderSidebar(activePage) {
         item.children.forEach(child => {
           const childActive = child.page === activePage;
           html += `
-            <div class="nav-item ${childActive ? 'active' : ''}" onclick="navigateTo(resolveHref('${child.href}'))">
+            <div class="nav-item ${childActive ? 'active' : ''}" onclick="closeMobileSidebar();navigateTo(resolveHref('${child.href}'))">
               <span class="label">${child.label}</span>
             </div>
           `;
@@ -102,9 +102,14 @@ function renderHeader() {
   const unreadCount = AppData.messages.filter(m => !m.read).length;
   
   header.innerHTML = `
-    <div class="header-search">
-      <span style="color:var(--text-muted);font-size:14px;">🔍</span>
-      <input type="text" placeholder="搜索案件、商标、律所、文档..." id="globalSearch">
+    <div style="display:flex;align-items:center;flex:1;">
+      <div class="mobile-menu-btn" onclick="openMobileSidebar()">
+        ☰
+      </div>
+      <div class="header-search">
+        <span style="color:var(--text-muted);font-size:14px;">🔍</span>
+        <input type="text" placeholder="搜索案件、商标、律所、文档..." id="globalSearch">
+      </div>
     </div>
     <div class="header-actions">
       <div class="btn-icon" title="消息通知" onclick="toggleMessagePanel()">
@@ -123,6 +128,26 @@ function renderHeader() {
   `;
 }
 
+function openMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  let overlay = document.querySelector('.mobile-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.className = 'mobile-overlay';
+    overlay.onclick = closeMobileSidebar;
+    document.querySelector('.app-layout').appendChild(overlay);
+  }
+  sidebar.classList.add('mobile-open');
+  overlay.classList.add('active');
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.mobile-overlay');
+  if (sidebar) sidebar.classList.remove('mobile-open');
+  if (overlay) overlay.classList.remove('active');
+}
+
 function toggleSidebar() {
   document.querySelector('.sidebar').classList.toggle('collapsed');
   const btn = document.querySelector('.toggle-btn');
@@ -138,6 +163,7 @@ function toggleSubNav(el) {
 }
 
 function navigateTo(href) {
+  closeMobileSidebar();
   window.location.href = href;
 }
 
@@ -150,8 +176,9 @@ function toggleMessagePanel() {
   
   panel = document.createElement('div');
   panel.className = 'message-panel';
+  const isMobile = window.innerWidth <= 768;
   panel.style.cssText = `
-    position:absolute; top:52px; right:20px; width:320px;
+    position:fixed; top:${isMobile?'52px':'52px'}; right:${isMobile?'8px':'20px'}; width:${isMobile?'calc(100% - 16px)':'320px'};
     background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.12);
     border:1px solid #e2e8f0; z-index:200; overflow:hidden;
   `;
@@ -342,3 +369,11 @@ function drawLineChart(containerId, data, labels, color) {
 
   el.innerHTML = `<div style="height:calc(100% - 18px); position:relative;">${svg}</div>${xLabels}`;
 }
+
+
+// Auto-close mobile sidebar on resize to desktop
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) {
+    closeMobileSidebar();
+  }
+});
