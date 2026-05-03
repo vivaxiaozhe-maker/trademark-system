@@ -31,6 +31,9 @@ const menuConfig = [
     { label: "管理决策中心", icon: "📈", page: "decision", href: "pages/decision.html" },
     { label: "监测中心", icon: "🔍", page: "monitor", href: "pages/monitor.html" },
     { label: "商标工具Link", icon: "🔗", page: "tools", href: "pages/tools.html" }
+  ]},
+  { group: "系统管理", items: [
+    { label: "账号与权限", icon: "🔐", page: "admin-users", href: "pages/admin-users.html" }
   ]}
 ];
 

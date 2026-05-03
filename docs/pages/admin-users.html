@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>账号与权限 - 小米商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+/* User table avatar */
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: #fff; flex-shrink: 0;
+}
+.user-info { display: flex; align-items: center; gap: 10px; }
+.user-name { font-weight: 600; font-size: 13px; }
+.user-email { font-size: 11px; color: var(--text-muted); }
+
+/* Toggle switch */
+.toggle-switch {
+  width: 40px; height: 22px; border-radius: 11px;
+  background: var(--border-color); position: relative; cursor: pointer;
+  transition: background 0.25s;
+}
+.toggle-switch.on { background: var(--success); }
+.toggle-switch::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: transform 0.25s;
+}
+.toggle-switch.on::after { transform: translateX(18px); }
+
+/* Role cards */
+.role-card {
+  padding: 16px; border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+  background: var(--bg-card); cursor: pointer; transition: var(--transition);
+  position: relative;
+}
+.role-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.role-card.active { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 0 0 3px var(--primary-light); }
+.role-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.role-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.role-name { font-weight: 600; font-size: 14px; }
+.role-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.role-stats { display: flex; gap: 12px; font-size: 12px; color: var(--text-secondary); }
+
+/* Permission tree */
+.perm-tree { padding-left: 0; }
+.perm-node { margin-bottom: 4px; }
+.perm-parent {
+  display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+  background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;
+  font-weight: 600; font-size: 13px; transition: var(--transition);
+}
+.perm-parent:hover { background: #e2e8f0; }
+.perm-children { padding-left: 24px; margin-top: 4px; }
+.perm-child {
+  display: flex; align-items: center; gap: 8px; padding: 6px 12px;
+  border-radius: var(--radius-sm); font-size: 13px; color: var(--text-secondary);
+}
+.perm-child:hover { background: var(--bg-body); }
+.perm-check { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+
+/* Data scope tags */
+.scope-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border-color); cursor: pointer; transition: var(--transition);
+}
+.scope-tag:hover { border-color: var(--primary); color: var(--primary); }
+.scope-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Stat cards */
+.stat-card-sm {
+  padding: 14px; background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg); display: flex; align-items: center; gap: 12px;
+}
+.stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.stat-value { font-size: 20px; font-weight: 700; line-height: 1; }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">账号与权限</div>
+          <div class="page-desc">管理系统账号、角色分配与权限配置</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm">📥 导出</button>
+          <button class="btn btn-primary btn-sm" onclick="openNewUserModal()">➕ 新增用户</button>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="kpi-grid" style="grid-template-columns: repeat(5, 1fr); margin-bottom: 16px;">
+        <div class="stat-card-sm">
+          <div class="stat-icon" style="background: var(--primary-light); color: var(--primary);">👥</div>
+          <div><div class="stat-value">24</div><div class="stat-label">总用户</div></div>
+        </div>
+        <div class="stat-card-sm">
+          <div class="stat-icon" style="background: #d1fae5; color: var(--success);">✅</div>
+          <div><div class="stat-value" style="color:var(--success);">21</div><div class="stat-label">已启用</div></div>
+        </div>
+        <div class="stat-card-sm">
+          <div class="stat-icon" style="background: #fee2e2; color: var(--danger);">🚫</div>
+          <div><div class="stat-value" style="color:var(--danger);">3</div><div class="stat-label">已禁用</div></div>
+        </div>
+        <div class="stat-card-sm">
+          <div class="stat-icon" style="background: #fef3c7; color: var(--warning);">🔑</div>
+          <div><div class="stat-value" style="color:var(--warning);">5</div><div class="stat-label">角色数</div></div>
+        </div>
+        <div class="stat-card-sm">
+          <div class="stat-icon" style="background: #ede9fe; color: var(--info);">🌐</div>
+          <div><div class="stat-value" style="color:var(--info);">8</div><div class="stat-label">在线</div></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('users',this)">👤 用户管理</div>
+        <div class="tab" onclick="switchTab('roles',this)">🔐 角色权限</div>
+        <div class="tab" onclick="switchTab('logs',this)">📋 操作日志</div>
+      </div>
+
+      <!-- 用户管理面板 -->
+      <div id="usersPanel">
+        <div class="filter-bar">
+          <div class="filter-item active" data-filter="all" onclick="filterUsers(this,'all')">全部</div>
+          <div class="filter-item" data-filter="法务" onclick="filterUsers(this,'法务')">法务部</div>
+          <div class="filter-item" data-filter="流程" onclick="filterUsers(this,'流程')">流程部</div>
+          <div class="filter-item" data-filter="管理层" onclick="filterUsers(this,'管理层')">管理层</div>
+          <div class="filter-item" data-filter="外部" onclick="filterUsers(this,'外部')">外部律所</div>
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <input type="text" class="search-input" placeholder="搜索姓名、邮箱..." id="userSearch" oninput="searchUsers(this.value)">
+            <select class="filter-item" id="userStatusFilter" onchange="filterUserStatus(this.value)">
+              <option value="all">全部状态</option>
+              <option value="active">已启用</option>
+              <option value="disabled">已禁用</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:40px;"><input type="checkbox"></th>
+                  <th>用户信息</th>
+                  <th>角色</th>
+                  <th>部门</th>
+                  <th>数据范围</th>
+                  <th>最近登录</th>
+                  <th>状态</th>
+                  <th style="text-align:right;">操作</th>
+                </tr>
+              </thead>
+              <tbody id="userTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 角色权限面板 -->
+      <div id="rolesPanel" style="display:none;">
+        <div class="row row-2">
+          <div>
+            <div class="card" style="margin-bottom:16px;">
+              <div class="card-header"><div class="card-title">🎭 角色列表</div><button class="btn btn-primary btn-sm" onclick="openNewRoleModal()">➕ 新增角色</button></div>
+              <div class="card-body" id="roleList" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">🔒 权限配置</div></div>
+              <div class="card-body">
+                <div style="margin-bottom:14px;">
+                  <div style="font-size:13px; font-weight:600; margin-bottom:8px;">数据权限范围</div>
+                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <span class="scope-tag active">全部数据</span>
+                    <span class="scope-tag">本部门数据</span>
+                    <span class="scope-tag">本部门及下属</span>
+                    <span class="scope-tag">仅本人数据</span>
+                    <span class="scope-tag">自定义</span>
+                  </div>
+                </div>
+                <div style="font-size:13px; font-weight:600; margin-bottom:8px;">菜单权限</div>
+                <div class="perm-tree" id="permTree"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 操作日志面板 -->
+      <div id="logsPanel" style="display:none;">
+        <div class="card">
+          <div class="card-header"><div class="card-title">📋 操作日志</div></div>
+          <div class="card-body" style="padding:0;">
+            <table class="data-table">
+              <thead>
+                <tr><th>时间</th><th>用户</th><th>操作类型</th><th>操作内容</th><th>IP地址</th><th>结果</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2026-05-04 14:32:18</td>
+                  <td><strong>张法务</strong></td>
+                  <td><span class="tag tag-blue">登录</span></td>
+                  <td>用户登录系统</td>
+                  <td>192.168.1.45</td>
+                  <td><span class="tag tag-green">成功</span></td>
+                </tr>
+                <tr>
+                  <td>2026-05-04 14:28:05</td>
+                  <td><strong>张法务</strong></td>
+                  <td><span class="tag tag-orange">案件编辑</span></td>
+                  <td>编辑案件 TM-2026-0042（云智）</td>
+                  <td>192.168.1.45</td>
+                  <td><span class="tag tag-green">成功</span></td>
+                </tr>
+                <tr>
+                  <td>2026-05-04 14:15:33</td>
+                  <td><strong>李流程</strong></td>
+                  <td><span class="tag tag-green">费用审批</span></td>
+                  <td>审批通过费用申请 PAY-2026-0089</td>
+                  <td>192.168.1.62</td>
+                  <td><span class="tag tag-green">成功</span></td>
+                </tr>
+                <tr>
+                  <td>2026-05-04 13:58:12</td>
+                  <td><strong>王总监</strong></td>
+                  <td><span class="tag tag-blue">报告生成</span></td>
+                  <td>生成商标全局概览报告</td>
+                  <td>192.168.1.10</td>
+                  <td><span class="tag tag-green">成功</span></td>
+                </tr>
+                <tr>
+                  <td>2026-05-04 11:20:45</td>
+                  <td><strong>赵法务</strong></td>
+                  <td><span class="tag tag-red">导出</span></td>
+                  <td>导出案件列表（156条）</td>
+                  <td>192.168.1.88</td>
+                  <td><span class="tag tag-green">成功</span></td>
+                </tr>
+                <tr>
+                  <td>2026-05-04 10:05:22</td>
+                  <td><strong>张法务</strong></td>
+                  <td><span class="tag tag-orange">登录</span></td>
+                  <td>登录失败（密码错误）</td>
+                  <td>192.168.1.45</td>
+                  <td><span class="tag tag-red">失败</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 新增/编辑用户模态框 -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <div style="font-weight:600;" id="userModalTitle">➕ 新增用户</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeUserModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">姓名 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="uName" placeholder="请输入姓名">
+        </div>
+        <div class="form-section">
+          <label class="form-label">邮箱 <span class="required">*</span></label>
+          <input type="email" class="form-input" id="uEmail" placeholder="name@xiaomi.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-section">
+          <label class="form-label">手机号</label>
+          <input type="text" class="form-input" id="uPhone" placeholder="请输入手机号">
+        </div>
+        <div class="form-section">
+          <label class="form-label">工号</label>
+          <input type="text" class="form-input" id="uNo" placeholder="如：IP-2026-001">
+        </div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-section">
+          <label class="form-label">所属部门 <span class="required">*</span></label>
+          <select class="form-select" id="uDept">
+            <option>知识产权部</option>
+            <option>流程管理部</option>
+            <option>品牌管理部</option>
+            <option>海外业务部</option>
+            <option>财务部</option>
+            <option>管理层</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">角色 <span class="required">*</span></label>
+          <select class="form-select" id="uRole">
+            <option>法务专员</option>
+            <option>高级法务经理</option>
+            <option>流程专员</option>
+            <option>部门总监</option>
+            <option>系统管理员</option>
+            <option>外部律所</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label">数据范围</label>
+          <select class="form-select" id="uScope">
+            <option>全部数据</option>
+            <option>本部门数据</option>
+            <option>本部门及下属</option>
+            <option>仅本人数据</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-section">
+        <label class="form-label">备注</label>
+        <textarea class="form-textarea" id="uRemark" placeholder="补充说明..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeUserModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitUser()">✅ 保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 新增角色模态框 -->
+<div class="modal-overlay" id="roleModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">➕ 新增角色</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeRoleModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-section">
+        <label class="form-label">角色名称 <span class="required">*</span></label>
+        <input type="text" class="form-input" id="rName" placeholder="如：高级法务经理">
+      </div>
+      <div class="form-section">
+        <label class="form-label">角色编码</label>
+        <input type="text" class="form-input" id="rCode" placeholder="如：ROLE_SENIOR_LEGAL">
+      </div>
+      <div class="form-section">
+        <label class="form-label">角色描述</label>
+        <textarea class="form-textarea" id="rDesc" placeholder="描述该角色的职责和权限范围..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeRoleModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitRole()">✅ 创建</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script>
+initApp('admin-users');
+
+const userData = [
+  { id: 1, name: '张法务', email: 'zhang@xiaomi.com', avatar: '张', role: '高级法务经理', dept: '知识产权部', scope: '全部数据', lastLogin: '2026-05-04 14:32', status: 'active', online: true },
+  { id: 2, name: '李流程', email: 'li@xiaomi.com', avatar: '李', role: '流程专员', dept: '流程管理部', scope: '本部门数据', lastLogin: '2026-05-04 10:15', status: 'active', online: true },
+  { id: 3, name: '王总监', email: 'wang@xiaomi.com', avatar: '王', role: '部门总监', dept: '管理层', scope: '全部数据', lastLogin: '2026-05-04 09:00', status: 'active', online: true },
+  { id: 4, name: '赵法务', email: 'zhao@xiaomi.com', avatar: '赵', role: '法务专员', dept: '知识产权部', scope: '本部门数据', lastLogin: '2026-05-03 16:45', status: 'active', online: false },
+  { id: 5, name: '孙流程', email: 'sun@xiaomi.com', avatar: '孙', role: '流程专员', dept: '流程管理部', scope: '本部门数据', lastLogin: '2026-05-03 11:20', status: 'active', online: false },
+  { id: 6, name: '钱经理', email: 'qian@xiaomi.com', avatar: '钱', role: '品牌经理', dept: '品牌管理部', scope: '本部门及下属', lastLogin: '2026-05-02 14:10', status: 'active', online: false },
+  { id: 7, name: '周财务', email: 'zhou@xiaomi.com', avatar: '周', role: '费用审核', dept: '财务部', scope: '仅本人数据', lastLogin: '2026-05-02 09:30', status: 'active', online: false },
+  { id: 8, name: '吴律所', email: 'wu@jincheng.com', avatar: '吴', role: '外部律所', dept: '外部律所', scope: '仅本人数据', lastLogin: '2026-05-01 15:20', status: 'active', online: false },
+  { id: 9, name: '郑实习', email: 'zheng@xiaomi.com', avatar: '郑', role: '法务专员', dept: '知识产权部', scope: '仅本人数据', lastLogin: '2026-04-28 10:00', status: 'disabled', online: false },
+  { id: 10, name: '陈流程', email: 'chen@xiaomi.com', avatar: '陈', role: '流程专员', dept: '流程管理部', scope: '本部门数据', lastLogin: '2026-04-25 11:30', status: 'disabled', online: false }
+];
+
+const roleData = [
+  { id: 1, name: '系统管理员', desc: '拥有系统全部权限，可管理账号、配置权限、查看所有数据', icon: '👑', color: '#fee2e2', iconColor: '#ef4444', users: 2 },
+  { id: 2, name: '部门总监', desc: '管理部门内所有数据，可审批案件、费用和查看报表', icon: '💼', color: '#fef3c7', iconColor: '#f59e0b', users: 3 },
+  { id: 3, name: '高级法务经理', desc: '负责核心案件处理、律所协作、风险评估和费用审批', icon: '⚖️', color: '#dbeafe', iconColor: '#2563eb', users: 5 },
+  { id: 4, name: '法务专员', desc: '处理日常案件、提交申请、管理证据和查看个人数据', icon: '📋', color: '#d1fae5', iconColor: '#10b981', users: 8 },
+  { id: 5, name: '流程专员', desc: '负责案件流程跟踪、期限管理、文件归档和数据统计', icon: '🔄', color: '#ede9fe', iconColor: '#8b5cf6', users: 4 },
+  { id: 6, name: '外部律所', desc: '仅可查看和处理被委托的案件，不可访问内部数据和费用', icon: '🤝', color: '#e0f2fe', iconColor: '#0ea5e9', users: 2 }
+];
+
+const permTreeData = [
+  {
+    name: '个人中心', checked: true, children: [
+      { name: '仪表盘', checked: true },
+      { name: '待办事项', checked: true },
+      { name: '已办事项', checked: true },
+      { name: '我的案件', checked: true },
+      { name: '抄送案件', checked: true },
+      { name: '我的草稿', checked: true }
+    ]
+  },
+  {
+    name: '管理中心', checked: true, children: [
+      { name: '案件管理中心（国内）', checked: true },
+      { name: '案件管理中心（海外）', checked: true },
+      { name: '品牌管理', checked: true },
+      { name: '品牌图谱', checked: true }
+    ]
+  },
+  {
+    name: '协作与费用', checked: false, children: [
+      { name: '律所协作中心', checked: false },
+      { name: '费用中心', checked: false }
+    ]
+  },
+  {
+    name: '决策与监测', checked: false, children: [
+      { name: '管理决策中心', checked: false },
+      { name: '监测中心', checked: false },
+      { name: '商标工具Link', checked: false }
+    ]
+  },
+  {
+    name: '系统管理', checked: false, children: [
+      { name: '账号与权限', checked: false },
+      { name: '操作日志', checked: false }
+    ]
+  }
+];
+
+let currentUsers = [...userData];
+let currentFilter = 'all';
+let currentStatusFilter = 'all';
+
+function renderUsers(list) {
+  const tbody = document.getElementById('userTable');
+  tbody.innerHTML = '';
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的用户</td></tr>';
+    return;
+  }
+  list.forEach(u => {
+    const avatarBg = ['#2563eb','#0ea5e9','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6'][u.id % 7];
+    const statusTag = u.status === 'active'
+      ? '<span class="tag tag-green">已启用</span>'
+      : '<span class="tag tag-gray">已禁用</span>';
+    const onlineDot = u.online ? '<span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;margin-right:4px;"></span>' : '';
+    tbody.innerHTML += `
+      <tr>
+        <td><input type="checkbox"></td>
+        <td>
+          <div class="user-info">
+            <div class="user-avatar" style="background:${avatarBg};">${u.avatar}</div>
+            <div>
+              <div class="user-name">${onlineDot}${u.name}</div>
+              <div class="user-email">${u.email}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="tag tag-blue">${u.role}</span></td>
+        <td>${u.dept}</td>
+        <td><span class="tag tag-gray">${u.scope}</span></td>
+        <td style="font-size:12px;color:var(--text-secondary);">${u.lastLogin}</td>
+        <td>${statusTag}</td>
+        <td style="text-align:right;">
+          <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end;">
+            <div class="toggle-switch ${u.status}" onclick="toggleUserStatus(${u.id})"></div>
+            <button class="btn btn-sm btn-secondary" style="padding:4px 10px;" onclick="editUser(${u.id})">编辑</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+renderUsers(currentUsers);
+
+function filterUsers(el, type) {
+  document.querySelectorAll('#usersPanel .filter-item[data-filter]').forEach(item => item.classList.remove('active'));
+  if (el) el.classList.add('active');
+  currentFilter = type;
+  applyUserFilters();
+}
+
+function searchUsers(keyword) {
+  applyUserFilters();
+}
+
+function filterUserStatus(status) {
+  currentStatusFilter = status;
+  applyUserFilters();
+}
+
+function applyUserFilters() {
+  let result = [...userData];
+  if (currentFilter !== 'all') {
+    result = result.filter(u => u.dept.includes(currentFilter) || u.role.includes(currentFilter));
+  }
+  if (currentStatusFilter !== 'all') {
+    result = result.filter(u => u.status === currentStatusFilter);
+  }
+  const keyword = document.getElementById('userSearch').value.trim().toLowerCase();
+  if (keyword) {
+    result = result.filter(u => u.name.toLowerCase().includes(keyword) || u.email.toLowerCase().includes(keyword));
+  }
+  currentUsers = result;
+  renderUsers(result);
+}
+
+function toggleUserStatus(id) {
+  const u = userData.find(x => x.id === id);
+  if (u) {
+    u.status = u.status === 'active' ? 'disabled' : 'active';
+    applyUserFilters();
+  }
+}
+
+function openNewUserModal() {
+  document.getElementById('userModalTitle').textContent = '➕ 新增用户';
+  document.getElementById('uName').value = '';
+  document.getElementById('uEmail').value = '';
+  document.getElementById('uPhone').value = '';
+  document.getElementById('uNo').value = '';
+  document.getElementById('uRemark').value = '';
+  document.getElementById('userModal').classList.add('active');
+}
+
+function closeUserModal() {
+  document.getElementById('userModal').classList.remove('active');
+}
+
+function editUser(id) {
+  const u = userData.find(x => x.id === id);
+  if (!u) return;
+  document.getElementById('userModalTitle').textContent = '✏️ 编辑用户';
+  document.getElementById('uName').value = u.name;
+  document.getElementById('uEmail').value = u.email;
+  document.getElementById('uPhone').value = '';
+  document.getElementById('uNo').value = '';
+  document.getElementById('uRemark').value = '';
+  document.getElementById('userModal').classList.add('active');
+}
+
+function submitUser() {
+  closeUserModal();
+  alert('用户保存成功！');
+}
+
+// Role rendering
+function renderRoles() {
+  const container = document.getElementById('roleList');
+  container.innerHTML = '';
+  roleData.forEach((r, i) => {
+    const activeClass = i === 2 ? 'active' : '';
+    container.innerHTML += `
+      <div class="role-card ${activeClass}" onclick="selectRole(this,${r.id})">
+        <div class="role-card-header">
+          <div class="role-icon" style="background:${r.color}; color:${r.iconColor};">${r.icon}</div>
+          <div>
+            <div class="role-name">${r.name}</div>
+            <div class="role-stats">${r.users} 位用户 · 查看权限</div>
+          </div>
+        </div>
+        <div class="role-desc">${r.desc}</div>
+      </div>
+    `;
+  });
+}
+renderRoles();
+
+function selectRole(el, id) {
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function renderPermTree() {
+  const container = document.getElementById('permTree');
+  let html = '';
+  permTreeData.forEach(node => {
+    html += `
+      <div class="perm-node">
+        <div class="perm-parent" onclick="togglePermChildren(this)">
+          <input type="checkbox" class="perm-check" ${node.checked ? 'checked' : ''} onclick="event.stopPropagation()">
+          <span>📁</span>
+          <span>${node.name}</span>
+          <span style="margin-left:auto; font-size:11px; color:var(--text-muted);">▼</span>
+        </div>
+        <div class="perm-children">
+    `;
+    node.children.forEach(child => {
+      html += `
+        <div class="perm-child">
+          <input type="checkbox" class="perm-check" ${child.checked ? 'checked' : ''}>
+          <span>📄</span>
+          <span>${child.name}</span>
+        </div>
+      `;
+    });
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
+renderPermTree();
+
+function togglePermChildren(el) {
+  const children = el.nextElementSibling;
+  if (children) {
+    children.style.display = children.style.display === 'none' ? 'block' : 'none';
+    const arrow = el.querySelector('span:last-child');
+    if (arrow) arrow.textContent = children.style.display === 'none' ? '▶' : '▼';
+  }
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('usersPanel').style.display = tab === 'users' ? 'block' : 'none';
+  document.getElementById('rolesPanel').style.display = tab === 'roles' ? 'block' : 'none';
+  document.getElementById('logsPanel').style.display = tab === 'logs' ? 'block' : 'none';
+}
+
+function openNewRoleModal() {
+  document.getElementById('roleModal').classList.add('active');
+}
+function closeRoleModal() {
+  document.getElementById('roleModal').classList.remove('active');
+}
+function submitRole() {
+  closeRoleModal();
+  alert('角色创建成功！');
+}
+</script>
+</body>
+</html>
