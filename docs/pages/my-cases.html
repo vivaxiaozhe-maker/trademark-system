@@ -193,7 +193,12 @@ function renderCases(list) {
         <td>${getStatusTag(c.status)}</td>
         <td style="color:${urgent?'#ef4444':''};font-weight:${urgent?'600':'400'};">${c.deadline || '-'}</td>
         <td>${intStr}</td>
-        <td>${c.owner}</td>
+        <td>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span>${c.owner}</span>
+            <span style="width:20px;height:20px;border-radius:4px;background:#3370ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;" title="飞书联系">飞</span>
+          </div>
+        </td>
         <td style="text-align:right;">
           <div style="display:flex; align-items:center; gap:8px; justify-content:flex-end;">
             <div class="progress-bar" style="width:60px;">

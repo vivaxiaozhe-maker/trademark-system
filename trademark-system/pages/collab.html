@@ -335,6 +335,62 @@
   </div>
 </div>
 
+<!-- 联系律所模态框 -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">📇 联系律所</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeContactModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; padding:12px; background:var(--bg-body); border-radius:var(--radius-md);">
+        <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;">⚖️</div>
+        <div>
+          <div style="font-weight:600; font-size:15px;" id="contactFirmName">金诚律师事务所</div>
+          <div style="font-size:12px; color:var(--text-muted);">对接人：陈律师 · 合伙人</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border-color); border-radius:var(--radius-md); cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+          <div style="width:36px;height:36px;border-radius:8px;background:#d1fae5;color:var(--success);display:flex;align-items:center;justify-content:center;font-size:18px;">💬</div>
+          <div style="flex:1;">
+            <div style="font-weight:600; font-size:13px;">微信</div>
+            <div style="font-size:12px; color:var(--text-muted);">jincheng_lawyer</div>
+          </div>
+          <span style="font-size:12px; color:var(--text-muted);">复制</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border-color); border-radius:var(--radius-md); cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+          <div style="width:36px;height:36px;border-radius:8px;background:#dbeafe;color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:18px;">📞</div>
+          <div style="flex:1;">
+            <div style="font-weight:600; font-size:13px;">电话</div>
+            <div style="font-size:12px; color:var(--text-muted);">+86 138-0013-8888</div>
+          </div>
+          <span style="font-size:12px; color:var(--text-muted);">拨打</span>
+        </div>
+        <a href="mailto:chen@jincheng-law.com" style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border-color); border-radius:var(--radius-md); cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+          <div style="width:36px;height:36px;border-radius:8px;background:#fef3c7;color:var(--warning);display:flex;align-items:center;justify-content:center;font-size:18px;">✉️</div>
+          <div style="flex:1;">
+            <div style="font-weight:600; font-size:13px;">邮箱</div>
+            <div style="font-size:12px; color:var(--text-muted);">chen@jincheng-law.com</div>
+          </div>
+          <span class="btn btn-sm btn-primary" style="padding:4px 10px; font-size:12px;">发送邮件</span>
+        </a>
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--border-color); border-radius:var(--radius-md); cursor:pointer; transition:var(--transition);" onmouseover="this.style.borderColor='#3370ff'" onmouseout="this.style.borderColor='var(--border-color)'">
+          <div style="width:36px;height:36px;border-radius:8px;background:#e6f0ff;color:#3370ff;display:flex;align-items:center;justify-content:center;font-size:14px; font-weight:700;">飞</div>
+          <div style="flex:1;">
+            <div style="font-weight:600; font-size:13px;">飞书</div>
+            <div style="font-size:12px; color:var(--text-muted);">陈律师（金诚）</div>
+          </div>
+          <span class="btn btn-sm btn-primary" style="padding:4px 10px; font-size:12px; background:#3370ff;">飞书联系</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeContactModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
 <script src="../js/data.js"></script>
 <script src="../js/app.js"></script>
 <script>
@@ -353,7 +409,7 @@ AppData.lawFirms.forEach(f => {
       <td>${getStatusTag(f.status)}</td>
       <td style="text-align:right;">
         <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">详情</button>
-        <button class="btn btn-sm btn-primary" style="padding:4px 10px;">沟通</button>
+        <button class="btn btn-sm btn-primary" style="padding:4px 10px;" onclick="openContactModal('${f.name}')">沟通</button>
       </td>
     </tr>
   `;
@@ -365,6 +421,15 @@ function switchTab(tab, el) {
   ['firms','comm','files','deadlines'].forEach(p => {
     document.getElementById(p+'Panel').style.display = p===tab?'block':'none';
   });
+}
+
+function openContactModal(firmName) {
+  document.getElementById('contactFirmName').textContent = firmName || '律所';
+  document.getElementById('contactModal').classList.add('active');
+}
+
+function closeContactModal() {
+  document.getElementById('contactModal').classList.remove('active');
 }
 
 function openInviteModal() {
@@ -411,7 +476,7 @@ function submitInvite() {
         <td>${getStatusTag(f.status)}</td>
         <td style="text-align:right;">
           <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">详情</button>
-          <button class="btn btn-sm btn-primary" style="padding:4px 10px;">沟通</button>
+          <button class="btn btn-sm btn-primary" style="padding:4px 10px;" onclick="openContactModal('${f.name}')">沟通</button>
         </td>
       </tr>
     `;

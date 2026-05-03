@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>生成报告 - 商标管理系统</title>
+<title>生成报告 - 小米商标管理系统</title>
 <link rel="stylesheet" href="../css/common.css">
 <style>
 .report-type-card {
@@ -40,6 +40,26 @@
   border-radius: 20px; font-size: 12px; font-weight: 500;
 }
 .email-chip .remove { cursor: pointer; font-size: 14px; }
+
+/* Risk matrix */
+.risk-matrix { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.risk-cell { padding: 10px 4px; text-align: center; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.risk-high { background: #fee2e2; color: #991b1b; }
+.risk-medium { background: #fef3c7; color: #92400e; }
+.risk-low { background: #d1fae5; color: #065f46; }
+.risk-header { background: #f1f5f9; color: #475569; font-weight: 600; }
+
+/* Score ring */
+.score-ring {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; position: relative;
+  background: conic-gradient(var(--primary) 0% 85%, #e2e8f0 85% 100%);
+}
+.score-ring::after {
+  content: ""; position: absolute; inset: 4px; border-radius: 50%; background: #fff;
+}
+.score-ring span { position: relative; z-index: 1; }
 </style>
 </head>
 <body>
@@ -105,8 +125,8 @@
                 <input type="text" id="emailInput" placeholder="输入邮箱后按回车添加" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;" onkeydown="addEmail(event)">
               </div>
               <div id="emailList" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
-                <div class="email-chip">zhang@company.com<span class="remove" onclick="this.parentElement.remove()">×</span></div>
-                <div class="email-chip">li@company.com<span class="remove" onclick="this.parentElement.remove()">×</span></div>
+                <div class="email-chip">zhang@xiaomi.com<span class="remove" onclick="this.parentElement.remove()">×</span></div>
+                <div class="email-chip">li@xiaomi.com<span class="remove" onclick="this.parentElement.remove()">×</span></div>
               </div>
               <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-muted);">
                 <input type="checkbox" id="scheduleSend" style="cursor:pointer;">
@@ -132,88 +152,7 @@
             </div>
             <div class="card-body" style="padding:0; overflow:auto; max-height:calc(100vh - 240px);">
               <div class="report-preview" id="reportPreview">
-                <div class="report-preview-header">
-                  <div class="report-preview-title">商标全局概览报告</div>
-                  <div class="report-preview-sub">科技创新集团 · 知识产权部 · 2026年5月</div>
-                </div>
-                
-                <div class="report-preview-section">
-                  <div class="report-preview-section-title">一、核心指标概览</div>
-                  <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px;">
-                    <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
-                      <div style="font-size:24px; font-weight:700; color:var(--primary);">1,256</div>
-                      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">商标总量</div>
-                    </div>
-                    <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
-                      <div style="font-size:24px; font-weight:700; color:var(--success);">986</div>
-                      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">有效商标</div>
-                    </div>
-                    <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
-                      <div style="font-size:24px; font-weight:700; color:var(--warning);">210</div>
-                      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">审理中</div>
-                    </div>
-                    <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
-                      <div style="font-size:24px; font-weight:700; color:var(--danger);">18</div>
-                      <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">本周到期</div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="report-preview-section">
-                  <div class="report-preview-section-title">二、案件状态分布</div>
-                  <table class="report-preview-table">
-                    <thead>
-                      <tr><th>状态</th><th>数量</th><th>占比</th><th>较上月</th></tr>
-                    </thead>
-                    <tbody>
-                      <tr><td>审查中</td><td>48</td><td>30.8%</td><td style="color:var(--success);">↑ 3</td></tr>
-                      <tr><td>已注册</td><td>86</td><td>55.1%</td><td style="color:var(--success);">↑ 5</td></tr>
-                      <tr><td>答辩期</td><td>12</td><td>7.7%</td><td style="color:var(--danger);">↓ 2</td></tr>
-                      <tr><td>已驳回</td><td>6</td><td>3.8%</td><td style="color:var(--success);">↓ 1</td></tr>
-                      <tr><td>其他</td><td>4</td><td>2.6%</td><td>-</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-                
-                <div class="report-preview-section">
-                  <div class="report-preview-section-title">三、费用执行情况</div>
-                  <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
-                    <div style="flex:1;">
-                      <div class="flex-between" style="font-size:12px; margin-bottom:4px;"><span>年度预算</span><span style="font-weight:600;">¥2,800,000</span></div>
-                      <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#e2e8f0;"></div></div>
-                    </div>
-                    <div style="flex:1;">
-                      <div class="flex-between" style="font-size:12px; margin-bottom:4px;"><span>已执行</span><span style="font-weight:600; color:var(--primary);">¥1,865,000 (67%)</span></div>
-                      <div class="progress-bar"><div class="progress-fill" style="width:67%; background:var(--primary);"></div></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="report-preview-section">
-                  <div class="report-preview-section-title">四、主要风险预警</div>
-                  <div style="padding:12px; background:#fef3c7; border-radius:8px; border-left:3px solid var(--warning); margin-bottom:8px;">
-                    <div style="font-weight:600; font-size:13px; color:#92400e;">⚠️ 续展逾期风险</div>
-                    <div style="font-size:12px; color:#78350f; margin-top:4px;">星联商标第45类将于2026-06-01到期，尚未提交续展申请</div>
-                  </div>
-                  <div style="padding:12px; background:#fee2e2; border-radius:8px; border-left:3px solid var(--danger);">
-                    <div style="font-weight:600; font-size:13px; color:#991b1b;">🔴 保护缺口风险</div>
-                    <div style="font-size:12px; color:#7f1d1d; margin-top:4px;">云智品牌在第25类、第28类尚未注册，存在被抢注风险</div>
-                  </div>
-                </div>
-                
-                <div class="report-preview-section">
-                  <div class="report-preview-section-title">五、决策建议</div>
-                  <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
-                    1. 建议在印度和东南亚地区为云智品牌补充注册第9、35类商标<br>
-                    2. 驳回复审类案件建议优先分配给金诚律所（成功率92%）<br>
-                    3. Q2海外申请费用预计超预算15%，建议调整部分非紧急申请至Q3<br>
-                    4. 星联商标续展需立即启动，避免逾期失效
-                  </div>
-                </div>
-                
-                <div style="text-align:center; margin-top:32px; padding-top:20px; border-top:1px solid var(--border-color);">
-                  <div style="font-size:11px; color:var(--text-muted);">本报告由商标管理系统自动生成 · 生成时间：2026-05-04 10:30</div>
-                </div>
+                <!-- 内容由JS动态切换 -->
               </div>
             </div>
           </div>
@@ -230,13 +169,308 @@ initApp('report');
 
 let currentReport = 'overview';
 
+const reportTemplates = {
+  overview: `
+    <div class="report-preview-header">
+      <div class="report-preview-title">商标全局概览报告</div>
+      <div class="report-preview-sub">小米集团 · 知识产权部 · 2026年5月</div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">一、核心指标概览</div>
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px;">
+        <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:24px; font-weight:700; color:var(--primary);">1,256</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">商标总量</div>
+        </div>
+        <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:24px; font-weight:700; color:var(--success);">986</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">有效商标</div>
+        </div>
+        <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:24px; font-weight:700; color:var(--warning);">210</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">审理中</div>
+        </div>
+        <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:24px; font-weight:700; color:var(--danger);">18</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">本周到期</div>
+        </div>
+      </div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">二、案件状态分布</div>
+      <table class="report-preview-table">
+        <thead><tr><th>状态</th><th>数量</th><th>占比</th><th>较上月</th></tr></thead>
+        <tbody>
+          <tr><td>审查中</td><td>48</td><td>30.8%</td><td style="color:var(--success);">↑ 3</td></tr>
+          <tr><td>已注册</td><td>86</td><td>55.1%</td><td style="color:var(--success);">↑ 5</td></tr>
+          <tr><td>答辩期</td><td>12</td><td>7.7%</td><td style="color:var(--danger);">↓ 2</td></tr>
+          <tr><td>已驳回</td><td>6</td><td>3.8%</td><td style="color:var(--success);">↓ 1</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">三、费用执行情况</div>
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
+        <div style="flex:1;">
+          <div class="flex-between" style="font-size:12px; margin-bottom:4px;"><span>年度预算</span><span style="font-weight:600;">¥2,800,000</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#e2e8f0;"></div></div>
+        </div>
+        <div style="flex:1;">
+          <div class="flex-between" style="font-size:12px; margin-bottom:4px;"><span>已执行</span><span style="font-weight:600; color:var(--primary);">¥1,865,000 (67%)</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:67%; background:var(--primary);"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">四、主要风险预警</div>
+      <div style="padding:12px; background:#fef3c7; border-radius:8px; border-left:3px solid var(--warning); margin-bottom:8px;">
+        <div style="font-weight:600; font-size:13px; color:#92400e;">⚠️ 续展逾期风险</div>
+        <div style="font-size:12px; color:#78350f; margin-top:4px;">星联商标第45类将于2026-06-01到期，尚未提交续展申请</div>
+      </div>
+      <div style="padding:12px; background:#fee2e2; border-radius:8px; border-left:3px solid var(--danger);">
+        <div style="font-weight:600; font-size:13px; color:#991b1b;">🔴 保护缺口风险</div>
+        <div style="font-size:12px; color:#7f1d1d; margin-top:4px;">云智品牌在第25类、第28类尚未注册，存在被抢注风险</div>
+      </div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">五、决策建议</div>
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
+        1. 建议在印度和东南亚地区为云智品牌补充注册第9、35类商标<br>
+        2. 驳回复审类案件建议优先分配给金诚律所（成功率92%）<br>
+        3. Q2海外申请费用预计超预算15%，建议调整部分非紧急申请至Q3<br>
+        4. 星联商标续展需立即启动，避免逾期失效
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:32px; padding-top:20px; border-top:1px solid var(--border-color);">
+      <div style="font-size:11px; color:var(--text-muted);">本报告由小米商标管理系统自动生成 · 生成时间：2026-05-04 10:30</div>
+    </div>
+  `,
+
+  risk: `
+    <div class="report-preview-header">
+      <div class="report-preview-title">品牌风险分析报告</div>
+      <div class="report-preview-sub">小米集团 · 知识产权部 · 2026年5月 · 机密</div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">一、风险等级矩阵</div>
+      <div style="margin-bottom:8px; font-size:12px; color:var(--text-muted);">横轴：影响程度 &nbsp;&nbsp; 纵轴：发生概率</div>
+      <div class="risk-matrix">
+        <div class="risk-cell risk-header"></div>
+        <div class="risk-cell risk-header">极低</div>
+        <div class="risk-cell risk-header">低</div>
+        <div class="risk-cell risk-header">中</div>
+        <div class="risk-cell risk-header">高</div>
+        <div class="risk-cell risk-header">极高</div>
+        <div class="risk-cell risk-header">极高</div><div class="risk-cell risk-low">低</div><div class="risk-cell risk-low">低</div><div class="risk-cell risk-medium">中</div><div class="risk-cell risk-high">高</div>
+        <div class="risk-cell risk-header">高</div><div class="risk-cell risk-low">低</div><div class="risk-cell risk-medium">中</div><div class="risk-cell risk-high">高</div><div class="risk-cell risk-high">高</div>
+        <div class="risk-cell risk-header">中</div><div class="risk-cell risk-medium">中</div><div class="risk-cell risk-medium">中</div><div class="risk-cell risk-high">高</div><div class="risk-cell risk-high">极高</div>
+        <div class="risk-cell risk-header">低</div><div class="risk-cell risk-medium">中</div><div class="risk-cell risk-high">高</div><div class="risk-cell risk-high">高</div><div class="risk-cell risk-high">极高</div>
+      </div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">二、高风险预警清单（Top 5）</div>
+      <table class="report-preview-table">
+        <thead><tr><th>风险编号</th><th>品牌/案件</th><th>风险类型</th><th>风险等级</th><th>剩余天数</th><th>建议措施</th></tr></thead>
+        <tbody>
+          <tr><td>R-2026-001</td><td><strong>星联·续展</strong></td><td>续展逾期</td><td><span style="color:var(--danger);font-weight:700;">极高</span></td><td style="color:var(--danger);font-weight:600;">28天</td><td>立即启动续展流程</td></tr>
+          <tr><td>R-2026-002</td><td><strong>云智·第25类</strong></td><td>保护缺口</td><td><span style="color:var(--danger);font-weight:700;">高</span></td><td>-</td><td>补充布局申请</td></tr>
+          <tr><td>R-2026-003</td><td><strong>智联·异议</strong></td><td>冲突预警</td><td><span style="color:var(--warning);font-weight:700;">高</span></td><td>3天</td><td>提交异议答辩</td></tr>
+          <tr><td>R-2026-004</td><td><strong>海翼·美国</strong></td><td>使用证据缺失</td><td><span style="color:var(--warning);font-weight:700;">中</span></td><td>90天</td><td>收集销售证据</td></tr>
+          <tr><td>R-2026-005</td><td><strong>悦动·图形</strong></td><td>近似抢注</td><td><span style="color:var(--warning);font-weight:700;">中</span></td><td>-</td><td>启动监测预警</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">三、品牌保护缺口分析</div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:12px;">
+        <div style="padding:12px; background:#fee2e2; border-radius:8px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:var(--danger);">12</div>
+          <div style="font-size:11px; color:#7f1d1d;">未注册类别缺口</div>
+        </div>
+        <div style="padding:12px; background:#fef3c7; border-radius:8px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:var(--warning);">5</div>
+          <div style="font-size:11px; color:#92400e;">未布局国家/地区</div>
+        </div>
+        <div style="padding:12px; background:#dbeafe; border-radius:8px; text-align:center;">
+          <div style="font-size:22px; font-weight:700; color:var(--primary);">3</div>
+          <div style="font-size:11px; color:#1e40af;">近似商标监测中</div>
+        </div>
+      </div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">四、监测预警汇总</div>
+      <table class="report-preview-table">
+        <thead><tr><th>监测类型</th><th>本月新增</th><th>累计关注</th><th>已处理</th><th>处理率</th></tr></thead>
+        <tbody>
+          <tr><td>近似商标监测</td><td>9</td><td>156</td><td>142</td><td>91.0%</td></tr>
+          <tr><td>主体监测</td><td>3</td><td>28</td><td>25</td><td>89.3%</td></tr>
+          <tr><td>期限预警</td><td>18</td><td>86</td><td>78</td><td>90.7%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="text-align:center; margin-top:32px; padding-top:20px; border-top:1px solid var(--border-color);">
+      <div style="font-size:11px; color:var(--text-muted);">本报告由小米商标管理系统自动生成 · 生成时间：2026-05-04 10:30 · 机密文件</div>
+    </div>
+  `,
+
+  fee: `
+    <div class="report-preview-header">
+      <div class="report-preview-title">费用管理分析报告</div>
+      <div class="report-preview-sub">小米集团 · 知识产权部 · 2026年5月 · 财务保密</div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">一、预算执行总览</div>
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px;">
+        <div style="text-align:center; padding:14px; background:linear-gradient(135deg,#dbeafe,#eff6ff); border-radius:8px;">
+          <div style="font-size:22px; font-weight:700; color:#1e40af;">¥280万</div>
+          <div style="font-size:12px; color:#475569; margin-top:4px;">年度预算</div>
+        </div>
+        <div style="text-align:center; padding:14px; background:linear-gradient(135deg,#d1fae5,#f0fdf4); border-radius:8px;">
+          <div style="font-size:22px; font-weight:700; color:#065f46;">¥186.5万</div>
+          <div style="font-size:12px; color:#475569; margin-top:4px;">已支出</div>
+        </div>
+        <div style="text-align:center; padding:14px; background:linear-gradient(135deg,#fef3c7,#fffbeb); border-radius:8px;">
+          <div style="font-size:22px; font-weight:700; color:#92400e;">¥45万</div>
+          <div style="font-size:12px; color:#475569; margin-top:4px;">待审批</div>
+        </div>
+        <div style="text-align:center; padding:14px; background:linear-gradient(135deg,#fee2e2,#fef2f2); border-radius:8px;">
+          <div style="font-size:22px; font-weight:700; color:#991b1b;">¥48.5万</div>
+          <div style="font-size:12px; color:#475569; margin-top:4px;">剩余可用</div>
+        </div>
+      </div>
+      <div style="padding:12px; background:#f8fafc; border-radius:8px;">
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">预算执行进度</div>
+        <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:67%; background:linear-gradient(90deg,#2563eb,#0ea5e9); border-radius:5px;"></div></div>
+        <div class="flex-between" style="margin-top:6px; font-size:12px;"><span style="color:var(--text-muted);">已执行 67%</span><span style="color:var(--success); font-weight:600;">正常</span></div>
+      </div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">二、费用构成分析</div>
+      <table class="report-preview-table">
+        <thead><tr><th>费用类型</th><th>金额</th><th>占比</th><th>预算内</th><th>同比变化</th></tr></thead>
+        <tbody>
+          <tr><td>官费</td><td>¥52.0万</td><td>27.9%</td><td style="color:var(--success);">✓ 正常</td><td style="color:var(--success);">↑ 8%</td></tr>
+          <tr><td>代理费</td><td>¥112.0万</td><td>60.1%</td><td style="color:var(--warning);">⚠ 接近上限</td><td style="color:var(--success);">↑ 12%</td></tr>
+          <tr><td>翻译费</td><td>¥12.5万</td><td>6.7%</td><td style="color:var(--success);">✓ 正常</td><td style="color:var(--danger);">↓ 5%</td></tr>
+          <tr><td>其他（公证/差旅）</td><td>¥10.0万</td><td>5.3%</td><td style="color:var(--success);">✓ 正常</td><td style="color:var(--success);">↑ 3%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">三、律所费用性价比对比</div>
+      <table class="report-preview-table">
+        <thead><tr><th>律所</th><th>案件数</th><th>总费用</th><td>单案均价</th><th>成功率</th><th>性价比评级</th></tr></thead>
+        <tbody>
+          <tr><td><strong>金诚律师事务所</strong></td><td>45</td><td>¥142万</td><td>¥3.16万</td><td>92%</td><td><span style="color:var(--success); font-weight:700;">A+</span></td></tr>
+          <tr><td><strong>中誉知识产权</strong></td><td>38</td><td>¥98万</td><td>¥2.58万</td><td>88%</td><td><span style="color:var(--success); font-weight:700;">A</span></td></tr>
+          <tr><td><strong>美国Baker律所</strong></td><td>12</td><td>¥86万</td><td>¥7.17万</td><td>90%</td><td><span style="color:var(--warning); font-weight:700;">B+</span></td></tr>
+          <tr><td><strong>德国Müller事务所</strong></td><td>8</td><td>¥52万</td><td>¥6.50万</td><td>85%</td><td><span style="color:var(--warning); font-weight:700;">B</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">四、品牌ROI分析（Top 3）</div>
+      <table class="report-preview-table">
+        <thead><tr><th>品牌</th><th>累计投入</th><th>品牌估值</th><th>ROI</th><th>建议</th></tr></thead>
+        <tbody>
+          <tr><td><strong>云智</strong></td><td>¥32.0万</td><td>¥520万</td><td style="color:var(--success); font-weight:700;">1,525%</td><td>继续加大海外投入</td></tr>
+          <tr><td><strong>智联</strong></td><td>¥28.0万</td><td>¥380万</td><td style="color:var(--success); font-weight:700;">1,257%</td><td>扩展至东南亚</td></tr>
+          <tr><td><strong>海翼</strong></td><td>¥18.5万</td><td>¥120万</td><td style="color:var(--warning); font-weight:700;">549%</td><td>评估续展必要性</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="text-align:center; margin-top:32px; padding-top:20px; border-top:1px solid var(--border-color);">
+      <div style="font-size:11px; color:var(--text-muted);">本报告由小米商标管理系统自动生成 · 生成时间：2026-05-04 10:30 · 财务保密</div>
+    </div>
+  `,
+
+  firm: `
+    <div class="report-preview-header">
+      <div class="report-preview-title">律所绩效评估报告</div>
+      <div class="report-preview-sub">小米集团 · 知识产权部 · 2026年5月 · 供应商评估</div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">一、综合评分排名</div>
+      <table class="report-preview-table">
+        <thead><tr><th>排名</th><th>律所</th><th>综合评分</th><th>案件量</th><th>成功率</th><th>响应时效</th><th>费用合理性</th><th>服务满意度</th></tr></thead>
+        <tbody>
+          <tr><td style="font-size:16px; font-weight:700; color:var(--warning);">🥇</td><td><strong>金诚律师事务所</strong></td><td><span style="font-weight:700; color:var(--success);">9.2</span></td><td>45</td><td>92%</td><td>2.3h</td><td>8.5</td><td>9.4</td></tr>
+          <tr><td style="font-size:16px; font-weight:700; color:var(--text-muted);">🥈</td><td><strong>美国Baker律所</strong></td><td><span style="font-weight:700; color:var(--success);">8.8</span></td><td>12</td><td>90%</td><td>8.5h</td><td>7.2</td><td>9.0</td></tr>
+          <tr><td style="font-size:16px; font-weight:700; color:#b45309;">🥉</td><td><strong>日本东京特许事务所</strong></td><td><span style="font-weight:700; color:var(--success);">8.5</span></td><td>6</td><td>91%</td><td>6.0h</td><td>8.0</td><td>8.6</td></tr>
+          <tr><td style="font-weight:600; color:var(--text-muted);">4</td><td><strong>中誉知识产权</strong></td><td><span style="font-weight:700; color:var(--warning);">8.1</span></td><td>38</td><td>88%</td><td>4.1h</td><td>9.0</td><td>8.0</td></tr>
+          <tr><td style="font-weight:600; color:var(--text-muted);">5</td><td><strong>德国Müller事务所</strong></td><td><span style="font-weight:700; color:var(--warning);">7.6</span></td><td>8</td><td>85%</td><td>12.0h</td><td>7.5</td><td>7.8</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">二、业务能力雷达维度</div>
+      <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:12px; margin-bottom:12px;">
+        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">新申请</div>
+          <div style="font-size:18px; font-weight:700; color:var(--primary);">9.1</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">驳回复审</div>
+          <div style="font-size:18px; font-weight:700; color:var(--primary);">9.4</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">异议/无效</div>
+          <div style="font-size:18px; font-weight:700; color:var(--primary);">8.7</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">海外申请</div>
+          <div style="font-size:18px; font-weight:700; color:var(--primary);">8.2</div>
+        </div>
+        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">续展维护</div>
+          <div style="font-size:18px; font-weight:700; color:var(--primary);">8.9</div>
+        </div>
+      </div>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">三、案件类型成功率对比</div>
+      <table class="report-preview-table">
+        <thead><tr><th>律所</th><th>新申请</th><th>驳回复审</th><th>异议</th><th>海外</th><th>综合</th></tr></thead>
+        <tbody>
+          <tr><td><strong>金诚</strong></td><td>96%</td><td>92%</td><td>88%</td><td>-</td><td style="font-weight:700; color:var(--success);">92%</td></tr>
+          <tr><td><strong>Baker</strong></td><td>-</td><td>-</td><td>-</td><td>90%</td><td style="font-weight:700; color:var(--success);">90%</td></tr>
+          <tr><td><strong>东京特许</strong></td><td>-</td><td>-</td><td>-</td><td>91%</td><td style="font-weight:700; color:var(--success);">91%</td></tr>
+          <tr><td><strong>中誉</strong></td><td>94%</td><td>85%</td><td>82%</td><td>-</td><td style="font-weight:700; color:var(--warning);">88%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="report-preview-section">
+      <div class="report-preview-section-title">四、年度合作建议</div>
+      <div style="padding:12px; background:#d1fae5; border-radius:8px; border-left:3px solid var(--success); margin-bottom:8px;">
+        <div style="font-weight:600; font-size:13px; color:#065f46;">✅ 优先合作推荐：金诚律师事务所</div>
+        <div style="font-size:12px; color:#166534; margin-top:4px;">驳回复审成功率92%、响应速度2.3h、客户满意度9.4，建议增加复审类案件分配比例至70%</div>
+      </div>
+      <div style="padding:12px; background:#fef3c7; border-radius:8px; border-left:3px solid var(--warning); margin-bottom:8px;">
+        <div style="font-weight:600; font-size:13px; color:#92400e;">⚠️ 改进关注：德国Müller事务所</div>
+        <div style="font-size:12px; color:#a16207; margin-top:4px;">平均响应12h偏慢，建议约定4h内响应的服务等级协议（SLA）</div>
+      </div>
+      <div style="padding:12px; background:#dbeafe; border-radius:8px; border-left:3px solid var(--primary);">
+        <div style="font-weight:600; font-size:13px; color:#1e40af;">📌 新需求建议</div>
+        <div style="font-size:12px; color:#1d4ed8; margin-top:4px;">印度市场布局加速，建议引入当地优质代理所，预算预留¥25万</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:32px; padding-top:20px; border-top:1px solid var(--border-color);">
+      <div style="font-size:11px; color:var(--text-muted);">本报告由小米商标管理系统自动生成 · 生成时间：2026-05-04 10:30 · 供应商评估专用</div>
+    </div>
+  `
+};
+
+function renderReport(type) {
+  document.getElementById('reportPreview').innerHTML = reportTemplates[type] || reportTemplates.overview;
+}
+
+renderReport('overview');
+
 function selectReport(el, type) {
   document.querySelectorAll('.report-type-card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   currentReport = type;
-  // 实际应用中会切换报告预览内容
-  const titles = { overview: '商标全局概览报告', risk: '品牌风险分析报告', fee: '费用管理分析报告', firm: '律所绩效评估报告' };
-  document.querySelector('.report-preview-title').textContent = titles[type];
+  renderReport(type);
 }
 
 function addEmail(e) {
