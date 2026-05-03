@@ -48,8 +48,8 @@ function renderSidebar(activePage) {
   
   let html = `
     <div class="sidebar-header">
-      <div class="logo-icon">TM</div>
-      <div class="logo-text">商标管理系统</div>
+      <div class="logo-icon" style="background:#FF6900; font-family:-apple-system,BlinkMacSystemFont,sans-serif; font-weight:700; font-size:14px; letter-spacing:0.5px;">mi</div>
+      <div class="logo-text">小米商标管理系统</div>
     </div>
     <div class="toggle-btn" onclick="toggleSidebar()" title="收起/展开">◀</div>
     <div class="sidebar-nav">
@@ -191,55 +191,78 @@ function initApp(activePage) {
   renderHeader();
 }
 
-// Simple chart drawing helpers
+// ===== Enhanced Chart Drawing Helpers =====
+
 function drawBarChart(containerId, data, labels, colors) {
   const el = document.getElementById(containerId);
   if (!el) return;
   const max = Math.max(...data);
-  let html = '<div style="display:flex; align-items:flex-end; justify-content:space-around; height:100%; padding:10px 0;">';
+  const id = 'bar-' + Math.random().toString(36).slice(2);
+  let html = `<div style="display:flex; align-items:flex-end; justify-content:space-around; height:100%; padding:10px 0;" id="${id}">`;
   data.forEach((v, i) => {
-    const h = (v / max) * 80;
+    const h = (v / max) * 75;
     html += `
-      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex:1;">
-        <div style="font-size:11px; color:#64748b; font-weight:600;">${v}</div>
-        <div style="width:28px; background:${colors[i]||'#2563eb'}; border-radius:4px 4px 0 0; height:${h}%; opacity:0.85; transition:all 0.3s;"></div>
-        <div style="font-size:11px; color:#94a3b8;">${labels[i]}</div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; cursor:pointer;">
+        <div style="font-size:11px; color:#64748b; font-weight:700; opacity:0; animation:fadeUp 0.4s ${i*0.08}s forwards;">${v}</div>
+        <div style="width:32px; background:${colors[i]||'var(--primary)'}; border-radius:6px 6px 0 0; height:0; opacity:0.9; transition:all 0.3s; box-shadow:0 4px 12px ${colors[i]||'var(--primary)'}40;" class="bar-col-${i}"></div>
+        <div style="font-size:11px; color:#94a3b8; font-weight:500;">${labels[i]}</div>
       </div>
     `;
   });
   html += '</div>';
   el.innerHTML = html;
+  // Animate bars
+  setTimeout(() => {
+    data.forEach((v, i) => {
+      const h = (v / max) * 75;
+      const bar = document.querySelector(`#${id} .bar-col-${i}`);
+      if (bar) bar.style.height = h + '%';
+    });
+  }, 100);
 }
 
 function drawPieChart(containerId, data, labels, colors) {
   const el = document.getElementById(containerId);
   if (!el) return;
   const total = data.reduce((a,b)=>a+b,0);
+  const uid = 'pie-' + Math.random().toString(36).slice(2);
   let acc = 0;
-  let svg = `<svg viewBox="0 0 100 100" style="width:180px; height:180px; transform:rotate(-90deg);">`;
+  let paths = [];
   data.forEach((v, i) => {
+    const start = acc;
     const pct = v / total;
-    const [x1, y1] = [50 + 40*Math.cos(2*Math.PI*acc), 50 + 40*Math.sin(2*Math.PI*acc)];
     acc += pct;
-    const [x2, y2] = [50 + 40*Math.cos(2*Math.PI*acc), 50 + 40*Math.sin(2*Math.PI*acc)];
+    const end = acc;
+    const [x1, y1] = [50 + 40*Math.cos(2*Math.PI*start), 50 + 40*Math.sin(2*Math.PI*start)];
+    const [x2, y2] = [50 + 40*Math.cos(2*Math.PI*end), 50 + 40*Math.sin(2*Math.PI*end)];
     const large = pct > 0.5 ? 1 : 0;
-    svg += `<path d="M50,50 L${x1},${y1} A40,40 0 ${large},1 ${x2},${y2} Z" fill="${colors[i]}" stroke="#fff" stroke-width="1"/>`;
+    const d = `M50,50 L${x1},${y1} A40,40 0 ${large},1 ${x2},${y2} Z`;
+    paths.push({ d, color: colors[i], pct, label: labels[i] });
   });
-  svg += `</svg>`;
-  
-  let legend = '<div style="display:flex; flex-direction:column; gap:8px;">';
-  data.forEach((v, i) => {
+
+  let svg = `<svg viewBox="0 0 100 100" style="width:170px; height:170px; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.08));">`;
+  svg += `<defs><clipPath id="${uid}-clip"><circle cx="50" cy="50" r="0"><animate attributeName="r" from="0" to="40" dur="0.8s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1"/></clipPath></defs>`;
+  svg += `<g clip-path="url(#${uid}-clip)" transform="rotate(-90 50 50)">`;
+  paths.forEach((p, i) => {
+    svg += `<path d="${p.d}" fill="${p.color}" stroke="#fff" stroke-width="1.5" opacity="0">
+      <animate attributeName="opacity" from="0" to="0.95" dur="0.4s" begin="${0.3 + i*0.1}s" fill="freeze"/>
+    </path>`;
+  });
+  svg += `</g></svg>`;
+
+  let legend = '<div style="display:flex; flex-direction:column; gap:10px;">';
+  paths.forEach((p, i) => {
     legend += `
-      <div style="display:flex; align-items:center; gap:8px; font-size:12px;">
-        <span style="width:10px; height:10px; border-radius:50%; background:${colors[i]};"></span>
-        <span style="color:#475569;">${labels[i]}</span>
-        <span style="margin-left:auto; font-weight:600; color:#1e293b;">${Math.round(v/total*100)}%</span>
+      <div style="display:flex; align-items:center; gap:8px; font-size:12px; animation:fadeIn 0.4s ${0.5+i*0.1}s backwards;">
+        <span style="width:10px; height:10px; border-radius:3px; background:${p.color}; box-shadow:0 2px 6px ${p.color}60;"></span>
+        <span style="color:#475569; font-weight:500;">${p.label}</span>
+        <span style="margin-left:auto; font-weight:700; color:#1e293b; font-size:13px;">${Math.round(p.pct*100)}%</span>
       </div>
     `;
   });
   legend += '</div>';
-  
-  el.innerHTML = `<div style="display:flex; align-items:center; gap:20px; justify-content:center; height:100%;">${svg}${legend}</div>`;
+
+  el.innerHTML = `<div style="display:flex; align-items:center; gap:24px; justify-content:center; height:100%;">${svg}${legend}</div>`;
 }
 
 function drawLineChart(containerId, data, labels, color) {
@@ -248,26 +271,71 @@ function drawLineChart(containerId, data, labels, color) {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
+  const padLeft = 14, padRight = 8, padTop = 10, padBottom = 18;
+  const chartW = 100 - padLeft - padRight;
+  const chartH = 100 - padTop - padBottom;
+
   const points = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * 90 + 5;
-    const y = 90 - ((v - min) / range) * 70 - 10;
-    return `${x},${y}`;
-  }).join(' ');
-  
-  let svg = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">`;
-  svg += `<polyline points="${points}" fill="none" stroke="${color}" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round"/>`;
-  
-  data.forEach((v, i) => {
-    const x = (i / (data.length - 1)) * 90 + 5;
-    const y = 90 - ((v - min) / range) * 70 - 10;
-    svg += `<circle cx="${x}" cy="${y}" r="0.8" fill="${color}"/>`;
+    const x = padLeft + (i / (data.length - 1)) * chartW;
+    const y = padTop + chartH - ((v - min) / range) * chartH * 0.85;
+    return [x, y];
   });
-  
+  const pointsStr = points.map(p => p.join(',')).join(' ');
+
+  // Y axis ticks (3 ticks)
+  const yTicks = [max, min + range/2, min];
+  let yAxis = '';
+  yTicks.forEach((t, i) => {
+    const y = padTop + (i / 2) * chartH * 0.85;
+    yAxis += `<text x="${padLeft-2}" y="${y+1}" text-anchor="end" font-size="4.5" fill="#94a3b8" font-weight="500">${Math.round(t)}</text>`;
+    yAxis += `<line x1="${padLeft}" y1="${y}" x2="${100-padRight}" y2="${y}" stroke="#e2e8f0" stroke-width="0.3" stroke-dasharray="1,1"/>`;
+  });
+
+  // Area fill path
+  const areaPath = `${pointsStr} ${padLeft+chartW},${padTop+chartH} ${padLeft},${padTop+chartH}`;
+
+  let svg = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; overflow:visible;">`;
+  svg += `<defs>
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="1.5" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>`;
+
+  // Grid & Y labels
+  svg += yAxis;
+
+  // Area fill with clip animation
+  svg += `<clipPath id="lineClip"><rect x="0" y="0" width="0" height="100"><animate attributeName="width" from="0" to="100" dur="1.2s" fill="freeze" calcMode="spline" keySplines="0.4 0 0.2 1"/></rect></clipPath>`;
+
+  svg += `<g clip-path="url(#lineClip)">`;
+  // Area
+  svg += `<polygon points="${areaPath}" fill="url(#lineGrad)" opacity="0">
+    <animate attributeName="opacity" from="0" to="1" dur="0.6s" begin="0.2s" fill="freeze"/>
+  </polygon>`;
+  // Line
+  svg += `<polyline points="${pointsStr}" fill="none" stroke="${color}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>`;
+  // Points
+  points.forEach(([x, y], i) => {
+    svg += `<circle cx="${x}" cy="${y}" r="2" fill="#fff" stroke="${color}" stroke-width="1">
+      <animate attributeName="r" from="0" to="2" dur="0.3s" begin="${0.6 + i*0.1}s" fill="freeze"/>
+    </circle>`;
+    // Value labels
+    svg += `<text x="${x}" y="${y-4}" text-anchor="middle" font-size="4.5" fill="${color}" font-weight="700" opacity="0">
+      <animate attributeName="opacity" from="0" to="1" dur="0.3s" begin="${0.8 + i*0.1}s" fill="freeze"/>
+      ${data[i]}
+    </text>`;
+  });
+  svg += `</g>`;
   svg += `</svg>`;
-  
-  let xLabels = '<div style="display:flex; justify-content:space-between; padding:0 10px; margin-top:4px;">';
-  labels.forEach(l => xLabels += `<span style="font-size:10px; color:#94a3b8;">${l}</span>`);
+
+  // X axis labels
+  let xLabels = '<div style="display:flex; justify-content:space-between; padding-left:14px; padding-right:8px; margin-top:2px;">';
+  labels.forEach((l, i) => {
+    xLabels += `<span style="font-size:10px; color:#94a3b8; font-weight:500; text-align:center; flex:1;">${l}</span>`;
+  });
   xLabels += '</div>';
-  
-  el.innerHTML = `<div style="height:calc(100% - 20px);">${svg}</div>${xLabels}`;
+
+  el.innerHTML = `<div style="height:calc(100% - 18px); position:relative;">${svg}</div>${xLabels}`;
 }
