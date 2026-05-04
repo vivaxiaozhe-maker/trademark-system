@@ -791,9 +791,10 @@ function sendQuickReply() {
 // ==================== Edit Modal ====================
 function openEditModal() {
   const c = caseData;
-  const statusOptions = Object.entries(DataService.STATUS_MAP).map(([code, { label }]) => 
-    `<option value="${code}" ${c.statusCode === code ? 'selected' : ''}>${label}</option>`
-  ).join('');
+  const statusOptions = Object.keys(DataService.STATUS_MAP).map(function(code) {
+    var label = DataService.STATUS_MAP[code].label;
+    return '<option value="' + code + '"' + (c.statusCode === code ? ' selected' : '') + '>' + label + '</option>';
+  }).join('');
   
   document.getElementById('editModalBody').innerHTML = `
     <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px;">
@@ -839,7 +840,7 @@ function saveEdit() {
     brandName: document.getElementById('editBrandName').value,
     businessType: document.getElementById('editBusinessType').value,
     statusCode: document.getElementById('editStatus').value,
-    status: DataService.STATUS_MAP[document.getElementById('editStatus').value]?.label || '',
+    status: (DataService.STATUS_MAP[document.getElementById('editStatus').value] || {}).label || '',
     lawFirmName: document.getElementById('editLawFirm').value,
     officialDeadline: document.getElementById('editDeadline').value,
     responsibleUser: document.getElementById('editOwner').value,
