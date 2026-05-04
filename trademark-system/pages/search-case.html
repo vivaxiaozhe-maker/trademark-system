@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>检索案卷 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.form-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.form-row-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+/* 日期快捷标签 */
+.date-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.date-tag {
+  padding: 3px 10px; border-radius: 12px; font-size: 12px; cursor: pointer;
+  border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); transition: var(--transition);
+}
+.date-tag:hover { border-color: var(--primary); color: var(--primary); }
+.date-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.date-range { display: flex; align-items: center; gap: 6px; }
+.date-range input { flex: 1; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 13px; }
+.date-range span { color: var(--text-muted); font-size: 12px; }
+
+/* 筛选区 */
+.filter-card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 20px; margin-bottom: 16px; }
+.filter-card .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.filter-card .form-group { margin-bottom: 12px; }
+.filter-card .actions { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color); }
+.filter-card .actions .checkbox { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); margin-left: auto; }
+.filter-card .actions .checkbox input { width: 16px; height: 16px; accent-color: var(--primary); }
+
+/* 列表区 */
+.table-card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.table-card .table-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border-color); }
+.table-card .table-header .left { font-size: 15px; font-weight: 700; }
+.table-card .table-header .right { display: flex; gap: 8px; }
+
+/* 分页 */
+.pagination { display: flex; align-items: center; gap: 4px; }
+.pagination button { padding: 5px 10px; border: 1px solid var(--border-color); background: #fff; border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; transition: var(--transition); }
+.pagination button:hover { border-color: var(--primary); color: var(--primary); }
+.pagination button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+.pagination span { font-size: 12px; color: var(--text-muted); padding: 0 6px; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">检索案卷</div>
+          <div class="page-desc" id="pageDesc">共 0 件检索案卷</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm">📥 导出</button>
+          <button class="btn btn-primary btn-sm">➕ 新建案卷</button>
+        </div>
+      </div>
+
+      <!-- 筛选区 -->
+      <div class="filter-card">
+        <div class="section-title">🔍 筛选条件</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">案卷号</label>
+            <input type="text" class="form-input" placeholder="请输入案卷号" id="filterCaseNo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">商标名称</label>
+            <input type="text" class="form-input" placeholder="请输入商标名称" id="filterSubject">
+          </div>
+          <div class="form-group">
+            <label class="form-label">当前节点</label>
+            <select class="form-select" id="filterNode"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">需求人</label>
+            <input type="text" class="form-input" placeholder="请输入需求人" id="filterRequester">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">需求部门</label>
+            <select class="form-select" id="filterDept"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">所属品牌</label>
+            <select class="form-select" id="filterBrand"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">所属产品</label>
+            <select class="form-select" id="filterProduct"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">所属项目</label>
+            <select class="form-select" id="filterProject"><option value="">全部</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">检索方式</label>
+            <select class="form-select" id="filterMethod"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">检索代理机构</label>
+            <select class="form-select" id="filterAgency"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">重要级别</label>
+            <select class="form-select" id="filterPriority"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">申请号</label>
+            <input type="text" class="form-input" placeholder="请输入申请号" id="filterAppNo">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">国家/地区</label>
+            <select class="form-select" id="filterCountry"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">检索机构申请建议</label>
+            <select class="form-select" id="filterAgencyAdvice"><option value="">全部</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">商标管理员申请建议</label>
+            <select class="form-select" id="filterAdminAdvice"><option value="">全部</option></select>
+          </div>
+          <div></div>
+        </div>
+
+        <!-- 三组日期筛选 -->
+        <div class="form-row-2" style="margin-top: 8px;">
+          <div class="form-group">
+            <label class="form-label">检索期限</label>
+            <div class="date-tags" id="tagsDeadline">
+              <span class="date-tag" data-range="today" onclick="pickDateRange(this,'searchDeadline')">今天</span>
+              <span class="date-tag" data-range="week" onclick="pickDateRange(this,'searchDeadline')">本周</span>
+              <span class="date-tag" data-range="month" onclick="pickDateRange(this,'searchDeadline')">本月</span>
+            </div>
+            <div class="date-range">
+              <input type="date" id="searchDeadlineStart"><span>至</span><input type="date" id="searchDeadlineEnd">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">检索完成期限</label>
+            <div class="date-tags" id="tagsComplete">
+              <span class="date-tag" data-range="today" onclick="pickDateRange(this,'completeDeadline')">今天</span>
+              <span class="date-tag" data-range="week" onclick="pickDateRange(this,'completeDeadline')">本周</span>
+              <span class="date-tag" data-range="month" onclick="pickDateRange(this,'completeDeadline')">本月</span>
+            </div>
+            <div class="date-range">
+              <input type="date" id="completeDeadlineStart"><span>至</span><input type="date" id="completeDeadlineEnd">
+            </div>
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">创建日期</label>
+            <div class="date-tags" id="tagsCreate">
+              <span class="date-tag" data-range="today" onclick="pickDateRange(this,'createdDate')">今天</span>
+              <span class="date-tag" data-range="week" onclick="pickDateRange(this,'createdDate')">本周</span>
+              <span class="date-tag" data-range="month" onclick="pickDateRange(this,'createdDate')">本月</span>
+            </div>
+            <div class="date-range">
+              <input type="date" id="createdDateStart"><span>至</span><input type="date" id="createdDateEnd">
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" onclick="applyFilters()">🔍 查询</button>
+          <button class="btn btn-secondary" onclick="resetFilters()">🔄 重置</button>
+          <label class="checkbox"><input type="checkbox" id="filterPending"> 查询拟申请商标信息</label>
+        </div>
+      </div>
+
+      <!-- 列表区 -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="left">检索案卷列表</div>
+          <div class="right">
+            <button class="btn btn-secondary btn-sm">📥 导出</button>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox"></th>
+                <th>案卷号</th>
+                <th>主题</th>
+                <th>当前节点</th>
+                <th>当前节点办理人</th>
+                <th>上一节点办理时间</th>
+                <th>检索方式</th>
+                <th>检索代理机构</th>
+                <th style="text-align:center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="caseList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/data-service.js"></script>
+<script>
+initApp('search-case');
+
+let currentData = [...AppData.searchCases];
+let pageSize = 10;
+let currentPage = 1;
+
+/* ============ 初始化下拉选项 ============ */
+function fillSelect(id, items) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  items.forEach(item => { sel.innerHTML += `<option value="${item}">${item}</option>`; });
+}
+
+fillSelect('filterNode', AppData.searchNodes || []);
+fillSelect('filterDept', AppData.departments || []);
+fillSelect('filterBrand', AppData.brandList || []);
+fillSelect('filterProduct', AppData.productList || []);
+fillSelect('filterProject', AppData.projects || []);
+fillSelect('filterMethod', AppData.searchMethods || []);
+fillSelect('filterAgency', AppData.searchAgencies || []);
+fillSelect('filterPriority', AppData.priorities || []);
+fillSelect('filterCountry', AppData.countries || []);
+fillSelect('filterAgencyAdvice', AppData.agencySuggestions || []);
+fillSelect('filterAdminAdvice', AppData.adminSuggestions || []);
+
+/* ============ 日期快捷标签 ============ */
+function pickDateRange(el, fieldPrefix) {
+  const parent = el.parentElement;
+  parent.querySelectorAll('.date-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const range = el.dataset.range;
+  const today = new Date();
+  let start = '', end = '';
+  const fmt = d => d.toISOString().slice(0,10);
+  if (range === 'today') { start = fmt(today); end = fmt(today); }
+  else if (range === 'week') {
+    const day = today.getDay() || 7;
+    start = fmt(new Date(today.getTime() - (day-1)*86400000));
+    end = fmt(new Date(today.getTime() + (7-day)*86400000));
+  }
+  else if (range === 'month') {
+    start = fmt(new Date(today.getFullYear(), today.getMonth(), 1));
+    end = fmt(new Date(today.getFullYear(), today.getMonth()+1, 0));
+  }
+  document.getElementById(fieldPrefix + 'Start').value = start;
+  document.getElementById(fieldPrefix + 'End').value = end;
+}
+
+/* ============ 渲染列表 ============ */
+function getNodeTag(node) {
+  const map = { '待分配': 'tag-gray', '检索中': 'tag-blue', '检索完成': 'tag-green', '审核中': 'tag-orange', '已归档': 'tag-purple' };
+  return `<span class="tag ${map[node]||'tag-gray'}">${node}</span>`;
+}
+
+function renderTable(list) {
+  const tbody = document.getElementById('caseList');
+  tbody.innerHTML = '';
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的检索案卷</td></tr>';
+    return;
+  }
+  list.forEach(c => {
+    tbody.innerHTML += `
+      <tr>
+        <td><input type="checkbox"></td>
+        <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">${c.caseNo}</span></td>
+        <td><strong>${c.subject}</strong></td>
+        <td>${getNodeTag(c.currentNode)}</td>
+        <td>${c.handler || '-'}</td>
+        <td><span style="font-size:12px;color:var(--text-secondary);">${c.prevTime || '-'}</span></td>
+        <td><span class="tag tag-blue" style="font-size:12px;">${c.searchMethod || '-'}</span></td>
+        <td>${c.agency || '-'}</td>
+        <td style="text-align:center;">
+          <button class="btn btn-sm btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="alert('查看案卷：${c.caseNo}')">查看</button>
+        </td>
+      </tr>
+    `;
+  });
+  document.getElementById('pageDesc').textContent = `共 ${list.length} 件检索案卷`;
+  renderPagination(list.length);
+}
+
+/* ============ 分页 ============ */
+function renderPagination(total) {
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  const el = document.getElementById('pagination');
+  let html = '';
+  html += `<button onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>上一页</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+      html += `<button class="${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    } else if (Math.abs(i - currentPage) === 2) {
+      html += `<span>...</span>`;
+    }
+  }
+  html += `<button onclick="goPage(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>下一页</button>`;
+  el.innerHTML = html;
+}
+
+function goPage(p) {
+  const totalPages = Math.ceil(currentData.length / pageSize) || 1;
+  if (p < 1 || p > totalPages) return;
+  currentPage = p;
+  applyFilters();
+}
+
+/* ============ 筛选逻辑 ============ */
+function applyFilters() {
+  let result = [...AppData.searchCases];
+
+  // 文本筛选
+  const caseNo = document.getElementById('filterCaseNo').value.trim();
+  if (caseNo) result = result.filter(c => c.caseNo.toLowerCase().includes(caseNo.toLowerCase()));
+  const subject = document.getElementById('filterSubject').value.trim();
+  if (subject) result = result.filter(c => c.subject.toLowerCase().includes(subject.toLowerCase()));
+  const requester = document.getElementById('filterRequester').value.trim();
+  if (requester) result = result.filter(c => (c.requester||'').toLowerCase().includes(requester.toLowerCase()));
+  const appNo = document.getElementById('filterAppNo').value.trim();
+  if (appNo) result = result.filter(c => (c.appNo||'').toLowerCase().includes(appNo.toLowerCase()));
+
+  // 下拉筛选
+  const node = document.getElementById('filterNode').value;
+  if (node) result = result.filter(c => c.currentNode === node);
+  const dept = document.getElementById('filterDept').value;
+  if (dept) result = result.filter(c => c.dept === dept);
+  const brand = document.getElementById('filterBrand').value;
+  if (brand) result = result.filter(c => c.brand === brand);
+  const product = document.getElementById('filterProduct').value;
+  if (product) result = result.filter(c => c.product === product);
+  const project = document.getElementById('filterProject').value;
+  if (project) result = result.filter(c => c.project === project);
+  const method = document.getElementById('filterMethod').value;
+  if (method) result = result.filter(c => c.searchMethod === method);
+  const agency = document.getElementById('filterAgency').value;
+  if (agency) result = result.filter(c => c.agency === agency);
+  const priority = document.getElementById('filterPriority').value;
+  if (priority) result = result.filter(c => c.priority === priority);
+  const country = document.getElementById('filterCountry').value;
+  if (country) result = result.filter(c => c.country === country);
+  const agencyAdvice = document.getElementById('filterAgencyAdvice').value;
+  if (agencyAdvice) result = result.filter(c => c.agencyAdvice === agencyAdvice);
+  const adminAdvice = document.getElementById('filterAdminAdvice').value;
+  if (adminAdvice) result = result.filter(c => c.adminAdvice === adminAdvice);
+
+  // 日期范围筛选
+  const filterDate = (field, startId, endId) => {
+    const start = document.getElementById(startId).value;
+    const end = document.getElementById(endId).value;
+    if (start) result = result.filter(c => (c[field]||'') >= start);
+    if (end) result = result.filter(c => (c[field]||'') <= end);
+  };
+  filterDate('searchDeadline', 'searchDeadlineStart', 'searchDeadlineEnd');
+  filterDate('completeDeadline', 'completeDeadlineStart', 'completeDeadlineEnd');
+  filterDate('createdDate', 'createdDateStart', 'createdDateEnd');
+
+  currentData = result;
+  currentPage = 1;
+  renderTable(result);
+}
+
+function resetFilters() {
+  document.querySelectorAll('.form-input, .form-select').forEach(el => el.value = '');
+  document.querySelectorAll('.date-tag').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('input[type=date]').forEach(el => el.value = '');
+  document.getElementById('filterPending').checked = false;
+  currentPage = 1;
+  applyFilters();
+}
+
+// 初始渲染
+applyFilters();
+</script>
+</body>
+</html>

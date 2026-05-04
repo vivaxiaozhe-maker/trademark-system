@@ -13,6 +13,7 @@ const breadcrumbMap = {
   'brand-internal': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '内部品牌' }],
   'brand-external': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '外部合作' }],
   'brand-map': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '品牌图谱' }],
+  'search-case': [{ label: '首页', href: 'index.html' }, { label: '检索中心' }, { label: '检索案卷' }],
   'collab': [{ label: '首页', href: 'index.html' }, { label: '律所协作中心' }],
   'fees': [{ label: '首页', href: 'index.html' }, { label: '费用中心' }],
   'fees-bills': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '账单导入' }],
@@ -48,6 +49,9 @@ const menuConfig = [
       { label: "外部合作", page: "brand-external", href: "pages/brand.html?tab=external" },
       { label: "品牌图谱", page: "brand-map", href: "pages/brand-map.html" }
     ]}
+  ]},
+  { group: "检索中心", items: [
+    { label: "检索案卷", icon: "🔍", page: "search-case", href: "pages/search-case.html" }
   ]},
   { group: "协作与费用", items: [
     { label: "律所协作中心", icon: "🤝", page: "collab", href: "pages/collab.html" },

@@ -177,7 +177,26 @@ const AppData = {
   agentPersons: ['李律师·合伙人', '王律师·主任', 'Michael Chen·Partner', '张律师·合伙人', '陈律师·合伙人', '孙律师·主任'],
   priorityTypes: ['无', '在先优先权', '展会优先权'],
   rejectionTypes: ['部分驳回', '全部驳回'],
-  statusList: ['申请中', '初审公告', '已注册', '驳回复审中', '异议中', '无效宣告中', '撤销中', '已失效', '待提交']
+  statusList: ['申请中', '初审公告', '已注册', '驳回复审中', '异议中', '无效宣告中', '撤销中', '已失效', '待提交'],
+
+  // 检索中心相关数据
+  searchCases: [
+    { caseNo: 'SC-2026-0001', subject: '云智商标检索', currentNode: '检索完成', handler: '张法务', prevTime: '2026-05-03', searchMethod: '近似检索', agency: '智联知识产权', requester: '王经理', dept: '品牌管理部', brand: '云智', product: '智能手机', project: '云智项目', priority: '高', country: '中国', appNo: 'TM-2026-0042', agencyAdvice: '建议注册', adminAdvice: '同意', searchDeadline: '2026-05-10', completeDeadline: '2026-05-15', createdDate: '2026-05-01' },
+    { caseNo: 'SC-2026-0002', subject: '智联海外多国检索', currentNode: '检索中', handler: '李流程', prevTime: '2026-05-02', searchMethod: '综合检索', agency: 'Horizon Law Group', requester: '赵总监', dept: '海外市场部', brand: '智联', product: '云服务', project: '智联项目', priority: '高', country: '美国', appNo: 'TM-2026-0031', agencyAdvice: '需补充检索', adminAdvice: '驳回', searchDeadline: '2026-05-08', completeDeadline: '2026-05-12', createdDate: '2026-04-28' },
+    { caseNo: 'SC-2026-0003', subject: '海翼欧盟注册检索', currentNode: '审核中', handler: '张法务', prevTime: '2026-05-01', searchMethod: '官方数据库检索', agency: '启航知识产权', requester: '陈主管', dept: '知识产权部', brand: '海翼', product: '智能家居', project: '海翼项目', priority: '中', country: '欧盟', appNo: 'TM-2025-0189', agencyAdvice: '建议注册', adminAdvice: '同意', searchDeadline: '2026-05-05', completeDeadline: '2026-05-08', createdDate: '2026-04-25' },
+    { caseNo: 'SC-2026-0004', subject: '星联续展前置检索', currentNode: '待分配', handler: '-', prevTime: '-', searchMethod: '近似检索', agency: '-', requester: '刘经理', dept: '法务部', brand: '星联', product: '可穿戴设备', project: '星联项目', priority: '中', country: '中国', appNo: 'TM-2025-0098', agencyAdvice: '-', adminAdvice: '-', searchDeadline: '2026-05-20', completeDeadline: '2026-05-25', createdDate: '2026-04-30' },
+    { caseNo: 'SC-2026-0005', subject: '悦动新申请检索', currentNode: '检索完成', handler: '王流程', prevTime: '2026-04-29', searchMethod: '第三方平台检索', agency: '元健律师事务所', requester: '孙专员', dept: '产品研发部', brand: '悦动', product: '物联网平台', project: '悦动项目', priority: '低', country: '中国', appNo: 'TM-2026-0056', agencyAdvice: '不建议注册', adminAdvice: '需补充材料', searchDeadline: '2026-05-12', completeDeadline: '2026-05-18', createdDate: '2026-04-20' },
+    { caseNo: 'SC-2026-0006', subject: '睿思驳回复审检索', currentNode: '检索完成', handler: '张法务', prevTime: '2026-04-28', searchMethod: '人工分析检索', agency: '智联知识产权', requester: '周主管', dept: '知识产权部', brand: '睿思', product: '人工智能', project: '智联项目', priority: '高', country: '中国', appNo: 'TM-2026-0071', agencyAdvice: '建议分割申请', adminAdvice: '同意', searchDeadline: '2026-05-06', completeDeadline: '2026-05-10', createdDate: '2026-04-22' },
+    { caseNo: 'SC-2026-0007', subject: '明达异议答辩检索', currentNode: '检索中', handler: '李流程', prevTime: '2026-04-27', searchMethod: '综合检索', agency: '海翼律师事务所', requester: '吴经理', dept: '法务部', brand: '明达', product: '智能家居', project: '海翼项目', priority: '高', country: '中国', appNo: 'TM-2026-0028', agencyAdvice: '建议变更', adminAdvice: '转交上级', searchDeadline: '2026-05-09', completeDeadline: '2026-05-14', createdDate: '2026-04-26' },
+    { caseNo: 'SC-2026-0008', subject: '远见日本注册检索', currentNode: '审核中', handler: '王流程', prevTime: '2026-04-25', searchMethod: '官方数据库检索', agency: '金诚律师事务所', requester: '郑总监', dept: '海外市场部', brand: '远见', product: '智能手机', project: '星联项目', priority: '中', country: '日本', appNo: 'TM-2026-0012', agencyAdvice: '建议注册', adminAdvice: '同意', searchDeadline: '2026-05-15', completeDeadline: '2026-05-20', createdDate: '2026-04-18' },
+    { caseNo: 'SC-2026-0009', subject: 'Horizon品牌美国检索', currentNode: '待分配', handler: '-', prevTime: '-', searchMethod: '近似检索', agency: '-', requester: '钱经理', dept: '品牌管理部', brand: 'Horizon', product: '云服务', project: '智联项目', priority: '高', country: '美国', appNo: 'TM-2025-0156', agencyAdvice: '-', adminAdvice: '-', searchDeadline: '2026-05-25', completeDeadline: '2026-05-30', createdDate: '2026-05-01' },
+    { caseNo: 'SC-2026-0010', subject: '启航韩国注册检索', currentNode: '检索完成', handler: '张法务', prevTime: '2026-04-24', searchMethod: '综合检索', agency: '启航知识产权', requester: '冯专员', dept: '知识产权部', brand: '启航', product: '物联网平台', project: '悦动项目', priority: '中', country: '韩国', appNo: 'TM-2025-0203', agencyAdvice: '建议注册', adminAdvice: '同意', searchDeadline: '2026-05-11', completeDeadline: '2026-05-16', createdDate: '2026-04-15' }
+  ],
+  searchNodes: ['待分配', '检索中', '检索完成', '审核中', '已归档'],
+  searchMethods: ['近似检索', '综合检索', '官方数据库检索', '第三方平台检索', '人工分析检索'],
+  searchAgencies: ['智联知识产权', '元健律师事务所', 'Horizon Law Group', '启航知识产权', '海翼律师事务所', '金诚律师事务所'],
+  agencySuggestions: ['建议注册', '不建议注册', '需补充检索', '建议分割申请', '建议变更'],
+  adminSuggestions: ['同意', '驳回', '需补充材料', '转交上级']
 };
 
 function getPriorityTag(p) {
