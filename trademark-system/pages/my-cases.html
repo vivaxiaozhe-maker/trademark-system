@@ -81,97 +81,6 @@
   </div>
 </div>
 
-<!-- 新建案件模态框 -->
-<div class="modal-overlay" id="newCaseModal">
-  <div class="modal" style="max-width:720px;">
-    <div class="modal-header">
-      <div style="font-weight:600;">➕ 新建案件</div>
-      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal()">×</div>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-section">
-          <label class="form-label">商标名称 <span class="required">*</span></label>
-          <input type="text" class="form-input" id="caseName" placeholder="请输入商标名称">
-        </div>
-        <div class="form-section">
-          <label class="form-label">案件类别 <span class="required">*</span></label>
-          <select class="form-select" id="caseCategory" onchange="updateCaseTypeOptions()">
-            <option value="国内案件">国内案件</option>
-            <option value="海外案件">海外案件</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-section">
-          <label class="form-label">业务类型 <span class="required">*</span></label>
-          <select class="form-select" id="caseType">
-            <option>风险评估</option>
-            <option>新申请补位申请</option>
-            <option>驳回</option>
-            <option>撤三申请</option>
-            <option>异议申请</option>
-            <option>无效宣告</option>
-            <option>商标诉讼</option>
-            <option>变转续补</option>
-            <option>商标购入</option>
-            <option>使用证据/宣誓</option>
-            <option>线上线下调查</option>
-            <option>谈判类（共存/和解）</option>
-            <option>手续文件</option>
-            <option>维权相关</option>
-            <option>其他</option>
-            <option>马德里申请</option>
-            <option>单一国家申请</option>
-          </select>
-        </div>
-        <div class="form-section">
-          <label class="form-label">代理律所 <span class="required">*</span></label>
-          <select class="form-select" id="caseAgent">
-            <option>智联知识产权</option>
-            <option>元健律师事务所</option>
-            <option>Horizon Law Group</option>
-            <option>瑞思律师事务所</option>
-            <option>云智科技</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-section">
-        <label class="form-label">尼斯分类（可多选） <span class="required">*</span></label>
-        <div class="cat-grid" id="newCaseCats"></div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">已选择：<span id="selectedCats" style="color:var(--primary);font-weight:600;">未选择</span></div>
-      </div>
-      <div class="form-row-3">
-        <div class="form-section">
-          <label class="form-label">申请日</label>
-          <input type="date" class="form-input" id="caseApplyDate">
-        </div>
-        <div class="form-section">
-          <label class="form-label">官方绝限</label>
-          <input type="date" class="form-input" id="caseDeadline">
-        </div>
-        <div class="form-section">
-          <label class="form-label">责任人 <span class="required">*</span></label>
-          <select class="form-select" id="caseOwner">
-            <option>张法务</option>
-            <option>李流程</option>
-            <option>王流程</option>
-            <option>赵法务</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-section">
-        <label class="form-label">案件备注</label>
-        <textarea class="form-textarea" id="caseDesc" placeholder="补充案件背景、策略说明或其他信息..."></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
-      <button class="btn btn-primary" onclick="submitCase()">✅ 创建案件</button>
-    </div>
-  </div>
-</div>
-
 <script src="../js/data.js"></script>
 <script src="../js/app.js"></script>
 <script src="../js/data-service.js"></script>
@@ -180,8 +89,6 @@ initApp('my-cases');
 
 let currentCases = [...AppData.cases];
 let currentFilter = 'all';
-let selectedCats = [];
-
 function renderCases(list) {
   const tbody = document.getElementById('caseList');
   tbody.innerHTML = '';
@@ -268,84 +175,6 @@ function applyFilters() {
   renderCases(result);
 }
 
-function openNewCaseModal() {
-  document.getElementById('newCaseModal').classList.add('active');
-  selectedCats = [];
-  renderCatGrid();
-  // 默认申请日为今天
-  document.getElementById('caseApplyDate').value = new Date().toISOString().slice(0,10);
-  updateCaseTypeOptions();
-}
-
-function updateCaseTypeOptions() {
-  const category = document.getElementById('caseCategory').value;
-  const select = document.getElementById('caseType');
-  const domesticTypes = [
-    '风险评估', '新申请补位申请', '驳回', '撤三申请', '异议申请',
-    '无效宣告', '商标诉讼', '变转续补', '商标购入', '使用证据/宣誓',
-    '线上线下调查', '谈判类（共存/和解）', '手续文件', '维权相关', '其他'
-  ];
-  const overseasTypes = domesticTypes.concat(['马德里申请', '单一国家申请']);
-  const types = category === '国内案件' ? domesticTypes : overseasTypes;
-  select.innerHTML = types.map(function(t) { return '<option>' + t + '</option>'; }).join('');
-}
-
-function closeModal() {
-  document.getElementById('newCaseModal').classList.remove('active');
-}
-
-function renderCatGrid() {
-  const grid = document.getElementById('newCaseCats');
-  grid.innerHTML = '';
-  for (let i=1; i<=45; i++) {
-    grid.innerHTML += `<div class="cat-chip ${selectedCats.includes(i)?'active':''}" onclick="toggleCat(${i})">${i}</div>`;
-  }
-}
-
-function toggleCat(cat) {
-  if (selectedCats.includes(cat)) {
-    selectedCats = selectedCats.filter(c => c !== cat);
-  } else {
-    selectedCats.push(cat);
-  }
-  renderCatGrid();
-  document.getElementById('selectedCats').textContent = selectedCats.length ? '第' + selectedCats.join('类, 第') + '类' : '未选择';
-}
-
-function submitCase() {
-  const name = document.getElementById('caseName').value.trim();
-  const category = document.getElementById('caseCategory').value;
-  const type = document.getElementById('caseType').value;
-  const agent = document.getElementById('caseAgent').value;
-  const deadline = document.getElementById('caseDeadline').value;
-  const owner = document.getElementById('caseOwner').value;
-  
-  if (!name || selectedCats.length === 0) {
-    alert('请填写必填项（商标名称和尼斯分类）！');
-    return;
-  }
-  
-  const newId = 'TM-2026-00' + (AppData.cases.length + 51);
-  const newCase = {
-    id: newId,
-    name: name,
-    type: type,
-    category: category,
-    status: '受理中',
-    agent: agent,
-    deadline: deadline || '2026-12-31',
-    owner: owner,
-    progress: 5
-  };
-  
-  AppData.cases.unshift(newCase);
-  closeModal();
-  applyFilters();
-  alert('案件创建成功！案件编号：' + newId);
-  
-  document.getElementById('caseName').value = '';
-  document.getElementById('caseDesc').value = '';
-}
 </script>
 </body>
 </html>
