@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新建案件 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+.form-section { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.form-label .required { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
+  background: var(--bg-card); outline: none; transition: var(--transition);
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.form-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* Radio group */
+.radio-group { display: flex; gap: 16px; flex-wrap: wrap; }
+.radio-item { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.radio-item input { width: 16px; height: 16px; cursor: pointer; }
+
+/* Tag input */
+.tag-input-container {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 6px 10px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); background: var(--bg-card);
+  min-height: 38px; align-items: center;
+}
+.tag-input-container:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.tag-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 12px; font-size: 11px;
+  background: var(--primary-light); color: var(--primary); font-weight: 500;
+}
+.tag-chip .tag-remove { cursor: pointer; font-size: 14px; line-height: 1; }
+.tag-chip .tag-remove:hover { color: var(--danger); }
+.tag-input {
+  border: none; outline: none; background: transparent;
+  flex: 1; min-width: 60px; font-size: 13px; padding: 2px;
+}
+
+/* Upload area */
+.upload-zone {
+  border: 2px dashed var(--border-color); border-radius: var(--radius-md);
+  padding: 32px; text-align: center; color: var(--text-muted);
+  transition: var(--transition); cursor: pointer;
+}
+.upload-zone:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.upload-preview { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.upload-preview-item {
+  width: 80px; height: 80px; border-radius: var(--radius-md);
+  border: 1px solid var(--border-color); object-fit: contain;
+  background: #f8fafc;
+}
+
+/* Collapse panel */
+.collapse-panel { margin-bottom: 20px; }
+.collapse-panel-header {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 14px 20px; background: var(--bg-card);
+  border-radius: var(--radius-md); border: 1px solid var(--border-color);
+  font-size: 14px; font-weight: 600;
+}
+.collapse-panel-header:hover { border-color: var(--primary); }
+.collapse-panel-arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.3s; margin-left: auto; }
+.collapse-panel-arrow.expanded { transform: rotate(180deg); }
+.collapse-panel-body {
+  padding: 20px; background: var(--bg-card);
+  border: 1px solid var(--border-color); border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  display: none;
+}
+.collapse-panel-body.expanded { display: block; }
+
+/* Dynamic section */
+.dynamic-section {
+  background: #f8fafc; border-radius: var(--radius-md);
+  border: 1px solid var(--border-color); padding: 20px;
+  margin-bottom: 20px;
+}
+.dynamic-section-title {
+  font-size: 13px; font-weight: 600; color: var(--primary);
+  margin-bottom: 16px; padding-bottom: 10px;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+/* Required highlight */
+.required-field .form-input,
+.required-field .form-select,
+.required-field .tag-input-container {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* Suggest dropdown */
+.suggest-dropdown {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--bg-card); border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm); max-height: 200px; overflow-y: auto;
+  z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: none;
+}
+.suggest-dropdown.active { display: block; }
+.suggest-item { padding: 8px 12px; font-size: 13px; cursor: pointer; }
+.suggest-item:hover { background: var(--primary-light); color: var(--primary); }
+.suggest-wrap { position: relative; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row, .form-row-3, .form-row-4 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+      <div class="page-header">
+        <div>
+          <div class="page-title">新建案件</div>
+          <div class="page-desc">填写案件基本信息，带 <span style="color:var(--danger);">*</span> 为必填项</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <a href="cases.html" class="btn btn-secondary btn-sm back-btn">← 返回案件列表</a>
+        </div>
+      </div>
+
+      <form id="caseForm" onsubmit="event.preventDefault(); submitCase();">
+        <!-- 基本信息区 -->
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header"><div class="card-title">📋 基本信息</div></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">商标编号</label>
+                <input type="text" class="form-input" id="tmNo" placeholder="系统自动生成" readonly style="background:var(--bg-body);">
+              </div>
+              <div class="form-section" id="fs-brandName">
+                <label class="form-label">商标名称 <span class="required">*</span></label>
+                <input type="text" class="form-input" id="brandName" placeholder="请输入商标名称" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">商标状态</label>
+                <select class="form-select" id="tmStatus"></select>
+              </div>
+              <div class="form-section">
+                <label class="form-label">创建日期</label>
+                <input type="date" class="form-input" id="createDate">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">需求部门</label>
+                <select class="form-select" id="department"></select>
+              </div>
+              <div class="form-section">
+                <label class="form-label">重要级别</label>
+                <select class="form-select" id="priorityLevel"></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section" id="fs-country">
+                <label class="form-label">国家(地区) <span class="required">*</span></label>
+                <select class="form-select" id="country" required></select>
+              </div>
+              <div class="form-section">
+                <label class="form-label">业务类型 <span class="required">*</span></label>
+                <select class="form-select" id="businessType" required onchange="onBusinessTypeChange()"></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">所属项目</label>
+                <div class="tag-input-container" id="projectTags">
+                  <input type="text" class="tag-input" id="projectInput" placeholder="输入后回车添加" onkeydown="handleTagInput(event,'project')">
+                </div>
+              </div>
+              <div class="form-section">
+                <label class="form-label">所属产品</label>
+                <input type="text" class="form-input" id="product" placeholder="请输入所属产品">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">所属品牌</label>
+                <select class="form-select" id="brand"></select>
+              </div>
+              <div class="form-section">
+                <label class="form-label">商标来源</label>
+                <select class="form-select" id="source"></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">商标类型</label>
+                <div class="radio-group" id="tmTypeGroup">
+                  <label class="radio-item"><input type="radio" name="tmType" value="一般" checked> 一般</label>
+                  <label class="radio-item"><input type="radio" name="tmType" value="集体"> 集体</label>
+                  <label class="radio-item"><input type="radio" name="tmType" value="证明"> 证明</label>
+                  <label class="radio-item"><input type="radio" name="tmType" value="特殊"> 特殊</label>
+                </div>
+              </div>
+              <div class="form-section">
+                <label class="form-label">是否颜色组合</label>
+                <div class="radio-group">
+                  <label class="radio-item"><input type="radio" name="isColor" value="否" checked> 否</label>
+                  <label class="radio-item"><input type="radio" name="isColor" value="是"> 是</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">是否三维标志</label>
+                <div class="radio-group">
+                  <label class="radio-item"><input type="radio" name="is3D" value="否" checked> 否</label>
+                  <label class="radio-item"><input type="radio" name="is3D" value="是"> 是</label>
+                </div>
+              </div>
+              <div class="form-section">
+                <label class="form-label">是否声音商标</label>
+                <div class="radio-group">
+                  <label class="radio-item"><input type="radio" name="isSound" value="否" checked> 否</label>
+                  <label class="radio-item"><input type="radio" name="isSound" value="是"> 是</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section suggest-wrap">
+                <label class="form-label">商标负责人</label>
+                <input type="text" class="form-input" id="tmOwner" placeholder="输入搜索..." oninput="filterSuggest(this,'ownerSuggest')">
+                <div class="suggest-dropdown" id="ownerSuggest"></div>
+              </div>
+              <div class="form-section">
+                <label class="form-label">法律状态(参考)</label>
+                <select class="form-select" id="legalStatus"></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section suggest-wrap">
+                <label class="form-label">缔约方</label>
+                <input type="text" class="form-input" id="contractingParty" placeholder="输入搜索..." oninput="filterSuggest(this,'partySuggest')">
+                <div class="suggest-dropdown" id="partySuggest"></div>
+              </div>
+              <div class="form-section">
+                <label class="form-label">商标IPR</label>
+                <select class="form-select" id="tmIPR"></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">是否共有</label>
+                <div class="radio-group">
+                  <label class="radio-item"><input type="radio" name="isJoint" value="否" checked> 否</label>
+                  <label class="radio-item"><input type="radio" name="isJoint" value="是"> 是</label>
+                </div>
+              </div>
+              <div class="form-section">
+                <label class="form-label">自定义栏位1</label>
+                <input type="text" class="form-input" id="customField1" placeholder="自定义内容">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">商标说明</label>
+                <textarea class="form-textarea" id="tmDesc" placeholder="请输入商标说明..."></textarea>
+              </div>
+              <div class="form-section">
+                <label class="form-label">备注</label>
+                <textarea class="form-textarea" id="remark" placeholder="请输入备注..."></textarea>
+              </div>
+            </div>
+            <div class="form-section">
+              <label class="form-label">商标图样</label>
+              <div class="upload-zone" onclick="document.getElementById('tmImageInput').click()">
+                <div style="font-size:32px;margin-bottom:8px;">🖼️</div>
+                <div style="font-size:13px;font-weight:500;">点击或拖拽上传商标图样</div>
+                <div style="font-size:11px;margin-top:4px;">支持 JPG、PNG、GIF，单个不超过 10MB</div>
+              </div>
+              <input type="file" id="tmImageInput" accept="image/*" style="display:none;" onchange="handleImageUpload(this)">
+              <div class="upload-preview" id="imagePreview"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 折叠区块「信息」 -->
+        <div class="collapse-panel" id="infoPanel">
+          <div class="collapse-panel-header" onclick="toggleCollapsePanel('infoPanel')">
+            <span>📁</span>
+            <span>信息</span>
+            <span class="collapse-panel-arrow expanded" id="infoPanel-arrow">▼</span>
+          </div>
+          <div class="collapse-panel-body expanded" id="infoPanel-body">
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">申请号</label>
+                <input type="text" class="form-input" id="appNo" placeholder="请输入申请号">
+              </div>
+              <div class="form-section">
+                <label class="form-label">申请日期</label>
+                <input type="date" class="form-input" id="appDate">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">初审公告期号</label>
+                <input type="text" class="form-input" id="prelimIssueNo" placeholder="请输入初审公告期号">
+              </div>
+              <div class="form-section">
+                <label class="form-label">初审公告日</label>
+                <input type="date" class="form-input" id="prelimIssueDate">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">注册号</label>
+                <input type="text" class="form-input" id="regNo" placeholder="请输入注册号">
+              </div>
+              <div class="form-section">
+                <label class="form-label">注册公告日</label>
+                <input type="date" class="form-input" id="regDate">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">注册公告期号</label>
+                <input type="text" class="form-input" id="regIssueNo" placeholder="请输入注册公告期号">
+              </div>
+              <div class="form-section">
+                <label class="form-label">国际注册号</label>
+                <input type="text" class="form-input" id="intRegNo" placeholder="请输入国际注册号">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">国际注册日</label>
+                <input type="date" class="form-input" id="intRegDate">
+              </div>
+              <div class="form-section">
+                <label class="form-label">续展起始日</label>
+                <input type="date" class="form-input" id="renewalStart">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">权利终止日</label>
+                <input type="date" class="form-input" id="termEnd">
+              </div>
+              <div class="form-section">
+                <label class="form-label">申请人</label>
+                <input type="text" class="form-input" id="applicant" placeholder="请输入申请人">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">申请人英文</label>
+                <input type="text" class="form-input" id="applicantEn" placeholder="Applicant Name">
+              </div>
+              <div class="form-section">
+                <label class="form-label">申请人地址</label>
+                <input type="text" class="form-input" id="applicantAddr" placeholder="请输入申请人地址">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">申请人地址英文</label>
+                <input type="text" class="form-input" id="applicantAddrEn" placeholder="Applicant Address">
+              </div>
+              <div class="form-section">
+                <label class="form-label">代理机构</label>
+                <select class="form-select" id="agent"></select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">代理人</label>
+                <select class="form-select" id="agentPerson"></select>
+              </div>
+              <div class="form-section">
+                <label class="form-label">委案日期</label>
+                <input type="date" class="form-input" id="assignDate">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">代理机构案卷号</label>
+                <input type="text" class="form-input" id="agentCaseNo" placeholder="请输入代理机构案卷号">
+              </div>
+              <div class="form-section">
+                <label class="form-label">优先权</label>
+                <div class="radio-group">
+                  <label class="radio-item"><input type="radio" name="priority" value="无" checked onchange="onPriorityChange()"> 无</label>
+                  <label class="radio-item"><input type="radio" name="priority" value="在先优先权" onchange="onPriorityChange()"> 在先优先权</label>
+                  <label class="radio-item"><input type="radio" name="priority" value="展会优先权" onchange="onPriorityChange()"> 展会优先权</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-row" id="priorityCountryRow" style="display:none;">
+              <div class="form-section">
+                <label class="form-label">申请/展出国家</label>
+                <input type="text" class="form-input" id="priorityCountry" placeholder="请输入申请/展出国家">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 动态区块：驳回复审 -->
+        <div class="dynamic-section" id="sec-rejection" style="display:none;">
+          <div class="dynamic-section-title">🚫 驳回信息</div>
+          <div class="form-row">
+            <div class="form-section">
+              <label class="form-label">驳回类型</label>
+              <select class="form-select" id="rejectionType"></select>
+            </div>
+            <div class="form-section">
+              <label class="form-label">官方发文日</label>
+              <input type="date" class="form-input" id="rejectionDocDate">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-section">
+              <label class="form-label">官方期限</label>
+              <input type="date" class="form-input" id="rejectionDeadline">
+            </div>
+            <div class="form-section">
+              <label class="form-label">内部期限</label>
+              <input type="date" class="form-input" id="rejectionInternalDeadline">
+            </div>
+          </div>
+          <div class="form-section">
+            <label class="form-label">驳回理由</label>
+            <textarea class="form-textarea" id="rejectionReason" placeholder="请输入驳回理由..."></textarea>
+          </div>
+          <!-- 引证商标折叠区块 -->
+          <div class="collapse-panel" style="margin-top:16px;">
+            <div class="collapse-panel-header" onclick="toggleCollapsePanel('citedPanel')">
+              <span>📋</span>
+              <span>引证商标信息</span>
+              <span class="collapse-panel-arrow expanded" id="citedPanel-arrow">▼</span>
+            </div>
+            <div class="collapse-panel-body expanded" id="citedPanel-body">
+              <div id="citedMarkList"></div>
+              <button type="button" class="btn btn-sm btn-secondary" style="margin-top:12px;" onclick="addCitedMark()">➕ 添加引证商标</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 动态区块：续展 -->
+        <div class="dynamic-section" id="sec-renewal" style="display:none;">
+          <div class="dynamic-section-title">🔄 续展信息</div>
+          <div class="form-row">
+            <div class="form-section">
+              <label class="form-label">注册号</label>
+              <input type="text" class="form-input" id="renewalRegNo" placeholder="请输入注册号">
+            </div>
+            <div class="form-section">
+              <label class="form-label">续展起始日</label>
+              <input type="date" class="form-input" id="renewalStartDate">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-section">
+              <label class="form-label">权利终止日</label>
+              <input type="date" class="form-input" id="renewalTermEnd">
+            </div>
+          </div>
+        </div>
+
+        <!-- 动态区块：异议答辩 -->
+        <div class="dynamic-section" id="sec-defense" style="display:none;">
+          <div class="dynamic-section-title">⚖️ 异议答辩信息</div>
+          <div class="form-row">
+            <div class="form-section">
+              <label class="form-label">答辩期限</label>
+              <input type="date" class="form-input" id="defenseDeadline">
+            </div>
+          </div>
+          <div class="form-section">
+            <label class="form-label">引证商标信息</label>
+            <textarea class="form-textarea" id="defenseCitedMark" placeholder="请输入引证商标信息..."></textarea>
+          </div>
+        </div>
+
+        <!-- 动态区块：撤三答辩 -->
+        <div class="dynamic-section" id="sec-cancellation" style="display:none;">
+          <div class="dynamic-section-title">🗑️ 撤三答辩信息</div>
+          <div class="form-row">
+            <div class="form-section">
+              <label class="form-label">撤销申请人</label>
+              <input type="text" class="form-input" id="cancelApplicant" placeholder="请输入撤销申请人">
+            </div>
+            <div class="form-section">
+              <label class="form-label">答辩期限</label>
+              <input type="date" class="form-input" id="cancelDefenseDeadline">
+            </div>
+          </div>
+          <div class="form-section">
+            <label class="form-label">使用证据</label>
+            <textarea class="form-textarea" id="useEvidence" placeholder="请描述使用证据情况..."></textarea>
+          </div>
+        </div>
+
+        <!-- 动态区块：新申请必填高亮 -->
+        <div class="dynamic-section" id="sec-new" style="display:none;">
+          <div class="dynamic-section-title">📝 新申请必填信息</div>
+          <div class="form-row">
+            <div class="form-section" id="fs-applicant-new">
+              <label class="form-label">申请人 <span class="required">*</span></label>
+              <input type="text" class="form-input" id="applicantNew" placeholder="请输入申请人">
+            </div>
+            <div class="form-section" id="fs-goods-new">
+              <label class="form-label">商品/服务 <span class="required">*</span></label>
+              <textarea class="form-textarea" id="goodsServicesNew" placeholder="请输入商品/服务项目..."></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-section" id="fs-niceClasses-new">
+              <label class="form-label">尼斯分类 <span class="required">*</span></label>
+              <div class="tag-input-container" id="niceClassTags">
+                <input type="text" class="tag-input" id="niceClassInput" placeholder="输入分类号后回车（如 9, 35）" onkeydown="handleTagInput(event,'niceClass')">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 提交按钮 -->
+        <div style="display:flex; gap:12px; justify-content:center; padding:20px;">
+          <button type="button" class="btn btn-secondary" onclick="history.back()">取消</button>
+          <button type="submit" class="btn btn-primary" style="min-width:120px;">✅ 创建案件</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/data-service.js"></script>
+<script>
+initApp('case-new');
+
+// ==================== Init Dropdowns ====================
+function initDropdowns() {
+  const setOptions = function(id, list) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = list.map(function(item) {
+      var label = typeof item === 'string' ? item : item.label;
+      var value = typeof item === 'string' ? item : item.code;
+      return '<option value="' + value + '">' + label + '</option>';
+    }).join('');
+  };
+
+  if (typeof AppData !== 'undefined') {
+    setOptions('tmStatus', AppData.statusList || ['待提交']);
+    setOptions('department', AppData.departments || []);
+    setOptions('priorityLevel', AppData.priorities || []);
+    setOptions('country', AppData.countries || []);
+    setOptions('businessType', AppData.caseTypes || []);
+    setOptions('brand', AppData.brandList || []);
+    setOptions('source', AppData.sources || []);
+    setOptions('legalStatus', AppData.legalStatusList || []);
+    setOptions('tmIPR', AppData.iprList || []);
+    setOptions('agent', AppData.agents || []);
+    setOptions('agentPerson', AppData.agentPersons || []);
+    setOptions('rejectionType', AppData.rejectionTypes || []);
+  }
+
+  document.getElementById('createDate').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('tmNo').value = 'TM-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 9000) + 1000);
+}
+
+// ==================== Tag Input ====================
+var projectTags = [];
+var niceClassTags = [];
+
+function handleTagInput(event, type) {
+  if (event.key !== 'Enter') return;
+  event.preventDefault();
+  var input = event.target;
+  var val = input.value.trim();
+  if (!val) return;
+
+  if (type === 'project') {
+    if (projectTags.indexOf(val) === -1) projectTags.push(val);
+    renderTags('projectTags', 'projectInput', projectTags, 'project');
+  } else if (type === 'niceClass') {
+    if (/^\d+$/.test(val) && parseInt(val) >= 1 && parseInt(val) <= 45) {
+      if (niceClassTags.indexOf(val) === -1) niceClassTags.push(val);
+    }
+    renderTags('niceClassTags', 'niceClassInput', niceClassTags, 'niceClass');
+  }
+  input.value = '';
+}
+
+function renderTags(containerId, inputId, tags, type) {
+  var container = document.getElementById(containerId);
+  var input = document.getElementById(inputId);
+  if (!container || !input) return;
+  var html = tags.map(function(t) {
+    return '<span class="tag-chip">' + t + '<span class="tag-remove" onclick="removeTag(\'' + type + '\',\'' + t + '\')">&times;</span></span>';
+  }).join('');
+  container.innerHTML = html;
+  container.appendChild(input);
+}
+
+function removeTag(type, tag) {
+  if (type === 'project') {
+    projectTags = projectTags.filter(function(t) { return t !== tag; });
+    renderTags('projectTags', 'projectInput', projectTags, 'project');
+  } else if (type === 'niceClass') {
+    niceClassTags = niceClassTags.filter(function(t) { return t !== tag; });
+    renderTags('niceClassTags', 'niceClassInput', niceClassTags, 'niceClass');
+  }
+}
+
+// ==================== Suggest Dropdown ====================
+var ownerList = ['张法务', '李流程', '王流程', '赵法务', '刘助理', '陈律师'];
+var partyList = ['中国', '美国', '欧盟', '日本', '韩国', '新加坡', '澳大利亚', '加拿大'];
+
+function filterSuggest(input, dropdownId) {
+  var dropdown = document.getElementById(dropdownId);
+  if (!dropdown) return;
+  var val = input.value.trim().toLowerCase();
+  var list = dropdownId === 'ownerSuggest' ? ownerList : partyList;
+  var matches = list.filter(function(item) { return item.toLowerCase().indexOf(val) !== -1; });
+
+  if (matches.length && val) {
+    dropdown.innerHTML = matches.map(function(m) {
+      return '<div class="suggest-item" onclick="selectSuggest(\'' + dropdownId + '\',\'' + input.id + '\',\'' + m + '\')">' + m + '</div>';
+    }).join('');
+    dropdown.classList.add('active');
+  } else {
+    dropdown.classList.remove('active');
+  }
+}
+
+function selectSuggest(dropdownId, inputId, value) {
+  document.getElementById(inputId).value = value;
+  document.getElementById(dropdownId).classList.remove('active');
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.suggest-wrap')) {
+    document.querySelectorAll('.suggest-dropdown').forEach(function(d) { d.classList.remove('active'); });
+  }
+});
+
+// ==================== Collapse Panel ====================
+function toggleCollapsePanel(panelId) {
+  var body = document.getElementById(panelId + '-body');
+  var arrow = document.getElementById(panelId + '-arrow');
+  if (!body || !arrow) return;
+  var isExpanded = body.classList.contains('expanded');
+  body.classList.toggle('expanded', !isExpanded);
+  arrow.classList.toggle('expanded', !isExpanded);
+}
+
+// ==================== Priority Change ====================
+function onPriorityChange() {
+  var val = document.querySelector('input[name="priority"]:checked').value;
+  var row = document.getElementById('priorityCountryRow');
+  if (row) row.style.display = val === '无' ? 'none' : 'flex';
+}
+
+// ==================== Business Type Dynamic Show/Hide ====================
+function onBusinessTypeChange() {
+  var val = document.getElementById('businessType').value;
+  var typeMap = {};
+  if (typeof AppData !== 'undefined' && AppData.caseTypes) {
+    AppData.caseTypes.forEach(function(t) { typeMap[t.code] = t.category; });
+  }
+  var category = typeMap[val] || 'other';
+
+  // Hide all dynamic sections
+  ['sec-rejection', 'sec-renewal', 'sec-defense', 'sec-cancellation', 'sec-new'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  // Remove required highlights
+  document.querySelectorAll('.required-field').forEach(function(el) { el.classList.remove('required-field'); });
+
+  // Show corresponding section
+  if (category === 'rejection') {
+    document.getElementById('sec-rejection').style.display = 'block';
+  } else if (category === 'renewal') {
+    document.getElementById('sec-renewal').style.display = 'block';
+  } else if (category === 'defense') {
+    document.getElementById('sec-defense').style.display = 'block';
+  } else if (category === 'cancellation') {
+    document.getElementById('sec-cancellation').style.display = 'block';
+  } else if (category === 'new') {
+    document.getElementById('sec-new').style.display = 'block';
+    // Highlight required fields
+    ['fs-brandName', 'fs-country', 'fs-applicant-new', 'fs-goods-new', 'fs-niceClasses-new'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('required-field');
+    });
+  }
+}
+
+// ==================== Cited Mark List ====================
+var citedMarkCount = 0;
+function addCitedMark() {
+  citedMarkCount++;
+  var container = document.getElementById('citedMarkList');
+  if (!container) return;
+  var div = document.createElement('div');
+  div.className = 'form-row';
+  div.style.marginBottom = '12px';
+  div.innerHTML =
+    '<div class="form-section">' +
+      '<label class="form-label">引证商标名称</label>' +
+      '<input type="text" class="form-input" placeholder="引证商标' + citedMarkCount + '" name="citedName[]">' +
+    '</div>' +
+    '<div class="form-section">' +
+      '<label class="form-label">注册号</label>' +
+      '<input type="text" class="form-input" placeholder="注册号" name="citedRegNo[]">' +
+    '</div>' +
+    '<div class="form-section">' +
+      '<label class="form-label">类别</label>' +
+      '<input type="text" class="form-input" placeholder="如 10" name="citedClass[]">' +
+    '</div>' +
+    '<div class="form-section" style="display:flex;align-items:flex-end;">' +
+      '<button type="button" class="btn btn-sm btn-danger" style="padding:6px 12px;" onclick="this.closest(\'.form-row\').remove()">删除</button>' +
+    '</div>';
+  container.appendChild(div);
+}
+
+// ==================== Image Upload ====================
+function handleImageUpload(input) {
+  var preview = document.getElementById('imagePreview');
+  if (!preview || !input.files) return;
+  preview.innerHTML = '';
+  Array.from(input.files).forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'upload-preview-item';
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ==================== Submit ====================
+function submitCase() {
+  var brandName = document.getElementById('brandName').value.trim();
+  if (!brandName) {
+    alert('请填写商标名称！');
+    return;
+  }
+
+  var businessType = document.getElementById('businessType');
+  var businessTypeText = businessType.options[businessType.selectedIndex].text;
+
+  var newCase = {
+    id: document.getElementById('tmNo').value,
+    brandId: brandName.toLowerCase().replace(/\s+/g, '-'),
+    brandName: brandName,
+    trademarkImage: '../assets/tm-yunzhi.png',
+    type: document.getElementById('country').value === '中国' ? 'domestic' : 'overseas',
+    country: document.getElementById('country').value,
+    businessType: businessTypeText,
+    businessTypeCode: businessType.value,
+    statusCode: 'pending',
+    status: '受理中',
+    niceClasses: niceClassTags.map(function(n) { return parseInt(n); }),
+    niceClassNames: niceClassTags.join(', '),
+    applicationDate: document.getElementById('appDate').value || new Date().toISOString().slice(0, 10),
+    officialDeadline: '',
+    internalDeadline: '',
+    currentProgress: 5,
+    lawFirmId: '',
+    lawFirmName: document.getElementById('agent').value || '-',
+    responsibleUser: document.getElementById('tmOwner').value || '张法务',
+    responsibleUserId: 'zhang',
+    feeTotal: 0,
+    feePaid: 0,
+    feePending: 0,
+    timeline: [],
+    documents: [],
+    messages: [],
+    tags: [],
+    createdAt: new Date().toISOString().slice(0, 10),
+    updatedAt: new Date().toISOString().slice(0, 10)
+  };
+
+  if (typeof DataService !== 'undefined' && DataService.createCase) {
+    DataService.createCase(newCase);
+  }
+
+  alert('案件创建成功！案件编号：' + newCase.id);
+  location.href = 'cases.html';
+}
+
+// ==================== Init ====================
+initDropdowns();
+</script>
+</body>
+</html>

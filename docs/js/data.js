@@ -145,7 +145,34 @@ const AppData = {
   citedMarks: [
     { seq: 1, appNo: "79480607", appDate: "2024-06-12", image: "../assets/tm-cited-1.png", applicant: "深圳智云科技有限公司", niceClass: "10", goods: "振动按摩器,电疗器械", legalStatus: "有效", regDate: "2025-02-20", term: "2025-02-20 至 2035-02-19", action: "查看" },
     { seq: 2, appNo: "80893707", appDate: "2024-09-18", image: "../assets/tm-cited-2.png", applicant: "北京康健医疗设备有限公司", niceClass: "10", goods: "电疗器械,按摩仪器", legalStatus: "有效", regDate: "2025-04-15", term: "2025-04-15 至 2035-04-14", action: "查看" }
-  ]
+  ],
+
+  // 新建案件下拉选项
+  caseTypes: [
+    { code: 'new_apply', label: '单一注册', category: 'new' },
+    { code: 'madrid', label: '马德里申请', category: 'new' },
+    { code: 'renewal', label: '续展', category: 'renewal' },
+    { code: 'reexamination', label: '驳回复审', category: 'rejection' },
+    { code: 'defense', label: '异议答辩', category: 'defense' },
+    { code: 'cancellation', label: '撤三答辩', category: 'cancellation' },
+    { code: 'invalidation', label: '无效宣告', category: 'other' },
+    { code: 'other', label: '其他', category: 'other' }
+  ],
+  departments: ['知识产权部', '法务部', '品牌管理部', '海外市场部', '产品研发部', '财务部'],
+  countries: ['中国', '美国', '欧盟', '日本', '韩国', '新加坡', '澳大利亚', '加拿大', '英国', '德国', '法国', '印度', '巴西', '俄罗斯'],
+  priorities: ['高', '中', '低'],
+  projects: ['云智项目', '智联项目', '海翼项目', '星联项目', '悦动项目'],
+  productList: ['智能手机', '智能家居', '可穿戴设备', '云服务', '物联网平台', '人工智能'],
+  brandList: ['云智', '智联', '海翼', '星联', '悦动', '睿思', '明达', '远见', 'Horizon'],
+  sources: ['自主申请', '受让取得', '并购取得', '许可使用', '其他'],
+  trademarkTypes: ['一般', '集体', '证明', '特殊'],
+  legalStatusList: ['申请中', '初审公告', '已注册', '驳回复审中', '异议中', '无效宣告中', '撤销中', '已失效'],
+  iprList: ['张法务', '李流程', '王流程', '赵法务'],
+  agents: ['智联知识产权', '元健律师事务所', 'Horizon Law Group', '启航知识产权', '海翼律师事务所', '金诚律师事务所'],
+  agentPersons: ['李律师·合伙人', '王律师·主任', 'Michael Chen·Partner', '张律师·合伙人', '陈律师·合伙人', '孙律师·主任'],
+  priorityTypes: ['无', '在先优先权', '展会优先权'],
+  rejectionTypes: ['部分驳回', '全部驳回'],
+  statusList: ['申请中', '初审公告', '已注册', '驳回复审中', '异议中', '无效宣告中', '撤销中', '已失效', '待提交']
 };
 
 function getPriorityTag(p) {
