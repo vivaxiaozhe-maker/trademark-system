@@ -122,6 +122,7 @@
 .doc-card-icon.official { background: #fee2e2; color: #dc2626; }
 .doc-card-icon.lawfirm { background: #dbeafe; color: #2563eb; }
 .doc-card-icon.evidence { background: #d1fae5; color: #16a34a; }
+.doc-card-icon.internal { background: #fef3c7; color: #d97706; }
 .doc-card-info { flex: 1; min-width: 0; }
 .doc-card-name { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .doc-card-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: flex; gap: 8px; align-items: center; }
@@ -324,9 +325,14 @@ initApp('case-detail');
 // ==================== State ====================
 const params = new URLSearchParams(location.search);
 const caseId = params.get('id') || 'TM-2026-0042';
+const isEditMode = params.get('mode') === 'edit';
 let caseData = DataService.getCaseById(caseId);
 if (!caseData) {
   caseData = DataService.getCases()[0];
+}
+
+if (isEditMode && caseData) {
+  document.title = `案件详情 - 编辑中 · ${caseData.brandName}（${caseData.id}）- 商标管理系统`;
 }
 
 let msgFilter = 'all';
@@ -374,6 +380,18 @@ function renderHeader() {
   
   const typeLabel = c.type === 'domestic' ? '国内案件' : '海外案件';
   
+  const editBadge = isEditMode ? `<span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;color:#92400e;background:#fef3c7;">✏️ 编辑中</span>` : '';
+  
+  const actions = isEditMode ? `
+    <button class="btn btn-sm btn-secondary" onclick="cancelEdit()">❌ 取消</button>
+    <button class="btn btn-sm btn-primary" onclick="saveEditForm()">💾 保存修改</button>
+  ` : `
+    <button class="btn btn-sm btn-warning" style="background:#fef3c7;color:#92400e;border:none;" onclick="remindCase()">⏰ 催办</button>
+    <a href="mailto:${c.lawFirmName}" class="btn btn-sm btn-secondary">✉️ 发送邮件</a>
+    <button class="btn btn-sm btn-secondary" onclick="exportReport()">📄 导出报告</button>
+    <button class="btn btn-sm btn-primary" onclick="enterEditMode()">✏️ 编辑</button>
+  `;
+  
   document.getElementById('caseHeader').innerHTML = `
     <img src="${c.trademarkImage}" alt="${c.brandName}" class="case-header-img">
     <div class="case-header-main">
@@ -381,6 +399,7 @@ function renderHeader() {
         ${c.brandName}
         <span style="font-size:14px;color:var(--text-muted);font-weight:400;">${c.id}</span>
         ${renderStatusTag(c.statusCode)}
+        ${editBadge}
         <span class="badge-deadline" style="background:${dl.color}15;color:${dl.color};${dl.badgeClass ? 'animation: pulse-red 2s infinite;' : ''}">
           ⏰ ${dl.text}
         </span>
@@ -396,10 +415,7 @@ function renderHeader() {
       </div>
     </div>
     <div class="case-header-actions">
-      <button class="btn btn-sm btn-warning" style="background:#fef3c7;color:#92400e;border:none;" onclick="remindCase()">⏰ 催办</button>
-      <a href="mailto:${c.lawFirmName}" class="btn btn-sm btn-secondary">✉️ 发送邮件</a>
-      <button class="btn btn-sm btn-secondary" onclick="exportReport()">📄 导出报告</button>
-      <button class="btn btn-sm btn-primary" onclick="openEditModal()">✏️ 编辑</button>
+      ${actions}
     </div>
   `;
 }
@@ -410,45 +426,86 @@ function renderInfoGrid() {
   const dl = getDeadlineInfo(c.officialDeadline);
   const idl = getDeadlineInfo(c.internalDeadline);
   
-  document.getElementById('infoGrid').innerHTML = `
-    <div class="info-item-v2">
-      <div class="info-label-v2">尼斯分类</div>
-      <div class="info-value-v2" title="${getNiceClassTooltip(c.niceClasses)}">${c.niceClassNames}</div>
-    </div>
-    <div class="info-item-v2">
-      <div class="info-label-v2">申请号</div>
-      <div class="info-value-v2">${c.id}</div>
-    </div>
-    <div class="info-item-v2">
-      <div class="info-label-v2">申请日</div>
-      <div class="info-value-v2">${c.applicationDate}</div>
-    </div>
-    <div class="info-item-v2">
-      <div class="info-label-v2">官方绝限</div>
-      <div class="info-value-v2" style="color:${dl.color};">${c.officialDeadline}</div>
-      <div style="font-size:11px;color:${dl.color};margin-top:2px;">${dl.text}</div>
-    </div>
-    <div class="info-item-v2">
-      <div class="info-label-v2">内部期限</div>
-      <div class="info-value-v2" style="color:${idl.color};">${c.internalDeadline}</div>
-      <div style="font-size:11px;color:${idl.color};margin-top:2px;">${idl.text}</div>
-    </div>
-    <div class="info-item-v2">
-      <div class="info-label-v2">当前进度</div>
-      <div class="info-value-v2">${c.currentProgress}%</div>
-      <div class="info-progress">
-        <div class="progress-track"><div class="progress-fill" style="width:${c.currentProgress}%;background:var(--primary);"></div></div>
+  if (isEditMode) {
+    document.getElementById('infoGrid').innerHTML = `
+      <div class="info-item-v2">
+        <div class="info-label-v2">尼斯分类</div>
+        <input type="text" class="form-input" id="editNiceClasses" value="${c.niceClassNames}" style="width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;">
       </div>
-    </div>
-    <div class="info-item-v2">
-      <div class="info-label-v2">代理费</div>
-      <div class="info-value-v2">¥${(c.feeTotal - c.feePaid).toLocaleString()}</div>
-    </div>
-    <div class="info-item-v2">
-      <div class="info-label-v2">官费</div>
-      <div class="info-value-v2">¥${c.feePaid.toLocaleString()}</div>
-    </div>
-  `;
+      <div class="info-item-v2">
+        <div class="info-label-v2">申请号</div>
+        <div class="info-value-v2" style="color:var(--text-muted);">${c.id}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">申请日</div>
+        <input type="date" class="form-input" id="editAppDate" value="${c.applicationDate}" style="width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;">
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">官方绝限</div>
+        <input type="date" class="form-input" id="editDeadline" value="${c.officialDeadline}" style="width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;">
+        <div style="font-size:11px;color:${dl.color};margin-top:2px;">${dl.text}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">内部期限</div>
+        <input type="date" class="form-input" id="editInternalDeadline" value="${c.internalDeadline}" style="width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;">
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">当前进度 (%)</div>
+        <input type="number" class="form-input" id="editProgress" value="${c.currentProgress}" min="0" max="100" style="width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;">
+        <div class="info-progress" style="margin-top:6px;">
+          <div class="progress-track"><div class="progress-fill" style="width:${c.currentProgress}%;background:var(--primary);"></div></div>
+        </div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">代理费 (¥)</div>
+        <input type="number" class="form-input" id="editFeeTotal" value="${c.feeTotal}" style="width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;">
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">官费 (¥)</div>
+        <input type="number" class="form-input" id="editFeePaid" value="${c.feePaid}" style="width:100%;padding:8px 10px;border:1px solid var(--border-color);border-radius:var(--radius-sm);font-size:13px;">
+      </div>
+    `;
+  } else {
+    document.getElementById('infoGrid').innerHTML = `
+      <div class="info-item-v2">
+        <div class="info-label-v2">尼斯分类</div>
+        <div class="info-value-v2" title="${getNiceClassTooltip(c.niceClasses)}">${c.niceClassNames}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">申请号</div>
+        <div class="info-value-v2">${c.id}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">申请日</div>
+        <div class="info-value-v2">${c.applicationDate}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">官方绝限</div>
+        <div class="info-value-v2" style="color:${dl.color};">${c.officialDeadline}</div>
+        <div style="font-size:11px;color:${dl.color};margin-top:2px;">${dl.text}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">内部期限</div>
+        <div class="info-value-v2" style="color:${idl.color};">${c.internalDeadline}</div>
+        <div style="font-size:11px;color:${idl.color};margin-top:2px;">${idl.text}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">当前进度</div>
+        <div class="info-value-v2">${c.currentProgress}%</div>
+        <div class="info-progress">
+          <div class="progress-track"><div class="progress-fill" style="width:${c.currentProgress}%;background:var(--primary);"></div></div>
+        </div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">代理费</div>
+        <div class="info-value-v2">¥${(c.feeTotal - c.feePaid).toLocaleString()}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">官费</div>
+        <div class="info-value-v2">¥${c.feePaid.toLocaleString()}</div>
+      </div>
+    `;
+  }
 }
 
 // ==================== Render Timeline ====================
@@ -515,7 +572,8 @@ function renderDocuments() {
   const iconMap = {
     official: { icon: '📜', cls: 'official' },
     lawfirm: { icon: '🏢', cls: 'lawfirm' },
-    evidence: { icon: '📁', cls: 'evidence' }
+    evidence: { icon: '📁', cls: 'evidence' },
+    internal: { icon: '📝', cls: 'internal' }
   };
   
   let html = '';
@@ -770,6 +828,44 @@ function remindCase() {
 
 function exportReport() {
   alert('正在生成案件报告 PDF...\n（演示模式：实际导出需后端支持）');
+}
+
+function enterEditMode() {
+  const url = new URL(window.location.href);
+  url.searchParams.set('mode', 'edit');
+  window.location.href = url.toString();
+}
+
+function cancelEdit() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('mode');
+  window.location.href = url.toString();
+}
+
+function saveEditForm() {
+  const updates = {
+    niceClassNames: document.getElementById('editNiceClasses').value,
+    applicationDate: document.getElementById('editAppDate').value,
+    officialDeadline: document.getElementById('editDeadline').value,
+    internalDeadline: document.getElementById('editInternalDeadline').value,
+    currentProgress: parseInt(document.getElementById('editProgress').value) || 0,
+    feeTotal: parseInt(document.getElementById('editFeeTotal').value) || 0,
+    feePaid: parseInt(document.getElementById('editFeePaid').value) || 0,
+    feePending: (parseInt(document.getElementById('editFeeTotal').value) || 0) - (parseInt(document.getElementById('editFeePaid').value) || 0)
+  };
+  
+  DataService.updateCase(caseData.id, updates);
+  
+  if (typeof showToast === 'function') {
+    showToast('案件已更新', 'success');
+  } else {
+    alert('案件已更新');
+  }
+  
+  // Return to detail mode after short delay
+  setTimeout(() => {
+    cancelEdit();
+  }, 800);
 }
 
 function renderAll() {

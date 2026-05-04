@@ -23,7 +23,7 @@ const DataService = (function() {
     DRAFTS: 'tm_drafts'
   };
 
-  const CURRENT_VERSION = '2.0';
+  const CURRENT_VERSION = '2.1';
 
   const NICE_CLASS_NAMES = {
     1: '化工原料', 2: '颜料油漆', 3: '日化用品', 4: '燃料油脂',
@@ -295,27 +295,48 @@ const DataService = (function() {
         currentProgress: 65,
         lawFirmId: 'jincheng', lawFirmName: '金诚律师事务所',
         responsibleUser: '张法务', responsibleUserId: 'zhang',
-        feeTotal: 86500, feePaid: 1500, feePending: 85000,
+        feeTotal: 101500, feePaid: 4500, feePending: 97000,
         timeline: [
-          { id: 'tl-1', title: '案件创建', date: '2026-01-15', actor: '张法务', actorType: 'internal', status: 'completed', detail: '' },
-          { id: 'tl-2', title: '材料准备', date: '2026-01-20', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '' },
-          { id: 'tl-3', title: '提交申请', date: '2026-01-22', actor: '商标局受理', actorType: 'system', status: 'completed', detail: '申请号：TM-2026-0042' },
-          { id: 'tl-4', title: '形式审查', date: '2026-02-01', actor: '商标局', actorType: 'system', status: 'completed', detail: '通过' },
-          { id: 'tl-5', title: '实质审查', date: '2026-03-15', actor: '商标局', actorType: 'system', status: 'rejected', detail: '与在先商标"云智科技"（78954321）近似' },
-          { id: 'tl-6', title: '驳回复审材料准备', date: '2026-04-20', actor: '金诚律所', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-05-06' },
-          { id: 'tl-7', title: '复审提交', date: '', actor: '', actorType: '', status: 'pending', detail: '待进行' }
+          { id: 'tl-1', title: '案件创建', date: '2026-01-15', actor: '张法务', actorType: 'internal', status: 'completed', detail: '知识产权部发起"云智"商标第35类新申请，指定金诚律所为代理机构' },
+          { id: 'tl-2', title: '委托代理确认', date: '2026-01-18', actor: '金诚律师事务所', actorType: 'lawfirm', status: 'completed', detail: '陈律师确认接受委托，代理费报价¥85,000（一审），官费预估¥1,500' },
+          { id: 'tl-3', title: '申请材料准备', date: '2026-01-20', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '完成商标图样优化、商品/服务分类细化（35类：广告、商业管理、零售服务等）' },
+          { id: 'tl-4', title: '提交新申请', date: '2026-01-22', actor: '商标局受理处', actorType: 'system', status: 'completed', detail: '申请号：TM-2026-0042，申请类别：第35类，规费已缴纳' },
+          { id: 'tl-5', title: '形式审查通过', date: '2026-02-01', actor: '商标局审查一部', actorType: 'system', status: 'completed', detail: '申请文件齐全、图样清晰、类别划分符合要求，进入实质审查阶段' },
+          { id: 'tl-6', title: '实质审查驳回', date: '2026-03-15', actor: '商标局审查二部', actorType: 'system', status: 'rejected', detail: '驳回理由：与在先注册商标"云智科技"（注册号78954321，第9类）构成近似商标，违反《商标法》第三十条' },
+          { id: 'tl-7', title: '案件分析会议', date: '2026-03-20', actor: '张法务 / 陈律师', actorType: 'lawfirm', status: 'completed', detail: '会议结论：第9类与第35类商品/服务关联度较低，可尝试通过"商品/服务不类似"+"商标不近似"双路径论证' },
+          { id: 'tl-8', title: '类似案例检索', date: '2026-03-25', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '检索到3件支持性判例：（2024）京73行终1234号、（2023）京73行终5678号、（2023）商标异字第9012号' },
+          { id: 'tl-9', title: '驳回复审理由书 v1', date: '2026-04-10', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '完成初稿，重点论证：① 第9类与第35类商品/服务不构成类似；② "云智"与"云智科技"在呼叫、含义上存在差异' },
+          { id: 'tl-10', title: '法务批注反馈', date: '2026-04-15', actor: '张法务', actorType: 'internal', status: 'completed', detail: '反馈意见：整体逻辑通顺，但需补充第35类近三年实际使用证据（合同、发票、宣传材料），增强"实际使用+知名度"论证' },
+          { id: 'tl-11', title: '驳回复审材料准备', date: '2026-04-20', actor: '金诚律所', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-05-06 | 正在进行：补充使用证据、市场调研报告、理由书v2修订' },
+          { id: 'tl-12', title: '复审提交', date: '', actor: '', actorType: '', status: 'pending', detail: '待进行：理由书v2批注通过后，向商评委提交复审申请' }
         ],
         documents: [
           { id: 'doc-1', name: '商标注册申请书.pdf', type: 'official', typeLabel: '官方文件', size: '2.3MB', uploadDate: '2026-01-22', status: 'normal', statusLabel: '正常', url: '#' },
-          { id: 'doc-2', name: '驳回通知书.pdf', type: 'official', typeLabel: '官方文件', size: '1.1MB', uploadDate: '2026-04-03', status: 'normal', statusLabel: '正常', url: '#' },
-          { id: 'doc-3', name: '驳回复审理由书_v2.docx', type: 'lawfirm', typeLabel: '律所提交', size: '850KB', uploadDate: '2026-05-03', status: 'pending_review', statusLabel: '待批注', url: '#' },
-          { id: 'doc-4', name: '商标使用证据汇总.zip', type: 'evidence', typeLabel: '证据材料', size: '15.6MB', uploadDate: '2026-04-28', status: 'normal', statusLabel: '正常', url: '#' }
+          { id: 'doc-2', name: '商标代理委托书.pdf', type: 'official', typeLabel: '官方文件', size: '520KB', uploadDate: '2026-01-18', status: 'normal', statusLabel: '正常', url: '#' },
+          { id: 'doc-3', name: '驳回通知书.pdf', type: 'official', typeLabel: '官方文件', size: '1.1MB', uploadDate: '2026-04-03', status: 'normal', statusLabel: '正常', url: '#' },
+          { id: 'doc-4', name: '驳回分析备忘录.docx', type: 'lawfirm', typeLabel: '律所提交', size: '320KB', uploadDate: '2026-03-22', status: 'normal', statusLabel: '正常', url: '#' },
+          { id: 'doc-5', name: '类似案例检索报告.pdf', type: 'lawfirm', typeLabel: '律所提交', size: '2.1MB', uploadDate: '2026-03-25', status: 'normal', statusLabel: '正常', url: '#' },
+          { id: 'doc-6', name: '驳回复审理由书_v1.docx', type: 'lawfirm', typeLabel: '律所提交', size: '780KB', uploadDate: '2026-04-10', status: 'normal', statusLabel: '正常', url: '#' },
+          { id: 'doc-7', name: '法务批注意见_v1.pdf', type: 'internal', typeLabel: '内部文件', size: '450KB', uploadDate: '2026-04-15', status: 'normal', statusLabel: '正常', url: '#' },
+          { id: 'doc-8', name: '市场调研报告_云智品牌.pdf', type: 'evidence', typeLabel: '证据材料', size: '8.2MB', uploadDate: '2026-04-25', status: 'normal', statusLabel: '正常', url: '#' },
+          { id: 'doc-9', name: '商标使用证据汇总.zip', type: 'evidence', typeLabel: '证据材料', size: '15.6MB', uploadDate: '2026-04-28', status: 'normal', statusLabel: '正常', url: '#' },
+          { id: 'doc-10', name: '驳回复审理由书_v2.docx', type: 'lawfirm', typeLabel: '律所提交', size: '950KB', uploadDate: '2026-05-03', status: 'pending_review', statusLabel: '待批注', url: '#' }
         ],
         messages: [
-          { id: 'msg-1', sender: '金诚律师事务所', senderAvatar: '金', senderType: 'lawfirm', content: '驳回复审理由书v2已提交，请法务审核。本次重点补充了第35类的使用证据和市场调研数据。', date: '2026-05-03 10:30', type: 'message' },
-          { id: 'msg-2', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '收到，我将在今日内完成审核。关于证据链的完整性请再确认一下。', date: '2026-05-03 11:00', type: 'message' }
+          { id: 'msg-1', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '商标新申请已提交，申请号：TM-2026-0042，申请类别：第35类，当前状态：受理中', date: '2026-01-22 09:00', type: 'message' },
+          { id: 'msg-2', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '已确认接受委托，开始准备申请材料。预计1月20日前完成材料准备，请确认商品/服务清单。', date: '2026-01-18 14:30', type: 'message' },
+          { id: 'msg-3', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '商品/服务清单已确认，第35类包含：广告、商业管理辅助、替他人推销、零售服务等。请按此清单准备。', date: '2026-01-19 10:15', type: 'message' },
+          { id: 'msg-4', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '形式审查已通过，申请文件齐全，图样清晰，进入实质审查阶段。预计审查周期：3-4个月。', date: '2026-02-01 11:00', type: 'message' },
+          { id: 'msg-5', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '⚠️ 收到驳回通知书！商标局认定与在先商标"云智科技"（78954321，第9类）近似，违反《商标法》第三十条。官方绝限：2026-05-06。', date: '2026-04-03 16:20', type: 'message' },
+          { id: 'msg-6', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '建议尽快召开案件分析会议。初步判断：第9类（科学仪器）与第35类（广告销售）关联度较低，可尝试双路径论证。', date: '2026-04-03 17:00', type: 'message' },
+          { id: 'msg-7', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '同意召开分析会议。请提前准备：① 类似案例检索；② 商品/服务类似性判断依据；③ 复审成功率评估。会议时间：3月20日14:00。', date: '2026-04-03 18:30', type: 'message' },
+          { id: 'msg-8', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '驳回复审理由书v1已提交，请审核。核心论点：第9类与第35类不构成类似商品/服务，且两商标在呼叫、含义上存在显著差异。', date: '2026-04-10 11:00', type: 'message' },
+          { id: 'msg-9', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '理由书v1已审核。整体逻辑通顺，论证结构清晰，但存在以下不足：1）第35类实际使用证据不足；2）知名度论证缺少销售数据支撑；3）建议在"商标不近似"部分补充消费者认知调查。请修订后提交v2。', date: '2026-04-12 16:45', type: 'message' },
+          { id: 'msg-10', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '收到批注意见。已安排调研团队补充：① 近三年第35类使用合同及发票（预计15份）；② 品牌知名度市场调研（覆盖北上广深）；③ 消费者认知度问卷（样本量N=500）。预计4月25日前完成。', date: '2026-04-13 09:20', type: 'message' },
+          { id: 'msg-11', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '驳回复审理由书v2已提交，请法务审核。本次重点补充了：第35类使用证据（合同、发票、宣传材料）、品牌市场调研报告、消费者认知度调查数据。', date: '2026-05-03 10:30', type: 'message' },
+          { id: 'msg-12', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '收到v2，我将在今日内完成审核。关于证据链的完整性请再确认一下：① 合同金额是否覆盖近三年；② 发票与合同是否一一对应；③ 调研样本是否具有代表性。', date: '2026-05-03 11:00', type: 'message' }
         ],
-        tags: ['紧急', '复审', '近似驳回'],
+        tags: ['紧急', '复审', '近似驳回', '绝限临近'],
         createdAt: '2026-01-15', updatedAt: '2026-05-03'
       },
       {
@@ -504,6 +525,8 @@ const DataService = (function() {
     const fees = [
       { id: 'fee-1', caseId: 'TM-2026-0042', brandName: '云智', type: '代理费', typeLabel: '代理费', amount: 85000, currency: 'CNY', paid: 0, status: 'pending', note: '驳回复审代理费（一审）', createdAt: '2026-01-15' },
       { id: 'fee-2', caseId: 'TM-2026-0042', brandName: '云智', type: '官费', typeLabel: '官费', amount: 1500, currency: 'CNY', paid: 1500, status: 'paid', note: '驳回复审官费', createdAt: '2026-01-22' },
+      { id: 'fee-6', caseId: 'TM-2026-0042', brandName: '云智', type: '调查费', typeLabel: '调查费', amount: 12000, currency: 'CNY', paid: 0, status: 'pending', note: '市场调研及证据收集（消费者认知度调查N=500）', createdAt: '2026-04-15' },
+      { id: 'fee-7', caseId: 'TM-2026-0042', brandName: '云智', type: '检索费', typeLabel: '检索费', amount: 3000, currency: 'CNY', paid: 3000, status: 'paid', note: '类似案例检索及分析报告', createdAt: '2026-03-20' },
       { id: 'fee-3', caseId: 'TM-2026-0031', brandName: '智联', type: '代理费', typeLabel: '代理费', amount: 60000, currency: 'CNY', paid: 0, status: 'pending', note: '异议答辩代理费', createdAt: '2025-11-10' },
       { id: 'fee-4', caseId: 'TM-2026-0031', brandName: '智联', type: '官费', typeLabel: '官费', amount: 2000, currency: 'CNY', paid: 2000, status: 'paid', note: '异议答辩官费', createdAt: '2025-12-01' },
       { id: 'fee-5', caseId: 'TM-2025-0098', brandName: '星联', type: '官费', typeLabel: '官费', amount: 18000, currency: 'CNY', paid: 0, status: 'pending', note: '6类续展官费（每类3000）', createdAt: '2026-01-10' }
