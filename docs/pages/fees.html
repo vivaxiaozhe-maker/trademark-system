@@ -171,20 +171,22 @@
 initApp('fees');
 
 const tbody = document.getElementById('billList');
-AppData.bills.forEach(b => {
-  tbody.innerHTML += `
-    <tr>
-      <td><span style="font-family:monospace;color:var(--primary);font-weight:500;">${b.id}</span></td>
-      <td>${b.lawFirm}</td>
-      <td style="font-weight:600;">¥${b.amount.toLocaleString()}</td>
-      <td>${b.caseNo}</td>
-      <td><span class="tag tag-gray">${b.type}</span></td>
-      <td>${b.date}</td>
-      <td>${getStatusTag(b.status)}</td>
-      <td><button class="btn btn-sm btn-secondary" style="padding:4px 10px;">查看</button></td>
-    </tr>
-  `;
-});
+if (typeof AppData !== 'undefined' && AppData.bills) {
+  AppData.bills.forEach(b => {
+    tbody.innerHTML += `
+      <tr>
+        <td><span style="font-family:monospace;color:var(--primary);font-weight:500;">${b.id}</span></td>
+        <td>${b.lawFirm}</td>
+        <td style="font-weight:600;">¥${b.amount.toLocaleString()}</td>
+        <td>${b.caseNo}</td>
+        <td><span class="tag tag-gray">${b.type}</span></td>
+        <td>${b.date}</td>
+        <td>${getStatusTag(b.status)}</td>
+        <td><button class="btn btn-sm btn-secondary" style="padding:4px 10px;">查看</button></td>
+      </tr>
+    `;
+  });
+}
 
 drawPieChart('feePie', [520000,1120000,125000,100000], ['官费','代理费','翻译费','其他'], ['#2563eb','#0ea5e9','#10b981','#94a3b8']);
 drawBarChart('feeTrend', [120000,180000,150000,220000,280000,195000], ['12月','1月','2月','3月','4月','5月'], ['#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#dbeafe']);

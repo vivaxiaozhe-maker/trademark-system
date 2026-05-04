@@ -410,29 +410,36 @@ function renderHeader() {
   `;
   
   document.getElementById('caseHeader').innerHTML = `
-    <img src="${c.trademarkImage}" alt="${c.brandName}" class="case-header-img">
-    <div class="case-header-main">
-      <div class="case-header-title">
-        ${c.brandName}
-        <span style="font-size:14px;color:var(--text-muted);font-weight:400;">${c.id}</span>
-        ${renderStatusTag(c.statusCode)}
-        ${editBadge}
-        <span class="badge-deadline" style="background:${dl.color}15;color:${dl.color};${dl.badgeClass ? 'animation: pulse-red 2s infinite;' : ''}">
-          ⏰ ${dl.text}
-        </span>
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;">
+      <div>
+        <a href="cases.html" class="btn btn-sm btn-secondary back-btn">← 返回案件列表</a>
       </div>
-      <div class="case-header-meta">
-        <span>${c.businessType}</span>
-        <span>·</span>
-        <span>${typeLabel}</span>
-        <span>·</span>
-        <span>${c.lawFirmName} 代理</span>
-        <span>·</span>
-        <span>负责人：${c.responsibleUser}</span>
+      <div style="display:flex;align-items:flex-start;gap:20px;">
+        <img src="${c.trademarkImage}" alt="${c.brandName}" class="case-header-img">
+        <div class="case-header-main">
+          <div class="case-header-title">
+            ${c.brandName}
+            <span style="font-size:14px;color:var(--text-muted);font-weight:400;">${c.id}</span>
+            ${renderStatusTag(c.statusCode)}
+            ${editBadge}
+            <span class="badge-deadline" style="background:${dl.color}15;color:${dl.color};${dl.badgeClass ? 'animation: pulse-red 2s infinite;' : ''}">
+              ⏰ ${dl.text}
+            </span>
+          </div>
+          <div class="case-header-meta">
+            <span>${c.businessType}</span>
+            <span>·</span>
+            <span>${typeLabel}</span>
+            <span>·</span>
+            <span>${c.lawFirmName} 代理</span>
+            <span>·</span>
+            <span>负责人：${c.responsibleUser}</span>
+          </div>
+        </div>
+        <div class="case-header-actions">
+          ${actions}
+        </div>
       </div>
-    </div>
-    <div class="case-header-actions">
-      ${actions}
     </div>
   `;
 }
