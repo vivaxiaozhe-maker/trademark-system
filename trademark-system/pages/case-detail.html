@@ -327,8 +327,22 @@ const params = new URLSearchParams(location.search);
 const caseId = params.get('id') || 'TM-2026-0042';
 const isEditMode = params.get('mode') === 'edit';
 let caseData = DataService.getCaseById(caseId);
+
+// 如果无法获取案件数据，尝试重新初始化
 if (!caseData) {
-  caseData = DataService.getCases()[0];
+  console.warn('[CaseDetail] Case not found, re-seeding data...');
+  try {
+    DataService.seedData();
+    caseData = DataService.getCaseById(caseId);
+  } catch (e) {
+    console.error('[CaseDetail] Failed to seed data:', e);
+  }
+}
+
+// 仍然为空，尝试获取第一个案件
+if (!caseData) {
+  const allCases = DataService.getCases();
+  caseData = allCases && allCases.length > 0 ? allCases[0] : null;
 }
 
 if (isEditMode && caseData) {
@@ -374,6 +388,7 @@ function getNiceClassTooltip(niceClasses) {
 
 // ==================== Render Header ====================
 function renderHeader() {
+  if (!caseData) return;
   const c = caseData;
   const dl = getDeadlineInfo(c.officialDeadline);
   const statusMap = DataService.STATUS_MAP[c.statusCode] || { label: c.status, color: 'gray' };
@@ -422,6 +437,7 @@ function renderHeader() {
 
 // ==================== Render Info Grid ====================
 function renderInfoGrid() {
+  if (!caseData) return;
   const c = caseData;
   const dl = getDeadlineInfo(c.officialDeadline);
   const idl = getDeadlineInfo(c.internalDeadline);
@@ -510,6 +526,7 @@ function renderInfoGrid() {
 
 // ==================== Render Timeline ====================
 function renderTimeline() {
+  if (!caseData) return;
   const c = caseData;
   let html = '';
   c.timeline.forEach(t => {
@@ -568,6 +585,7 @@ function closeCitedDrawer() {
 
 // ==================== Render Documents ====================
 function renderDocuments() {
+  if (!caseData) return;
   const c = caseData;
   const iconMap = {
     official: { icon: '📜', cls: 'official' },
@@ -629,6 +647,7 @@ function handleFileUpload(input) {
 
 // ==================== Render Fees ====================
 function renderFees() {
+  if (!caseData) return;
   const c = caseData;
   const allFees = DataService.getFees ? DataService.getFees().filter(f => f.caseId === c.id) : [];
   
@@ -671,6 +690,7 @@ function renderFees() {
 
 // ==================== Render Messages ====================
 function renderMessages() {
+  if (!caseData) return;
   const c = caseData;
   let msgs = c.messages || [];
   
@@ -869,12 +889,28 @@ function saveEditForm() {
 }
 
 function renderAll() {
-  renderHeader();
-  renderInfoGrid();
-  renderTimeline();
-  renderDocuments();
-  renderFees();
-  renderMessages();
+  if (!caseData) {
+    const container = document.querySelector('.page-container');
+    if (container) {
+      container.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;">
+          <div style="font-size:48px;margin-bottom:16px;">📭</div>
+          <div style="font-size:18px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">案件数据加载失败</div>
+          <div style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;">无法找到案件 ${caseId} 的数据，请尝试刷新页面或清除浏览器缓存。</div>
+          <button class="btn btn-primary" onclick="location.reload()" style="margin-right:8px;">刷新页面</button>
+          <button class="btn btn-secondary" onclick="DataService.seedData();location.reload()">重新初始化数据</button>
+        </div>
+      `;
+    }
+    return;
+  }
+  
+  try { renderHeader(); } catch (e) { console.error('[CaseDetail] renderHeader error:', e); }
+  try { renderInfoGrid(); } catch (e) { console.error('[CaseDetail] renderInfoGrid error:', e); }
+  try { renderTimeline(); } catch (e) { console.error('[CaseDetail] renderTimeline error:', e); }
+  try { renderDocuments(); } catch (e) { console.error('[CaseDetail] renderDocuments error:', e); }
+  try { renderFees(); } catch (e) { console.error('[CaseDetail] renderFees error:', e); }
+  try { renderMessages(); } catch (e) { console.error('[CaseDetail] renderMessages error:', e); }
 }
 
 renderAll();
