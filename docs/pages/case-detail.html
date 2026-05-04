@@ -35,7 +35,7 @@
 
 /* Info grid */
 .info-grid-4 {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px;
   margin-bottom: 20px;
 }
 .info-item-v2 {
@@ -44,6 +44,9 @@
 }
 .info-label-v2 { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 .info-value-v2 { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.info-tag-high { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #fee2e2; color: #b91c1c; }
+.info-tag-medium { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #fef3c7; color: #92400e; }
+.info-tag-low { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #dbeafe; color: #1e40af; }
 .info-progress { margin-top: 8px; }
 .progress-track { height: 6px; background: var(--bg-body); border-radius: 3px; overflow: hidden; }
 .progress-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
@@ -202,11 +205,95 @@
 .collapse-content.collapsed { max-height: 300px; }
 .collapse-content.expanded { max-height: 2000px; }
 
+/* Goods & Services card */
+.goods-card {
+  background: var(--bg-card); border-radius: var(--radius-md);
+  border: 1px solid var(--border-color); padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.goods-card-header {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 10px;
+}
+.goods-card-content {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.8;
+}
+.goods-card-content.collapsed {
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.goods-expand-btn {
+  margin-top: 8px; font-size: 12px; color: var(--primary); cursor: pointer;
+  font-weight: 500; display: inline-flex; align-items: center; gap: 4px;
+}
+
+/* Rejection card */
+.rejection-card {
+  background: var(--bg-card); border-radius: var(--radius-md);
+  border: 1px solid var(--border-color); margin-bottom: 20px; overflow: hidden;
+}
+.rejection-card-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 20px; cursor: pointer;
+  border-left: 4px solid var(--primary);
+}
+.rejection-card-header-bar { width: 4px; height: 18px; background: var(--primary); border-radius: 2px; }
+.rejection-card-title { flex: 1; font-size: 14px; font-weight: 600; }
+.rejection-card-arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.3s; }
+.rejection-card-arrow.expanded { transform: rotate(180deg); }
+.rejection-card-body {
+  padding: 0 20px 20px; display: none;
+}
+.rejection-card-body.expanded { display: block; }
+.rejection-field-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;
+  margin-bottom: 16px;
+}
+.rejection-wide-card {
+  background: var(--bg-body); border-radius: var(--radius-sm);
+  padding: 12px 14px; margin-bottom: 12px;
+}
+.rejection-wide-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.rejection-wide-value { font-size: 13px; color: var(--text-primary); line-height: 1.6; }
+
+/* Cited marks table */
+.cited-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.cited-table th {
+  text-align: left; padding: 8px 10px; background: var(--bg-body);
+  color: var(--text-muted); font-weight: 600; font-size: 11px;
+  border-bottom: 1px solid var(--border-color);
+}
+.cited-table td {
+  padding: 8px 10px; border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+.cited-table tr:hover td { background: var(--bg-body); }
+
+/* Workflow timeline */
+.workflow-timeline { position: relative; padding-left: 28px; }
+.workflow-timeline::before {
+  content: ""; position: absolute; left: 7px; top: 0; bottom: 0;
+  width: 2px; background: #e2e8f0; border-radius: 2px;
+}
+.workflow-item { position: relative; padding-bottom: 18px; }
+.workflow-item::before {
+  content: ""; position: absolute; left: -24px; top: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid #cbd5e1; background: #fff;
+}
+.workflow-item.completed::before { background: #10b981; border-color: #10b981; }
+.workflow-item.pending::before { background: #f59e0b; border-color: #f59e0b; }
+.workflow-title { font-weight: 600; font-size: 13px; }
+.workflow-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.workflow-result { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+.workflow-opinion { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; background: #d1fae5; color: #065f46; margin-top: 4px; }
+
 /* Responsive */
 @media (max-width: 768px) {
   .case-header { flex-wrap: wrap; }
   .case-header-actions { width: 100%; margin-top: 10px; }
   .info-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .rejection-field-grid { grid-template-columns: repeat(2, 1fr); }
   .drawer-panel { width: 100%; }
 }
 </style>
@@ -222,7 +309,13 @@
       
       <!-- Info Grid -->
       <div class="info-grid-4" id="infoGrid"></div>
-      
+
+      <!-- Goods & Services -->
+      <div id="goodsServicesContainer"></div>
+
+      <!-- Rejection Info -->
+      <div id="rejectionContainer"></div>
+
       <div class="row row-3">
         <!-- Timeline -->
         <div class="card">
@@ -231,7 +324,7 @@
             <div class="timeline-v3" id="timeline"></div>
           </div>
         </div>
-        
+
         <!-- Documents -->
         <div class="card">
           <div class="card-header"><div class="card-title">📁 案件文档</div></div>
@@ -245,7 +338,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Fees -->
         <div class="card">
           <div class="card-header">
@@ -258,6 +351,14 @@
               <div class="fee-timeline" id="feeTimeline"></div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Workflow -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">📋 签核历史</div></div>
+        <div class="card-body">
+          <div class="workflow-timeline" id="workflowTimeline"></div>
         </div>
       </div>
       
@@ -491,7 +592,32 @@ function renderInfoGrid() {
       </div>
     `;
   } else {
+    const detail = (typeof AppData !== 'undefined' && AppData.caseDetail && AppData.caseDetail.id === c.id) ? AppData.caseDetail : {};
+    const priorityTag = detail.priority === 'high' ? '<span class="info-tag-high">高</span>' : detail.priority === 'medium' ? '<span class="info-tag-medium">中</span>' : detail.priority === 'low' ? '<span class="info-tag-low">低</span>' : '-';
+    const statusMap = DataService.STATUS_MAP[c.statusCode] || { label: c.status, color: 'gray' };
+    const statusColorMap = { blue: '#2563eb', green: '#10b981', orange: '#f59e0b', gray: '#64748b', red: '#ef4444', success: '#10b981', danger: '#ef4444', purple: '#8b5cf6', cyan: '#06b6d4', indigo: '#6366f1' };
+    const statusBgMap = { blue: '#dbeafe', green: '#d1fae5', orange: '#fef3c7', gray: '#f1f5f9', red: '#fee2e2', success: '#d1fae5', danger: '#fee2e2', purple: '#f3e8ff', cyan: '#cffafe', indigo: '#e0e7ff' };
+    const stColor = statusColorMap[statusMap.color] || '#64748b';
+    const stBg = statusBgMap[statusMap.color] || '#f1f5f9';
+    const statusTag = '<span style="display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;color:' + stColor + ';background:' + stBg + ';">' + statusMap.label + '</span>';
+
     document.getElementById('infoGrid').innerHTML = `
+      <div class="info-item-v2">
+        <div class="info-label-v2">商标名称</div>
+        <div class="info-value-v2">${detail.brandName || c.brandName}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">申请人</div>
+        <div class="info-value-v2">${detail.applicant || '-'}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">重要等级</div>
+        <div class="info-value-v2">${priorityTag}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">费用承担部门</div>
+        <div class="info-value-v2">${detail.feeDept || '-'}</div>
+      </div>
       <div class="info-item-v2">
         <div class="info-label-v2">尼斯分类</div>
         <div class="info-value-v2" title="${getNiceClassTooltip(c.niceClasses)}">${c.niceClassNames}</div>
@@ -503,6 +629,10 @@ function renderInfoGrid() {
       <div class="info-item-v2">
         <div class="info-label-v2">申请日</div>
         <div class="info-value-v2">${c.applicationDate}</div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">商标状态</div>
+        <div class="info-value-v2">${statusTag}</div>
       </div>
       <div class="info-item-v2">
         <div class="info-label-v2">官方绝限</div>
@@ -520,6 +650,10 @@ function renderInfoGrid() {
         <div class="info-progress">
           <div class="progress-track"><div class="progress-fill" style="width:${c.currentProgress}%;background:var(--primary);"></div></div>
         </div>
+      </div>
+      <div class="info-item-v2">
+        <div class="info-label-v2">代理机构</div>
+        <div class="info-value-v2">${detail.agent || c.lawFirmName}</div>
       </div>
       <div class="info-item-v2">
         <div class="info-label-v2">代理费</div>
@@ -786,6 +920,160 @@ function sendQuickReply() {
   renderMessages();
 }
 
+// ==================== Render Goods & Services ====================
+function renderGoodsServices() {
+  const container = document.getElementById('goodsServicesContainer');
+  if (!container) return;
+  const detail = (typeof AppData !== 'undefined' && AppData.caseDetail && AppData.caseDetail.id === caseData.id) ? AppData.caseDetail : {};
+  if (!detail.goodsServices) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = `
+    <div class="goods-card">
+      <div class="goods-card-header">📋 商品/服务项目</div>
+      <div class="goods-card-content collapsed" id="goodsContent">${detail.goodsServices.replace(/;/g, '；')}</div>
+      <div class="goods-expand-btn" id="goodsExpandBtn" onclick="toggleGoodsExpand()">展开 ▼</div>
+    </div>
+  `;
+}
+
+function toggleGoodsExpand() {
+  const content = document.getElementById('goodsContent');
+  const btn = document.getElementById('goodsExpandBtn');
+  if (!content || !btn) return;
+  const isCollapsed = content.classList.contains('collapsed');
+  content.classList.toggle('collapsed', !isCollapsed);
+  btn.textContent = isCollapsed ? '收起 ▲' : '展开 ▼';
+}
+
+// ==================== Render Rejection ====================
+function renderRejection() {
+  const container = document.getElementById('rejectionContainer');
+  if (!container) return;
+  const detail = (typeof AppData !== 'undefined' && AppData.caseDetail && AppData.caseDetail.id === caseData.id) ? AppData.caseDetail : {};
+  if (!detail.rejection || !detail.rejection.isRejection) {
+    container.innerHTML = '';
+    return;
+  }
+  const r = detail.rejection;
+  const citedRows = (typeof AppData !== 'undefined' && AppData.citedMarks) ? AppData.citedMarks.map(function(m) {
+    return '<tr>' +
+      '<td>' + m.seq + '</td>' +
+      '<td><span style="font-family:monospace;color:var(--primary);font-weight:500;">' + m.appNo + '</span></td>' +
+      '<td>' + m.appDate + '</td>' +
+      '<td><img src="' + m.image + '" style="width:40px;height:40px;border-radius:6px;object-fit:contain;background:#f8fafc;border:1px solid var(--border-color);"></td>' +
+      '<td>' + m.applicant + '</td>' +
+      '<td>' + m.niceClass + '</td>' +
+      '<td>' + m.goods + '</td>' +
+      '<td><span class="tag tag-green">' + m.legalStatus + '</span></td>' +
+      '<td>' + m.regDate + '</td>' +
+      '<td>' + m.term + '</td>' +
+      '<td><button class="btn btn-sm btn-secondary" style="padding:4px 8px;font-size:11px;">' + m.action + '</button></td>' +
+    '</tr>';
+  }).join('') : '';
+
+  container.innerHTML = `
+    <div class="rejection-card">
+      <div class="rejection-card-header" onclick="toggleRejectionCard()">
+        <div class="rejection-card-title">🚫 驳回信息</div>
+        <span class="rejection-card-arrow expanded" id="rejectionArrow">▼</span>
+      </div>
+      <div class="rejection-card-body expanded" id="rejectionBody">
+        <div class="rejection-field-grid">
+          <div class="info-item-v2">
+            <div class="info-label-v2">驳回类型</div>
+            <div class="info-value-v2"><span class="tag tag-orange">${r.rejectionType}</span></div>
+          </div>
+          <div class="info-item-v2">
+            <div class="info-label-v2">发文编号</div>
+            <div class="info-value-v2">${r.docNumber}</div>
+          </div>
+          <div class="info-item-v2">
+            <div class="info-label-v2">官方发文日</div>
+            <div class="info-value-v2">${r.officialDate}</div>
+          </div>
+          <div class="info-item-v2">
+            <div class="info-label-v2">官方期限</div>
+            <div class="info-value-v2">${r.officialDeadline}</div>
+          </div>
+          <div class="info-item-v2">
+            <div class="info-label-v2">内部期限</div>
+            <div class="info-value-v2">${r.internalDeadline}</div>
+          </div>
+          <div class="info-item-v2">
+            <div class="info-label-v2">是否分割申请</div>
+            <div class="info-value-v2">${r.isSplit}</div>
+          </div>
+          <div class="info-item-v2">
+            <div class="info-label-v2">驳回商品</div>
+            <div class="info-value-v2">${r.rejectedGoods}</div>
+          </div>
+        </div>
+        <div class="rejection-wide-card">
+          <div class="rejection-wide-label">驳回理由</div>
+          <div class="rejection-wide-value">${r.rejectionReason}</div>
+        </div>
+        <div class="rejection-wide-card">
+          <div class="rejection-wide-label">事务所建议</div>
+          <div class="rejection-wide-value">${r.agentSuggestion}</div>
+        </div>
+        <div style="margin-top:16px;">
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px;">📋 引证商标列表</div>
+          <div style="overflow-x:auto;">
+            <table class="cited-table">
+              <thead>
+                <tr>
+                  <th>序号</th><th>申请号/注册号</th><th>申请日</th><th>图样</th><th>申请人</th>
+                  <th>商品类别</th><th>商品</th><th>法律状态</th><th>注册日期</th><th>专用权期限</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody>${citedRows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleRejectionCard() {
+  const body = document.getElementById('rejectionBody');
+  const arrow = document.getElementById('rejectionArrow');
+  if (!body || !arrow) return;
+  const isExpanded = body.classList.contains('expanded');
+  body.classList.toggle('expanded', !isExpanded);
+  arrow.classList.toggle('expanded', !isExpanded);
+}
+
+// ==================== Render Workflow ====================
+function renderWorkflow() {
+  const container = document.getElementById('workflowTimeline');
+  if (!container) return;
+  const nodes = (typeof AppData !== 'undefined' && AppData.caseWorkflow) ? AppData.caseWorkflow : [];
+  if (nodes.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">暂无签核记录</div>';
+    return;
+  }
+  let html = '';
+  nodes.forEach(function(n, idx) {
+    const isLast = idx === nodes.length - 1;
+    const statusClass = n.opinion === '-' && !isLast ? 'pending' : n.opinion !== '-' ? 'completed' : '';
+    html += `
+      <div class="workflow-item ${statusClass}">
+        <div class="workflow-title">${n.node}</div>
+        <div class="workflow-meta">
+          <span>👤 ${n.handler}</span>
+          ${n.time !== '-' ? '<span>· ' + n.time + '</span>' : ''}
+          ${n.duration !== '-' ? '<span>· 耗时 ' + n.duration + '</span>' : ''}
+        </div>
+        ${n.opinion !== '-' ? '<div class="workflow-opinion">' + n.opinion + '</div>' : ''}
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
 // ==================== Edit Modal ====================
 function openEditModal() {
   const c = caseData;
@@ -917,10 +1205,13 @@ function renderAll() {
   
   try { renderHeader(); } catch (e) { console.error('[CaseDetail] renderHeader error:', e); }
   try { renderInfoGrid(); } catch (e) { console.error('[CaseDetail] renderInfoGrid error:', e); }
+  try { renderGoodsServices(); } catch (e) { console.error('[CaseDetail] renderGoodsServices error:', e); }
+  try { renderRejection(); } catch (e) { console.error('[CaseDetail] renderRejection error:', e); }
   try { renderTimeline(); } catch (e) { console.error('[CaseDetail] renderTimeline error:', e); }
   try { renderDocuments(); } catch (e) { console.error('[CaseDetail] renderDocuments error:', e); }
   try { renderFees(); } catch (e) { console.error('[CaseDetail] renderFees error:', e); }
   try { renderMessages(); } catch (e) { console.error('[CaseDetail] renderMessages error:', e); }
+  try { renderWorkflow(); } catch (e) { console.error('[CaseDetail] renderWorkflow error:', e); }
 }
 
 initApp('case-detail');

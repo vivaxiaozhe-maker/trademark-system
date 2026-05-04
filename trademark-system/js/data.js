@@ -108,6 +108,43 @@ const AppData = {
     { id: 2, title: "智联知识产权提交了新的答辩材料", time: "1小时前", type: "normal", read: false },
     { id: 3, title: "5月费用预算执行率达到85%", time: "3小时前", type: "normal", read: true },
     { id: 4, title: "马德里申请进入WIPO审查阶段", time: "昨天", type: "normal", read: true }
+  ],
+
+  caseDetail: {
+    id: "TM-2026-0042",
+    brandName: "云智",
+    applicant: "深圳市唯德科创信息有限公司",
+    priority: "high",
+    feeDept: "知识产权部",
+    agent: "金诚律师事务所",
+    goodsServices: "计算机软件出租;计算机游戏软件的设计和开发;计算机软件维护和更新;为他人提供计算机软件设计;计算机设备出租;计算机系统远程监控;计算机数据的恢复;计算机软件和程序出租;数据加密服务;创建、设计和维护网站",
+    rejection: {
+      isRejection: true,
+      rejectionType: "部分驳回",
+      docNumber: "TMZC81140188BFBH01",
+      officialDate: "2025-01-15",
+      officialDeadline: "2025-01-25",
+      internalDeadline: "2025-01-30",
+      isSplit: "否",
+      rejectedGoods: "振动按摩器,电疗器械",
+      rejectionReason: "该商标与下列在先商标相同或近似:第79480607号、第80893707号...",
+      agentSuggestion: "建议对驳回商品进行分割申请，核心商品予以保留，被驳回商品重新设计商标后再次提交。"
+    }
+  },
+
+  caseWorkflow: [
+    { node: "开始节点", handler: "李四", time: "2025-05-16 10:26:04", result: "-", duration: "-", opinion: "同意" },
+    { node: "商标管理员确认复审", handler: "系统管理员", time: "2025-05-16 10:27:12", result: "-", duration: "0小时", opinion: "同意" },
+    { node: "事务所撰写", handler: "李四", time: "2025-05-16 10:27:59", result: "-", duration: "0小时", opinion: "同意" },
+    { node: "商标管理员审核", handler: "系统管理员", time: "2025-05-16 10:28:18", result: "-", duration: "0小时", opinion: "同意" },
+    { node: "事务所递交", handler: "李四", time: "2025-05-16 10:31:22", result: "-", duration: "0小时", opinion: "同意" },
+    { node: "上传受理通知书", handler: "李四", time: "2025-06-23 08:32:52", result: "-", duration: "910小时", opinion: "同意" },
+    { node: "结束节点-复审", handler: "-", time: "-", result: "-", duration: "-", opinion: "-" }
+  ],
+
+  citedMarks: [
+    { seq: 1, appNo: "79480607", appDate: "2024-06-12", image: "../assets/tm-cited-1.png", applicant: "深圳智云科技有限公司", niceClass: "10", goods: "振动按摩器,电疗器械", legalStatus: "有效", regDate: "2025-02-20", term: "2025-02-20 至 2035-02-19", action: "查看" },
+    { seq: 2, appNo: "80893707", appDate: "2024-09-18", image: "../assets/tm-cited-2.png", applicant: "北京康健医疗设备有限公司", niceClass: "10", goods: "电疗器械,按摩仪器", legalStatus: "有效", regDate: "2025-04-15", term: "2025-04-15 至 2035-04-14", action: "查看" }
   ]
 };
 
