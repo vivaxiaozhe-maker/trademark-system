@@ -27,7 +27,7 @@ const AppData = {
     { id: 4, title: "品牌A 第35类补充注册评估", type: "风险评估", priority: "medium", deadline: "2026-05-12", caseNo: "EV-2026-0015", status: "待评估" },
     { id: 5, title: "年度商标续展预算编制", type: "预算编制", priority: "medium", deadline: "2026-05-15", caseNo: "BG-2026-0003", status: "待编制" },
     { id: 6, title: "'星联'商标使用证据收集", type: "证据管理", priority: "normal", deadline: "2026-05-20", caseNo: "TM-2025-0098", status: "待收集" },
-    { id: 7, title: "金诚律所Q2服务评价", type: "服务评价", priority: "normal", deadline: "2026-05-25", caseNo: "EV-2026-0018", status: "待评价" },
+    { id: 7, title: "智联知识产权Q2服务评价", type: "服务评价", priority: "normal", deadline: "2026-05-25", caseNo: "EV-2026-0018", status: "待评价" },
     { id: 8, title: "商标监测周报确认", type: "监测报告", priority: "low", deadline: "2026-05-30", caseNo: "MN-2026-0012", status: "待确认" }
   ],
 
@@ -40,14 +40,14 @@ const AppData = {
   ],
 
   cases: [
-    { id: "TM-2026-0042", name: "云智", type: "驳回复审", category: "国内案件", status: "审查中", agent: "金诚律师事务所", deadline: "2026-05-06", owner: "张法务", progress: 65 },
-    { id: "TM-2026-0031", name: "智联", type: "异议答辩", category: "国内案件", status: "答辩期", agent: "中誉知识产权", deadline: "2026-05-07", owner: "张法务", progress: 30 },
+    { id: "TM-2026-0042", name: "云智", type: "驳回复审", category: "国内案件", status: "审查中", agent: "智联知识产权", deadline: "2026-05-06", owner: "张法务", progress: 65 },
+    { id: "TM-2026-0031", name: "智联", type: "异议答辩", category: "国内案件", status: "答辩期", agent: "元健律师事务所", deadline: "2026-05-07", owner: "张法务", progress: 30 },
     { id: "TM-2025-0189", name: "海翼", type: "马德里申请", category: "海外案件", status: "WIPO审查", agent: "WIPO/当地所", deadline: "2026-05-15", owner: "李流程", progress: 45 },
-    { id: "TM-2026-0028", name: "明达", type: "不予注册复审", category: "国内案件", status: "准备材料", agent: "金诚律师事务所", deadline: "2026-05-22", owner: "张法务", progress: 20 },
-    { id: "TM-2026-0056", name: "悦动", type: "新申请", category: "国内案件", status: "受理中", agent: "中誉知识产权", deadline: "2026-06-01", owner: "王流程", progress: 15 },
-    { id: "TM-2025-0098", name: "星联", type: "续展", category: "国内案件", status: "待缴费", agent: "金诚律师事务所", deadline: "2026-05-10", owner: "张法务", progress: 80 },
-    { id: "TM-2026-0071", name: "睿思", type: "撤三答辩", category: "国内案件", status: "证据收集", agent: "中誉知识产权", deadline: "2026-06-10", owner: "张法务", progress: 40 },
-    { id: "TM-2025-0203", name: "启航", type: "单一国家申请", category: "海外案件", status: "审查中", agent: "美国Baker律所", deadline: "2026-06-20", owner: "李流程", progress: 55 }
+    { id: "TM-2026-0028", name: "明达", type: "不予注册复审", category: "国内案件", status: "准备材料", agent: "智联知识产权", deadline: "2026-05-22", owner: "张法务", progress: 20 },
+    { id: "TM-2026-0056", name: "悦动", type: "新申请", category: "国内案件", status: "受理中", agent: "元健律师事务所", deadline: "2026-06-01", owner: "王流程", progress: 15 },
+    { id: "TM-2025-0098", name: "星联", type: "续展", category: "国内案件", status: "待缴费", agent: "智联知识产权", deadline: "2026-05-10", owner: "张法务", progress: 80 },
+    { id: "TM-2026-0071", name: "睿思", type: "撤三答辩", category: "国内案件", status: "证据收集", agent: "元健律师事务所", deadline: "2026-06-10", owner: "张法务", progress: 40 },
+    { id: "TM-2025-0203", name: "启航", type: "单一国家申请", category: "海外案件", status: "审查中", agent: "Horizon Law Group", deadline: "2026-06-20", owner: "李流程", progress: 55 }
   ],
 
   brands: [
@@ -62,11 +62,17 @@ const AppData = {
   ],
 
   lawFirms: [
-    { name: "金诚律师事务所", cases: 45, rating: 4.8, responseTime: "2.3h", successRate: "92%", feeLevel: "高", status: "合作中" },
-    { name: "中誉知识产权", cases: 38, rating: 4.5, responseTime: "4.1h", successRate: "88%", feeLevel: "中", status: "合作中" },
-    { name: "美国Baker律所", cases: 12, rating: 4.7, responseTime: "8.5h", successRate: "90%", feeLevel: "高", status: "合作中" },
-    { name: "德国Müller事务所", cases: 8, rating: 4.3, responseTime: "12h", successRate: "85%", feeLevel: "中高", status: "合作中" },
-    { name: "日本东京特许事务所", cases: 6, rating: 4.6, responseTime: "6h", successRate: "91%", feeLevel: "中", status: "合作中" }
+    { name: "智联知识产权", logo: "tm-zhilian.png", cases: 52, rating: 4.9, responseTime: "1.8h", successRate: "94%", feeLevel: "高", status: "合作中", contact: { person: "李律师·合伙人", phone: "138-0013-8001", email: "lizl@zhilianip.com", wechat: "zhilian_li", feishu: "李智联" } },
+    { name: "元健律师事务所", logo: "tm-yuanjian.png", cases: 41, rating: 4.7, responseTime: "3.2h", successRate: "91%", feeLevel: "中高", status: "合作中", contact: { person: "王律师·主任", phone: "139-0014-9002", email: "wangyj@yuanjianlaw.com", wechat: "yuanjian_wang", feishu: "王元健" } },
+    { name: "启航知识产权", logo: "tm-qihang.png", cases: 35, rating: 4.5, responseTime: "4.5h", successRate: "89%", feeLevel: "中", status: "合作中", contact: { person: "张律师·合伙人", phone: "137-0012-7003", email: "zhangqh@qihangip.com", wechat: "qihang_zhang", feishu: "张启航" } },
+    { name: "海翼律师事务所", logo: "tm-haiyi.png", cases: 28, rating: 4.6, responseTime: "3.8h", successRate: "90%", feeLevel: "中高", status: "合作中", contact: { person: "陈律师·合伙人", phone: "136-0011-6004", email: "chenhy@haiyilaw.com", wechat: "haiyi_chen", feishu: "陈海翼" } },
+    { name: "Horizon Law Group", logo: "tm-horizon.png", cases: 15, rating: 4.8, responseTime: "6h", successRate: "93%", feeLevel: "高", status: "合作中", contact: { person: "Michael Chen·Partner", phone: "+1-415-555-0101", email: "m.chen@horizonlaw.com", wechat: "horizon_mike", feishu: "MichaelChen" } },
+    { name: "云智知识产权", logo: "tm-yunzhi.png", cases: 38, rating: 4.4, responseTime: "5h", successRate: "87%", feeLevel: "中", status: "合作中", contact: { person: "刘律师·合伙人", phone: "135-0010-5005", email: "liuyz@yunzhiip.com", wechat: "yunzhi_liu", feishu: "刘云智" } },
+    { name: "瑞思律师事务所", logo: "tm-ruisi.png", cases: 22, rating: 4.3, responseTime: "5.5h", successRate: "86%", feeLevel: "中", status: "合作中", contact: { person: "赵律师·合伙人", phone: "134-0009-4006", email: "zhaors@ruisilaw.com", wechat: "ruisi_zhao", feishu: "赵瑞思" } },
+    { name: "明达律师事务所", logo: "tm-mingda.png", cases: 19, rating: 4.7, responseTime: "2.5h", successRate: "92%", feeLevel: "高", status: "合作中", contact: { person: "孙律师·主任", phone: "133-0008-3007", email: "sunmd@mingdalaw.com", wechat: "mingda_sun", feishu: "孙明达" } },
+    { name: "星联知识产权", logo: "tm-xinglian.png", cases: 30, rating: 4.5, responseTime: "4h", successRate: "88%", feeLevel: "中", status: "合作中", contact: { person: "周律师·合伙人", phone: "132-0007-2008", email: "zhouxl@xinglianip.com", wechat: "xinglian_zhou", feishu: "周星联" } },
+    { name: "跃动律师事务所", logo: "tm-yuedong.png", cases: 16, rating: 4.2, responseTime: "6.5h", successRate: "85%", feeLevel: "低", status: "合作中", contact: { person: "吴律师·合伙人", phone: "131-0006-1009", email: "wuyd@yuedonglaw.com", wechat: "yuedong_wu", feishu: "吴跃动" } },
+    { name: "云智科技", logo: "tm-yunzhi-tech.png", cases: 24, rating: 4.4, responseTime: "4.8h", successRate: "89%", feeLevel: "中", status: "合作中", contact: { person: "郑经理·技术总监", phone: "130-0005-0010", email: "zheng@yunzhitech.com", wechat: "yunzhitech_zheng", feishu: "郑云智" } }
   ],
 
   fees: {
@@ -83,11 +89,11 @@ const AppData = {
   },
 
   bills: [
-    { id: "BILL-2026-0156", lawFirm: "金诚律师事务所", amount: 85000, caseNo: "TM-2026-0042", type: "代理费", date: "2026-04-28", status: "待审批" },
+    { id: "BILL-2026-0156", lawFirm: "智联知识产权", amount: 85000, caseNo: "TM-2026-0042", type: "代理费", date: "2026-04-28", status: "待审批" },
     { id: "BILL-2026-0155", lawFirm: "WIPO", amount: 12000, caseNo: "TM-2025-0189", type: "官费", date: "2026-04-25", status: "已审批" },
-    { id: "BILL-2026-0154", lawFirm: "中誉知识产权", amount: 35000, caseNo: "TM-2026-0031", type: "代理费", date: "2026-04-22", status: "已付款" },
-    { id: "BILL-2026-0153", lawFirm: "美国Baker律所", amount: 45000, caseNo: "TM-2025-0203", type: "代理费", date: "2026-04-20", status: "待审批" },
-    { id: "BILL-2026-0152", lawFirm: "金诚律师事务所", amount: 28000, caseNo: "TM-2025-0098", type: "官费+代理", date: "2026-04-18", status: "已付款" }
+    { id: "BILL-2026-0154", lawFirm: "元健律师事务所", amount: 35000, caseNo: "TM-2026-0031", type: "代理费", date: "2026-04-22", status: "已付款" },
+    { id: "BILL-2026-0153", lawFirm: "Horizon Law Group", amount: 45000, caseNo: "TM-2025-0203", type: "代理费", date: "2026-04-20", status: "待审批" },
+    { id: "BILL-2026-0152", lawFirm: "智联知识产权", amount: 28000, caseNo: "TM-2025-0098", type: "官费+代理", date: "2026-04-18", status: "已付款" }
   ],
 
   monitors: [
@@ -99,7 +105,7 @@ const AppData = {
 
   messages: [
     { id: 1, title: "商标'云智'驳回复审期限将至", time: "10分钟前", type: "urgent", read: false },
-    { id: 2, title: "金诚律所提交了新的答辩材料", time: "1小时前", type: "normal", read: false },
+    { id: 2, title: "智联知识产权提交了新的答辩材料", time: "1小时前", type: "normal", read: false },
     { id: 3, title: "5月费用预算执行率达到85%", time: "3小时前", type: "normal", read: true },
     { id: 4, title: "马德里申请进入WIPO审查阶段", time: "昨天", type: "normal", read: true }
   ]
