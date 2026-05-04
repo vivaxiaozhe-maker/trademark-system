@@ -296,6 +296,37 @@
   .rejection-field-grid { grid-template-columns: repeat(2, 1fr); }
   .drawer-panel { width: 100%; }
 }
+
+/* OCR Smart Recognition */
+.ocr-upload-zone {
+  border: 2px dashed var(--border-color); border-radius: var(--radius-md);
+  padding: 16px; text-align: center; color: var(--text-muted);
+  transition: var(--transition); cursor: pointer; background: var(--bg-card);
+}
+.ocr-upload-zone:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.ocr-upload-zone.processing { border-color: var(--warning); background: #fef3c7; cursor: wait; }
+.ocr-upload-zone.success { border-color: var(--success); background: #d1fae5; }
+.ocr-upload-zone .ocr-icon { font-size: 24px; margin-bottom: 6px; }
+.ocr-upload-zone .ocr-title { font-size: 13px; font-weight: 600; }
+.ocr-upload-zone .ocr-hint { font-size: 11px; margin-top: 4px; }
+.ocr-spinner {
+  width: 20px; height: 20px; border: 2px solid var(--border-color);
+  border-top-color: var(--primary); border-radius: 50%;
+  animation: ocr-spin 1s linear infinite; display: inline-block;
+  vertical-align: middle; margin-right: 6px;
+}
+@keyframes ocr-spin { to { transform: rotate(360deg); } }
+.ocr-highlight-value {
+  animation: ocr-value-pulse 2s ease;
+  background: #fffbeb !important;
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+}
+@keyframes ocr-value-pulse {
+  0% { background: #fffbeb; }
+  50% { background: #fef3c7; }
+  100% { background: #fffbeb; }
+}
 </style>
 </head>
 <body>
@@ -420,6 +451,7 @@
 <script src="../js/data.js?v=2.1"></script>
 <script src="../js/app.js?v=2.1"></script>
 <script src="../js/data-service.js?v=2.1"></script>
+<script src="../js/ocr-mock.js"></script>
 <script>
 window.addEventListener('error', function(e) {
   console.error('[CaseDetail] Global error:', e.message, e.filename, e.lineno, e.error);
@@ -980,6 +1012,15 @@ function renderRejection() {
         <span class="rejection-card-arrow expanded" id="rejectionArrow">▼</span>
       </div>
       <div class="rejection-card-body expanded" id="rejectionBody">
+        <!-- OCR 智能识别 -->
+        <div style="margin-bottom:16px; padding:16px; background:#f8fafc; border-radius:var(--radius-md); border:1px dashed var(--border-color);">
+          <div class="ocr-upload-zone" id="ocrDetailZone" onclick="document.getElementById('ocrDetailInput').click()">
+            <div class="ocr-icon">📷</div>
+            <div class="ocr-title">上传驳回通知书，AI 自动识别并填充驳回信息</div>
+            <div class="ocr-hint">支持 PDF、JPG、PNG</div>
+          </div>
+          <input type="file" id="ocrDetailInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="handleOCRDetailUpload(this)">
+        </div>
         <div class="rejection-field-grid">
           <div class="info-item-v2">
             <div class="info-label-v2">驳回类型</div>
@@ -1184,6 +1225,45 @@ function saveEditForm() {
   setTimeout(() => {
     cancelEdit();
   }, 800);
+}
+
+// ==================== OCR Smart Recognition (Detail Page) ====================
+function handleOCRDetailUpload(input) {
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var zone = document.getElementById('ocrDetailZone');
+  if (!zone) return;
+  zone.classList.add('processing');
+  zone.innerHTML = '<div class="ocr-spinner"></div><div class="ocr-title">正在识别...</div><div class="ocr-hint">AI 正在分析 ' + file.name + '</div>';
+
+  setTimeout(function() {
+    var result = OCRMock.recognize(file.name);
+    var validCount = OCRMock.countValidFields(result);
+    // 更新 AppData.caseDetail.rejection
+    if (typeof AppData !== 'undefined' && AppData.caseDetail && AppData.caseDetail.rejection) {
+      var r = AppData.caseDetail.rejection;
+      var f = result.fields;
+      if (f.rejectionReason) r.rejectionReason = f.rejectionReason;
+      if (f.officialDate) r.officialDate = f.officialDate;
+      if (f.officialDeadline) r.officialDeadline = f.officialDeadline;
+      if (f.rejectedGoods) r.rejectedGoods = f.rejectedGoods;
+    }
+    // 更新申请人信息
+    if (typeof AppData !== 'undefined' && AppData.caseDetail && result.fields.applicant) {
+      AppData.caseDetail.applicant = result.fields.applicant;
+      renderInfoGrid();
+    }
+    // 重新渲染驳回信息区
+    renderRejection();
+    // 恢复上传区显示
+    var newZone = document.getElementById('ocrDetailZone');
+    if (newZone) {
+      newZone.classList.remove('processing');
+      newZone.classList.add('success');
+      newZone.innerHTML = '<div class="ocr-icon" style="font-size:28px;">✅</div><div class="ocr-title">识别完成！已更新 ' + validCount + ' 个字段</div><div class="ocr-hint">' + result.typeLabel + ' · 置信度 ' + result.confidence + '%</div>';
+    }
+    alert('🤖 OCR 识别完成！已更新 ' + validCount + ' 个驳回字段');
+  }, 1500);
 }
 
 function renderAll() {
