@@ -25,6 +25,63 @@
 }
 .cat-chip:hover { border-color: var(--primary); color: var(--primary); }
 .cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Breadcrumb */
+.breadcrumb {
+  font-size: 12px; color: var(--text-muted); margin-top: 4px;
+}
+.breadcrumb a { color: var(--text-muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--primary); }
+
+/* Bulk action bar */
+.bulk-bar {
+  display: none; align-items: center; gap: 12px;
+  padding: 10px 16px; background: var(--primary-light); border-radius: var(--radius-md);
+  margin-bottom: 12px; border: 1px solid #bfdbfe;
+}
+.bulk-bar.active { display: flex; }
+.bulk-bar-text { font-size: 13px; color: var(--primary); font-weight: 600; }
+
+/* Dropdown */
+.action-dropdown .dropdown-menu {
+  display: none; position: absolute; right: 0; top: 100%;
+  z-index: 100; background: #fff; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 140px; padding: 4px 0; margin-top: 4px;
+}
+.action-dropdown .dropdown-menu.show { display: block; }
+.dropdown-item {
+  padding: 8px 14px; font-size: 13px; cursor: pointer; transition: background 0.15s;
+  white-space: nowrap;
+}
+.dropdown-item:hover { background: #f1f5f9; }
+
+/* Column settings modal */
+.col-setting-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-bottom: 1px solid var(--border-color);
+}
+.col-setting-item:last-child { border-bottom: none; }
+.col-setting-item label { flex: 1; font-size: 13px; cursor: pointer; }
+.col-sort-btns { display: flex; gap: 4px; }
+.col-sort-btns button {
+  width: 24px; height: 24px; border: 1px solid var(--border-color);
+  background: #fff; border-radius: 4px; cursor: pointer; font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+}
+.col-sort-btns button:hover { background: var(--bg-body); }
+.col-sort-btns button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* KPI card active state */
+.kpi-card[data-active="true"] {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+/* Table thead tools */
+.table-tools {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-bottom: 1px solid var(--border-color);
+}
 </style>
 </head>
 <body>
@@ -36,7 +93,7 @@
       <div class="page-header">
         <div>
           <div class="page-title">案件管理中心</div>
-          <div class="page-desc">管理国内与海外商标案件的全生命周期</div>
+          <nav class="breadcrumb"><a href="../index.html">首页</a> / 案件管理中心</nav>
         </div>
         <div style="display:flex; gap:8px;">
           <button class="btn btn-secondary btn-sm">📥 导出</button>
@@ -63,60 +120,59 @@
           <input type="text" class="search-input" placeholder="搜索案件编号、商标名称..." id="caseSearch" oninput="searchCases(this.value)">
           <select class="filter-item" id="statusFilter" onchange="filterByStatus(this.value)">
             <option value="all">全部状态</option>
-            <option value="审查中">审查中</option>
-            <option value="受理中">受理中</option>
-            <option value="答辩期">答辩期</option>
-            <option value="准备材料">准备材料</option>
-            <option value="待缴费">待缴费</option>
+            <option value="examining">审查中</option>
+            <option value="pending">受理中</option>
+            <option value="defense_period">答辩期</option>
+            <option value="preparing">准备材料</option>
+            <option value="waiting_payment">待缴费</option>
           </select>
         </div>
       </div>
       
       <div class="kpi-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:16px;">
-        <div class="kpi-card" style="padding:14px;">
+        <div class="kpi-card" style="padding:14px;" onclick="filterByStat('all')" data-stat="all">
           <div class="kpi-label">案件总数</div>
-          <div class="kpi-value" style="font-size:22px;">156</div>
+          <div class="kpi-value" style="font-size:22px;">-</div>
         </div>
-        <div class="kpi-card" style="padding:14px;">
+        <div class="kpi-card" style="padding:14px;" onclick="filterByStat('examining')" data-stat="examining">
           <div class="kpi-label">审查中</div>
-          <div class="kpi-value" style="font-size:22px; color:var(--primary);">48</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--primary);">-</div>
         </div>
-        <div class="kpi-card" style="padding:14px;">
+        <div class="kpi-card" style="padding:14px;" onclick="filterByStat('defense_period')" data-stat="defense_period">
           <div class="kpi-label">答辩期</div>
-          <div class="kpi-value" style="font-size:22px; color:var(--warning);">12</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--warning);">-</div>
         </div>
-        <div class="kpi-card" style="padding:14px;">
+        <div class="kpi-card" style="padding:14px;" onclick="filterByStat('registered')" data-stat="registered">
           <div class="kpi-label">已注册</div>
-          <div class="kpi-value" style="font-size:22px; color:var(--success);">86</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--success);">-</div>
         </div>
-        <div class="kpi-card" style="padding:14px;">
+        <div class="kpi-card" style="padding:14px;" onclick="filterByStat('rejected')" data-stat="rejected">
           <div class="kpi-label">已驳回</div>
-          <div class="kpi-value" style="font-size:22px; color:var(--danger);">6</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--danger);">-</div>
         </div>
-        <div class="kpi-card" style="padding:14px;">
+        <div class="kpi-card" style="padding:14px;" onclick="filterByStat('deadline_this_week')" data-stat="deadline_this_week">
           <div class="kpi-label">本周到期</div>
-          <div class="kpi-value" style="font-size:22px; color:var(--warning);">5</div>
+          <div class="kpi-value" style="font-size:22px; color:var(--warning);">-</div>
         </div>
       </div>
       
+      <div class="bulk-bar" id="bulkBar">
+        <div class="bulk-bar-text">已选择 <span id="bulkCount">0</span> 项</div>
+        <button class="btn btn-sm btn-secondary" onclick="bulkExport()">📥 批量导出</button>
+        <button class="btn btn-sm btn-secondary" onclick="bulkChangeOwner()">👤 修改责任人</button>
+        <button class="btn btn-sm btn-warning" style="background:#fef3c7;color:#92400e;border:none;" onclick="bulkRemind()">⏰ 催办</button>
+        <button class="btn btn-sm btn-danger" style="background:#fee2e2;color:#b91c1c;border:none;" onclick="bulkDelete()">🗑️ 删除</button>
+        <button class="btn btn-sm btn-secondary" onclick="clearSelection()" style="margin-left:auto;">取消</button>
+      </div>
+      
       <div class="card">
+        <div class="table-tools">
+          <div class="card-title" style="border:none;padding:0;">案件列表</div>
+          <button class="btn btn-sm btn-secondary" onclick="openColumnModal()">⚙️ 列设置</button>
+        </div>
         <div class="card-body" style="padding:0;">
           <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width:40px;"><input type="checkbox"></th>
-                <th>案件编号</th>
-                <th>商标名称</th>
-                <th>图样</th>
-                <th>尼斯分类</th>
-                <th>业务类型</th>
-                <th>当前状态</th>
-                <th>代理律所</th>
-                <th>官方绝限</th>
-                <th>责任人</th>
-                <th style="text-align:right;">操作</th>
-              </tr>
-            </thead>
+            <thead id="caseTableHead"></thead>
             <tbody id="caseTable"></tbody>
           </table>
         </div>
@@ -209,116 +265,452 @@
   </div>
 </div>
 
+<!-- 列设置模态框 -->
+<div class="modal-overlay" id="columnModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">⚙️ 列设置</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeColumnModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">勾选显示/隐藏，点击 ↑↓ 调整顺序</div>
+      <div id="columnList" style="border:1px solid var(--border-color);border-radius:var(--radius-md);overflow:hidden;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="resetColumns()">恢复默认</button>
+      <button class="btn btn-primary" onclick="saveColumnSettings()">保存</button>
+    </div>
+  </div>
+</div>
+
 <script src="../js/data.js"></script>
 <script src="../js/app.js"></script>
+<script src="../js/data-service.js"></script>
 <script>
 initApp('cases');
 
-const caseData = [
-  { id: "TM-2026-0042", name: "云智", img: "tm-yunzhi.png", cats: "9,35,38,42", type: "驳回复审", status: "审查中", agent: "智联知识产权", deadline: "2026-05-06", owner: "张法务" },
-  { id: "TM-2026-0031", name: "智联", img: "tm-zhilian.png", cats: "9,35,38", type: "异议答辩", status: "答辩期", agent: "元健律师事务所", deadline: "2026-05-07", owner: "张法务" },
-  { id: "TM-2026-0056", name: "悦动", img: "tm-yuedong.png", cats: "25,35", type: "新申请", status: "受理中", agent: "元健律师事务所", deadline: "2026-06-01", owner: "王流程" },
-  { id: "TM-2026-0028", name: "明达", img: "tm-mingda.png", cats: "35,36,42", type: "不予注册复审", status: "准备材料", agent: "智联知识产权", deadline: "2026-05-22", owner: "张法务" },
-  { id: "TM-2025-0098", name: "星联", img: "tm-xinglian.png", cats: "9,35,38,41,42,45", type: "续展", status: "待缴费", agent: "智联知识产权", deadline: "2026-05-10", owner: "张法务" },
-  { id: "TM-2026-0071", name: "睿思", img: "tm-ruisi.png", cats: "9,35,38,42", type: "撤三答辩", status: "证据收集", agent: "元健律师事务所", deadline: "2026-06-10", owner: "张法务" },
-  { id: "TM-2026-0012", name: "远见", img: "tm-yuanjian.png", cats: "35,42", type: "异议申请", status: "准备材料", agent: "智联知识产权", deadline: "2026-06-15", owner: "赵法务" },
-  { id: "TM-2025-0156", name: "Horizon", img: "tm-horizon.png", cats: "9,38", type: "行政诉讼", status: "一审中", agent: "元健律师事务所", deadline: "2026-07-01", owner: "张法务" }
+// ==================== Column Config ====================
+const COLUMN_KEY = 'tm_cases_columns';
+const defaultColumns = [
+  { key: 'checkbox', label: '', width: '40px', show: true, fixed: true },
+  { key: 'id', label: '案件编号', show: true },
+  { key: 'brandName', label: '商标名称', show: true },
+  { key: 'trademarkImage', label: '图样', width: '60px', show: true },
+  { key: 'niceClasses', label: '尼斯分类', show: true },
+  { key: 'businessType', label: '业务类型', show: true },
+  { key: 'status', label: '当前状态', show: true },
+  { key: 'lawFirmName', label: '代理律所', show: true },
+  { key: 'officialDeadline', label: '官方绝限', show: true },
+  { key: 'responsibleUser', label: '责任人', show: true },
+  { key: 'actions', label: '操作', width: '80px', show: true, fixed: true }
 ];
 
-const overseasData = [
-  { id: "TM-2025-0189", name: "海翼", img: "tm-haiyi.png", cats: "12,35,37", type: "马德里申请", status: "WIPO审查", agent: "WIPO", deadline: "2026-05-15", owner: "李流程" },
-  { id: "TM-2025-0203", name: "启航", img: "tm-qihang.png", cats: "35,39", type: "单一国家申请", status: "USPTO审查", agent: "Horizon Law Group", deadline: "2026-06-20", owner: "李流程" },
-  { id: "TM-2025-0218", name: "欧陆", img: "tm-yunzhi-tech.png", cats: "35,36", type: "EUIPO申请", status: "审查中", agent: "瑞思律师事务所", deadline: "2026-08-10", owner: "李流程" },
-  { id: "TM-2026-0033", name: "樱之", img: "tm-yunzhi.png", cats: "25,35", type: "JPO申请", status: "受理中", agent: "云智科技", deadline: "2026-09-01", owner: "李流程" }
-];
+function getColumns() {
+  try {
+    const saved = localStorage.getItem(COLUMN_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(defaultColumns));
+}
 
-let currentTab = 'domestic';
+function saveColumns(cols) {
+  localStorage.setItem(COLUMN_KEY, JSON.stringify(cols));
+}
+
+let columns = getColumns();
+
+// ==================== State ====================
+let currentTab = 'all';
 let currentFilter = 'all';
 let currentStatusFilter = 'all';
 let searchKeyword = '';
+let selectedCaseIds = new Set();
 let selectedCats = [];
-let allCases = [...caseData, ...overseasData];
 
-function renderTable(data) {
-  const tbody = document.getElementById('caseTable');
-  tbody.innerHTML = '';
-  if (data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的案件</td></tr>';
-    return;
-  }
-  data.forEach(c => {
-    const urgent = c.deadline <= '2026-05-07';
-    tbody.innerHTML += `
-      <tr>
-        <td><input type="checkbox"></td>
-        <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">${c.id}</span></td>
-        <td><strong>${c.name}</strong></td>
-        <td><img src="../assets/${c.img}" alt="${c.name}" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#f8fafc;border:1px solid var(--border-color);"></td>
-        <td><span style="font-size:12px;color:var(--text-secondary);">${c.cats}</span></td>
-        <td><span class="tag tag-blue">${c.type}</span></td>
-        <td>${getStatusTag(c.status)}</td>
-        <td>${c.agent}</td>
-        <td style="color:${urgent?'#ef4444':''};font-weight:${urgent?'600':'400'};">${c.deadline}</td>
-        <td>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span>${c.owner}</span>
-            <span style="width:20px;height:20px;border-radius:4px;background:#3370ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;" title="飞书联系">飞</span>
-          </div>
-        </td>
-        <td style="text-align:right;">
-          <button class="btn btn-sm btn-secondary" style="padding:4px 10px;" onclick="navigateTo('case-detail.html')">详情</button>
-          <button class="btn btn-sm btn-primary" style="padding:4px 10px;" onclick="navigateTo('case-detail.html')">编辑</button>
-        </td>
-      </tr>
-    `;
+// ==================== Status Helpers ====================
+function renderStatusTag(statusCode) {
+  const map = DataService.STATUS_MAP[statusCode] || { label: statusCode, color: 'gray' };
+  const colorMap = {
+    blue: '#2563eb', green: '#10b981', orange: '#f59e0b', gray: '#64748b',
+    red: '#ef4444', success: '#10b981', danger: '#ef4444', purple: '#8b5cf6',
+    cyan: '#06b6d4', indigo: '#6366f1'
+  };
+  const bgMap = {
+    blue: '#dbeafe', green: '#d1fae5', orange: '#fef3c7', gray: '#f1f5f9',
+    red: '#fee2e2', success: '#d1fae5', danger: '#fee2e2', purple: '#f3e8ff',
+    cyan: '#cffafe', indigo: '#e0e7ff'
+  };
+  const color = colorMap[map.color] || '#64748b';
+  const bg = bgMap[map.color] || '#f1f5f9';
+  return `<span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;color:${color};background:${bg};">${map.label}</span>`;
+}
+
+// ==================== Deadline Helper ====================
+function getDeadlineInfo(deadline) {
+  const days = DataService.daysBetween(DataService.getToday(), deadline);
+  let color = '#94a3b8';
+  let text = days <= 0 ? '已逾期' : `剩余 ${days} 天`;
+  if (days <= 3 && days > 0) color = '#ef4444';
+  else if (days <= 7 && days > 0) color = '#f59e0b';
+  return { days, color, text };
+}
+
+// ==================== Nice Class Tooltip ====================
+function getNiceClassTooltip(niceClasses) {
+  if (!niceClasses || !niceClasses.length) return '';
+  return niceClasses.map(c => `${c}-${DataService.NICE_CLASS_NAMES[c] || '未知'}`).join(', ');
+}
+
+function getNiceClassDisplay(niceClasses) {
+  if (!niceClasses || !niceClasses.length) return '-';
+  return niceClasses.join(', ');
+}
+
+// ==================== Stats ====================
+function renderStats() {
+  const stats = DataService.getCaseStats();
+  const statMap = {
+    all: { label: '案件总数', value: stats.total, color: 'var(--text-primary)' },
+    examining: { label: '审查中', value: stats.examining, color: 'var(--primary)' },
+    defense_period: { label: '答辩期', value: stats.defensePeriod, color: 'var(--warning)' },
+    registered: { label: '已注册', value: stats.registered, color: 'var(--success)' },
+    rejected: { label: '已驳回', value: stats.rejected, color: 'var(--danger)' },
+    deadline_this_week: { label: '本周到期', value: stats.deadlineThisWeek, color: 'var(--warning)' }
+  };
+  
+  document.querySelectorAll('.kpi-card').forEach(card => {
+    const key = card.dataset.stat;
+    const s = statMap[key];
+    if (s) {
+      card.querySelector('.kpi-value').textContent = s.value;
+      card.querySelector('.kpi-value').style.color = s.color;
+    }
+    card.setAttribute('data-active', currentStatusFilter === key ? 'true' : 'false');
   });
 }
 
-function getCurrentData() {
-  let data = currentTab === 'domestic' ? caseData : currentTab === 'overseas' ? overseasData : allCases;
+// ==================== Table Rendering ====================
+function renderTable() {
+  const tbody = document.getElementById('caseTable');
+  const thead = document.getElementById('caseTableHead');
+  
+  let data = currentTab === 'all' 
+    ? DataService.getCases() 
+    : DataService.getCases({ tab: currentTab });
   
   if (currentFilter !== 'all') {
-    data = data.filter(c => c.type.includes(currentFilter) || (currentFilter === '异议/无效' && (c.type.includes('异议') || c.type.includes('无效'))));
+    data = data.filter(c => c.businessType.includes(currentFilter) || 
+      (currentFilter === '异议/无效' && (c.businessType.includes('异议') || c.businessType.includes('无效'))));
   }
   
-  if (currentStatusFilter !== 'all') {
-    data = data.filter(c => c.status === currentStatusFilter);
+  if (currentStatusFilter !== 'all' && currentStatusFilter !== 'deadline_this_week') {
+    data = data.filter(c => c.statusCode === currentStatusFilter);
+  }
+  
+  if (currentStatusFilter === 'deadline_this_week') {
+    data = data.filter(c => {
+      if (!c.officialDeadline) return false;
+      return DataService.daysBetween(DataService.getToday(), c.officialDeadline) <= 7;
+    });
   }
   
   if (searchKeyword) {
     const kw = searchKeyword.toLowerCase();
-    data = data.filter(c => c.id.toLowerCase().includes(kw) || c.name.toLowerCase().includes(kw) || c.type.toLowerCase().includes(kw));
+    data = data.filter(c => 
+      c.id.toLowerCase().includes(kw) || 
+      c.brandName.toLowerCase().includes(kw) || 
+      c.businessType.toLowerCase().includes(kw)
+    );
   }
   
-  return data;
+  const visibleCols = columns.filter(col => col.show);
+  
+  // Render header
+  let headerHtml = '<tr>';
+  visibleCols.forEach(col => {
+    const width = col.width ? `style="width:${col.width};"` : '';
+    if (col.key === 'checkbox') {
+      headerHtml += `<th ${width}><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this.checked)"></th>`;
+    } else {
+      headerHtml += `<th ${width}>${col.label}</th>`;
+    }
+  });
+  headerHtml += '</tr>';
+  thead.innerHTML = headerHtml;
+  
+  // Render body
+  tbody.innerHTML = '';
+  if (data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="${visibleCols.length}" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的案件</td></tr>`;
+    return;
+  }
+  
+  data.forEach(c => {
+    let rowHtml = '<tr>';
+    visibleCols.forEach(col => {
+      rowHtml += renderCell(col.key, c);
+    });
+    rowHtml += '</tr>';
+    tbody.innerHTML += rowHtml;
+  });
+  
+  updateBulkBar();
 }
 
-renderTable(getCurrentData());
+function renderCell(key, c) {
+  switch(key) {
+    case 'checkbox':
+      const checked = selectedCaseIds.has(c.id) ? 'checked' : '';
+      return `<td><input type="checkbox" data-case-id="${c.id}" onchange="toggleCaseSelection('${c.id}', this.checked)" ${checked}></td>`;
+    
+    case 'id':
+      return `<td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">${c.id}</span></td>`;
+    
+    case 'brandName':
+      return `<td><strong>${c.brandName}</strong></td>`;
+    
+    case 'trademarkImage':
+      const img = c.trademarkImage || '../assets/tm-yunzhi.png';
+      return `<td><img src="${img}" alt="${c.brandName}" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#f8fafc;border:1px solid var(--border-color);"></td>`;
+    
+    case 'niceClasses':
+      const tooltip = getNiceClassTooltip(c.niceClasses);
+      const display = getNiceClassDisplay(c.niceClasses);
+      return `<td><span style="font-size:12px;color:var(--text-secondary);cursor:help;" title="${tooltip}">${display}</span></td>`;
+    
+    case 'businessType':
+      return `<td><span class="tag tag-blue">${c.businessType}</span></td>`;
+    
+    case 'status':
+      return `<td>${renderStatusTag(c.statusCode)}</td>`;
+    
+    case 'lawFirmName':
+      return `<td>${c.lawFirmName}</td>`;
+    
+    case 'officialDeadline':
+      const dl = getDeadlineInfo(c.officialDeadline);
+      return `<td>
+        <div style="font-weight:${dl.days <= 3 ? '600' : '400'};">${c.officialDeadline}</div>
+        <div style="font-size:11px;color:${dl.color};">${dl.text}</div>
+      </td>`;
+    
+    case 'responsibleUser':
+      return `<td>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span>${c.responsibleUser}</span>
+          <span style="width:20px;height:20px;border-radius:4px;background:#3370ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;" title="消息联系">💬</span>
+        </div>
+      </td>`;
+    
+    case 'actions':
+      return `<td style="text-align:right;">
+        <div class="action-dropdown" style="position:relative;display:inline-block;">
+          <button class="btn btn-sm btn-secondary" onclick="toggleDropdown(this, event)">更多 ▼</button>
+          <div class="dropdown-menu">
+            <div class="dropdown-item" onclick="navigateTo('case-detail.html?id=${c.id}')">详情</div>
+            <div class="dropdown-item" onclick="navigateTo('case-detail.html?id=${c.id}&mode=edit')">编辑</div>
+            <div class="dropdown-item" onclick="copyCase('${c.id}')">复制案件</div>
+            <div class="dropdown-item" onclick="transferCase('${c.id}')">移交责任人</div>
+            <div class="dropdown-item" style="color:#ef4444;" onclick="deleteCase('${c.id}')">删除</div>
+          </div>
+        </div>
+      </td>`;
+    
+    default:
+      return `<td></td>`;
+  }
+}
 
+// ==================== Selection & Bulk Actions ====================
+function toggleCaseSelection(id, checked) {
+  if (checked) selectedCaseIds.add(id);
+  else selectedCaseIds.delete(id);
+  updateBulkBar();
+  
+  // Update select-all checkbox
+  const allCheckboxes = document.querySelectorAll('#caseTable input[type="checkbox"]');
+  const checkedBoxes = document.querySelectorAll('#caseTable input[type="checkbox"]:checked');
+  const selectAll = document.getElementById('selectAll');
+  if (selectAll) {
+    selectAll.checked = allCheckboxes.length > 0 && allCheckboxes.length === checkedBoxes.length;
+    selectAll.indeterminate = checkedBoxes.length > 0 && checkedBoxes.length < allCheckboxes.length;
+  }
+}
+
+function toggleSelectAll(checked) {
+  document.querySelectorAll('#caseTable input[type="checkbox"]').forEach(cb => {
+    cb.checked = checked;
+    const id = cb.dataset.caseId;
+    if (checked) selectedCaseIds.add(id);
+    else selectedCaseIds.delete(id);
+  });
+  updateBulkBar();
+}
+
+function updateBulkBar() {
+  const bar = document.getElementById('bulkBar');
+  const count = document.getElementById('bulkCount');
+  count.textContent = selectedCaseIds.size;
+  bar.classList.toggle('active', selectedCaseIds.size > 0);
+}
+
+function clearSelection() {
+  selectedCaseIds.clear();
+  document.querySelectorAll('#caseTable input[type="checkbox"]').forEach(cb => cb.checked = false);
+  const selectAll = document.getElementById('selectAll');
+  if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false; }
+  updateBulkBar();
+}
+
+function bulkExport() { alert('批量导出 ' + selectedCaseIds.size + ' 个案件'); }
+function bulkChangeOwner() { alert('批量修改责任人：' + Array.from(selectedCaseIds).join(', ')); }
+function bulkRemind() { alert('已发送催办通知给 ' + selectedCaseIds.size + ' 个案件的责任人'); }
+function bulkDelete() {
+  if (!confirm('确定要删除选中的 ' + selectedCaseIds.size + ' 个案件吗？')) return;
+  selectedCaseIds.forEach(id => DataService.deleteCase(id));
+  clearSelection();
+  renderStats();
+  renderTable();
+}
+
+// ==================== Dropdown ====================
+function toggleDropdown(btn, event) {
+  event.stopPropagation();
+  const menu = btn.nextElementSibling;
+  document.querySelectorAll('.dropdown-menu.show').forEach(m => {
+    if (m !== menu) m.classList.remove('show');
+  });
+  menu.classList.toggle('show');
+}
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.dropdown-menu.show').forEach(m => m.classList.remove('show'));
+});
+
+// ==================== Column Settings ====================
+function openColumnModal() {
+  const list = document.getElementById('columnList');
+  list.innerHTML = '';
+  columns.forEach((col, idx) => {
+    if (col.fixed) return;
+    list.innerHTML += `
+      <div class="col-setting-item" data-idx="${idx}">
+        <input type="checkbox" id="col-${idx}" ${col.show ? 'checked' : ''}>
+        <label for="col-${idx}">${col.label}</label>
+        <div class="col-sort-btns">
+          <button onclick="moveColumn(${idx}, -1)" ${idx <= 1 ? 'disabled' : ''}>↑</button>
+          <button onclick="moveColumn(${idx}, 1)" ${idx >= columns.length - 2 ? 'disabled' : ''}>↓</button>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('columnModal').classList.add('active');
+}
+
+function closeColumnModal() {
+  document.getElementById('columnModal').classList.remove('active');
+}
+
+function moveColumn(idx, dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 1 || newIdx >= columns.length - 1) return;
+  if (columns[newIdx].fixed) return;
+  [columns[idx], columns[newIdx]] = [columns[newIdx], columns[idx]];
+  openColumnModal();
+}
+
+function saveColumnSettings() {
+  document.querySelectorAll('#columnList .col-setting-item').forEach(item => {
+    const idx = parseInt(item.dataset.idx);
+    const checkbox = item.querySelector('input[type="checkbox"]');
+    columns[idx].show = checkbox.checked;
+  });
+  saveColumns(columns);
+  closeColumnModal();
+  renderTable();
+}
+
+function resetColumns() {
+  columns = JSON.parse(JSON.stringify(defaultColumns));
+  saveColumns(columns);
+  openColumnModal();
+  renderTable();
+}
+
+// ==================== Filtering ====================
 function switchTab(tab, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   currentTab = tab;
-  renderTable(getCurrentData());
+  renderTable();
 }
 
 function filterCases(el, type) {
   document.querySelectorAll('.filter-bar .filter-item[data-filter]').forEach(item => item.classList.remove('active'));
   el.classList.add('active');
   currentFilter = type;
-  renderTable(getCurrentData());
+  renderTable();
 }
 
 function filterByStatus(status) {
   currentStatusFilter = status;
-  renderTable(getCurrentData());
+  renderStats();
+  renderTable();
+}
+
+function filterByStat(stat) {
+  if (currentStatusFilter === stat) {
+    currentStatusFilter = 'all';
+  } else {
+    currentStatusFilter = stat;
+  }
+  document.getElementById('statusFilter').value = currentStatusFilter === 'deadline_this_week' ? 'all' : currentStatusFilter;
+  renderStats();
+  renderTable();
 }
 
 function searchCases(keyword) {
   searchKeyword = keyword;
-  renderTable(getCurrentData());
+  renderTable();
 }
 
+// ==================== Case Actions ====================
+function copyCase(id) {
+  const c = DataService.getCaseById(id);
+  if (!c) return;
+  const newCase = {
+    ...c,
+    id: DataService.generateId('TM'),
+    brandName: c.brandName + ' (副本)',
+    createdAt: DataService.getToday(),
+    updatedAt: DataService.getToday()
+  };
+  DataService.createCase(newCase);
+  renderStats();
+  renderTable();
+  alert('案件已复制，新编号：' + newCase.id);
+}
+
+function transferCase(id) {
+  const c = DataService.getCaseById(id);
+  if (!c) return;
+  const newOwner = prompt('请输入新责任人：', c.responsibleUser);
+  if (newOwner && newOwner !== c.responsibleUser) {
+    DataService.updateCase(id, { responsibleUser: newOwner, responsibleUserId: newOwner.charAt(0) });
+    renderTable();
+    alert('责任人已变更为：' + newOwner);
+  }
+}
+
+function deleteCase(id) {
+  if (!confirm('确定要删除案件 ' + id + ' 吗？')) return;
+  DataService.deleteCase(id);
+  selectedCaseIds.delete(id);
+  renderStats();
+  renderTable();
+}
+
+// ==================== New Case Modal ====================
 function openNewCaseModal() {
   document.getElementById('newCaseModal').classList.add('active');
   selectedCats = [];
@@ -361,33 +753,59 @@ function submitCase() {
     return;
   }
   
-  const newId = 'TM-2026-00' + (allCases.length + 51);
-  const newCase = {
-    id: newId, name: name, img: '🆕', cats: selectedCats.join(','),
-    type: type, status: '受理中', agent: agent, deadline: deadline || '2026-12-31', owner: owner
+  const typeCodeMap = {
+    '新申请': 'new_apply', '驳回复审': 'reexamination', '异议申请': 'opposition',
+    '异议答辩': 'defense', '无效宣告': 'invalidation', '撤三答辩': 'defense',
+    '续展': 'renewal', '行政诉讼': 'litigation', '马德里申请': 'madrid',
+    '单一国家申请': 'single_country'
   };
   
-  if (category === '国内案件') {
-    caseData.unshift(newCase);
-  } else {
-    overseasData.unshift(newCase);
-  }
-  allCases = [...caseData, ...overseasData];
+  const newCase = {
+    id: DataService.generateId('TM'),
+    brandId: name.toLowerCase().replace(/\s+/g, '-'),
+    brandName: name,
+    trademarkImage: '../assets/tm-yunzhi.png',
+    type: category === '国内案件' ? 'domestic' : 'overseas',
+    businessType: type,
+    businessTypeCode: typeCodeMap[type] || 'new_apply',
+    statusCode: 'pending',
+    status: '受理中',
+    niceClasses: selectedCats,
+    niceClassNames: selectedCats.join(', '),
+    applicationDate: DataService.getToday(),
+    officialDeadline: deadline || DataService.getToday(),
+    internalDeadline: deadline || DataService.getToday(),
+    currentProgress: 0,
+    lawFirmId: agent.toLowerCase().replace(/\s+/g, '-'),
+    lawFirmName: agent,
+    responsibleUser: owner,
+    responsibleUserId: owner.charAt(0),
+    feeTotal: 0, feePaid: 0, feePending: 0,
+    timeline: [], documents: [], messages: [], tags: [],
+    createdAt: DataService.getToday(), updatedAt: DataService.getToday()
+  };
   
+  DataService.createCase(newCase);
   closeModal();
-  renderTable(getCurrentData());
-  alert('案件创建成功！案件编号：' + newId);
+  renderStats();
+  renderTable();
+  alert('案件创建成功！案件编号：' + newCase.id);
   
   document.getElementById('caseName').value = '';
   document.getElementById('caseDesc').value = '';
 }
 
+// ==================== Init ====================
 const params = new URLSearchParams(location.search);
 const tab = params.get('tab');
 if (tab === 'overseas') {
-  document.querySelectorAll('.tab')[1].click();
+  currentTab = 'overseas';
+  document.querySelectorAll('.tab')[1].classList.add('active');
+  document.querySelectorAll('.tab')[0].classList.remove('active');
 }
+
+renderStats();
+renderTable();
 </script>
-<script src="../js/data-service.js"></script>
 </body>
 </html>
