@@ -212,6 +212,7 @@
 </style>
 </head>
 <body>
+<div id="case-debug" style="position:fixed;top:0;right:0;background:#ef4444;color:#fff;padding:4px 12px;z-index:99999;font-size:11px;font-family:monospace;border-radius:0 0 0 8px;">LOADING...</div>
 <div class="app-layout">
   <aside class="sidebar"></aside>
   <div class="main-content">
@@ -320,13 +321,23 @@
 <script src="../js/app.js"></script>
 <script src="../js/data-service.js"></script>
 <script>
+const _debug = (msg) => { const el = document.getElementById('case-debug'); if (el) el.textContent = msg; console.log('[CaseDetail]', msg); };
+_debug('Script start');
+
+window.addEventListener('error', function(e) {
+  _debug('ERROR: ' + e.message.substring(0, 60));
+  console.error('[CaseDetail] Global error:', e.message, e.filename, e.lineno, e.error);
+});
+
 initApp('case-detail');
+_debug('initApp done');
 
 // ==================== State ====================
 const params = new URLSearchParams(location.search);
 const caseId = params.get('id') || 'TM-2026-0042';
 const isEditMode = params.get('mode') === 'edit';
 let caseData = DataService.getCaseById(caseId);
+_debug('getCaseById: ' + (caseData ? caseData.id : 'null'));
 
 // 如果无法获取案件数据，尝试重新初始化
 if (!caseData) {
@@ -889,6 +900,7 @@ function saveEditForm() {
 }
 
 function renderAll() {
+  _debug('renderAll start, caseData=' + (caseData ? caseData.id : 'null'));
   if (!caseData) {
     const container = document.querySelector('.page-container');
     if (container) {
@@ -905,12 +917,15 @@ function renderAll() {
     return;
   }
   
+  _debug('Rendering header...');
   try { renderHeader(); } catch (e) { console.error('[CaseDetail] renderHeader error:', e); }
+  _debug('Rendering infoGrid...');
   try { renderInfoGrid(); } catch (e) { console.error('[CaseDetail] renderInfoGrid error:', e); }
   try { renderTimeline(); } catch (e) { console.error('[CaseDetail] renderTimeline error:', e); }
   try { renderDocuments(); } catch (e) { console.error('[CaseDetail] renderDocuments error:', e); }
   try { renderFees(); } catch (e) { console.error('[CaseDetail] renderFees error:', e); }
   try { renderMessages(); } catch (e) { console.error('[CaseDetail] renderMessages error:', e); }
+  _debug('renderAll done');
 }
 
 renderAll();
