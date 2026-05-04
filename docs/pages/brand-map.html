@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>品牌图谱 - 商标管理系统</title>
 <link rel="stylesheet" href="../css/common.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <style>
 /* Filter chips */
 .brand-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
@@ -217,12 +218,12 @@
       <!-- Region View -->
       <div id="regionView" style="display:none;">
         <div class="card">
-          <div class="card-header"><div class="card-title">🌍 品牌地域分布</div></div>
+          <div class="card-header"><div class="card-title">🌍 品牌地域分布 — 高风险案件全球监控</div></div>
           <div class="card-body">
-            <div class="region-grid" id="regionGrid"></div>
+            <div id="regionMap" style="width:100%;height:480px;"></div>
             <div style="margin-top:24px; padding-top:24px; border-top:1px solid var(--border-color);">
-              <div class="card-title" style="margin-bottom:14px;">📊 地域布局分析</div>
-              <div class="row row-2" id="regionAnalysis"></div>
+              <div class="card-title" style="margin-bottom:14px;">📊 高风险案件列表</div>
+              <div id="regionAnalysis"></div>
             </div>
           </div>
         </div>
@@ -251,8 +252,21 @@
         <div class="form-section">
           <label class="form-label">业务类型 <span class="required">*</span></label>
           <select class="form-select" id="createType">
-            <option>新申请</option>
-            <option>防御性注册</option>
+            <option>风险评估</option>
+            <option>新申请补位申请</option>
+            <option>驳回</option>
+            <option>撤三申请</option>
+            <option>异议申请</option>
+            <option>无效宣告</option>
+            <option>商标诉讼</option>
+            <option>变转续补</option>
+            <option>商标购入</option>
+            <option>使用证据/宣誓</option>
+            <option>线上线下调查</option>
+            <option>谈判类（共存/和解）</option>
+            <option>手续文件</option>
+            <option>维权相关</option>
+            <option>其他</option>
           </select>
         </div>
         <div class="form-section">
@@ -454,65 +468,150 @@ function renderTimeline() {
 
 // ==================== Regions ====================
 function renderRegions() {
-  const regionData = [
-    { flag: '🇨🇳', name: '中国大陆', total: 32, registered: 24, pending: 7, expired: 1, pct: 95 },
-    { flag: '🇺🇸', name: '美国', total: 18, registered: 14, pending: 3, expired: 1, pct: 65 },
-    { flag: '🇪🇺', name: '欧盟', total: 12, registered: 10, pending: 2, expired: 0, pct: 50 },
-    { flag: '🇯🇵', name: '日本', total: 8, registered: 7, pending: 1, expired: 0, pct: 35 },
-    { flag: '🇰🇷', name: '韩国', total: 6, registered: 5, pending: 1, expired: 0, pct: 25 },
-    { flag: '🇸🇬', name: '新加坡', total: 4, registered: 3, pending: 1, expired: 0, pct: 15 },
-    { flag: '🇦🇺', name: '澳大利亚', total: 3, registered: 2, pending: 1, expired: 0, pct: 10 },
-    { flag: '🇨🇦', name: '加拿大', total: 2, registered: 1, pending: 1, expired: 0, pct: 8 }
-  ];
-  
-  let html = '';
-  regionData.forEach(r => {
-    html += `
-      <div class="region-card">
-        <div class="region-flag">${r.flag}</div>
-        <div class="region-name">${r.name}</div>
-        <div class="region-count">${r.total}<span style="font-size:13px;color:var(--text-muted);font-weight:400;"> 类</span></div>
-        <div class="region-detail">
-          <span>✅ 有效 ${r.registered} · ⏳ 在审 ${r.pending} · ❌ 失效 ${r.expired}</span>
-        </div>
-        <div class="region-bar"><div class="region-fill" style="width:${r.pct}%; background:linear-gradient(90deg,var(--primary),var(--secondary));"></div></div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">布局完整度 ${r.pct}%</div>
-      </div>
-    `;
+  const countryCoords = {
+    '中国': [104.195397, 35.86166],
+    '美国': [-95.712891, 37.09024],
+    '欧盟': [10.451526, 51.165691],
+    '日本': [138.252924, 36.204824],
+    '韩国': [127.766922, 35.907757],
+    '新加坡': [103.819836, 1.352083],
+    '澳大利亚': [133.775136, -25.274398],
+    '加拿大': [-106.346771, 56.130366],
+    '英国': [-3.435973, 55.378051],
+    '德国': [10.451526, 51.165691],
+    '法国': [2.213749, 46.227638],
+    '印度': [78.96288, 20.593684],
+    '巴西': [-51.92528, -14.235004],
+    '俄罗斯': [105.318756, 61.52401]
+  };
+
+  // 获取高风险案件
+  let highRiskCases = [];
+  try {
+    const allCases = DataService.getCases();
+    highRiskCases = allCases.filter(function(c) {
+      return c.statusCode === 'rejected' || c.statusCode === 'appeal' || c.businessTypeCode === 'invalidation';
+    });
+  } catch(e) { console.error(e); }
+
+  // 准备地图数据
+  const mapData = highRiskCases.map(function(c) {
+    const coords = countryCoords[c.country] || [0, 0];
+    return {
+      name: c.country,
+      value: coords.concat(c.brandName + ' / 第' + c.niceClasses.join('、') + '类'),
+      caseId: c.id,
+      brandName: c.brandName,
+      niceClasses: c.niceClasses,
+      businessType: c.businessType,
+      status: c.status
+    };
   });
-  document.getElementById('regionGrid').innerHTML = html;
-  
-  document.getElementById('regionAnalysis').innerHTML = `
-    <div>
-      <div style="display:flex; flex-direction:column; gap:12px;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="width:80px; font-size:13px; font-weight:500;">中国大陆</span>
-          <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:95%; background:#2563eb;"></div></div>
-          <span style="width:40px; text-align:right; font-size:13px; font-weight:600;">32类</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="width:80px; font-size:13px; font-weight:500;">美国</span>
-          <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:65%; background:#0ea5e9;"></div></div>
-          <span style="width:40px; text-align:right; font-size:13px; font-weight:600;">18类</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="width:80px; font-size:13px; font-weight:500;">欧盟</span>
-          <div class="progress-bar" style="flex:1;"><div class="progress-fill" style="width:50%; background:#10b981;"></div></div>
-          <span style="width:40px; text-align:right; font-size:13px; font-weight:600;">12类</span>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div style="padding:16px; background:#f8fafc; border-radius:var(--radius-md); border-left:4px solid var(--primary);">
-        <div style="font-weight:600; margin-bottom:8px;">📌 布局建议</div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.8;">
-          1. 云智品牌在印度、东南亚尚未布局，建议优先补充第9、35类注册<br>
-          2. 智联品牌美国注册存在缺口（第42类未覆盖），建议补充<br>
-          3. 海翼品牌欧盟已覆盖核心类别，可评估扩展至第39类
-        </div>
-      </div>
-    </div>
-  `;
+
+  // 初始化 ECharts
+  const chartDom = document.getElementById('regionMap');
+  if (!chartDom) return;
+
+  if (window.regionChart) {
+    window.regionChart.dispose();
+  }
+
+  fetch('https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/json/world.json')
+    .then(function(response) { return response.json(); })
+    .then(function(worldJson) {
+      echarts.registerMap('world', worldJson);
+      const chart = echarts.init(chartDom);
+      window.regionChart = chart;
+
+      const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+          trigger: 'item',
+          formatter: function(params) {
+            if (params.seriesType === 'scatter') {
+              return '<div style="font-weight:600;">' + params.data.brandName + '</div>' +
+                     '<div>国家：' + params.data.name + '</div>' +
+                     '<div>类别：第' + params.data.niceClasses.join('、') + '类</div>' +
+                     '<div>业务：' + params.data.businessType + '</div>' +
+                     '<div>状态：<span style="color:#ef4444;">' + params.data.status + '</span></div>';
+            }
+            return params.name;
+          }
+        },
+        geo: {
+          map: 'world',
+          roam: true,
+          zoom: 1.2,
+          center: [20, 20],
+          itemStyle: {
+            areaColor: '#e2e8f0',
+            borderColor: '#94a3b8',
+            borderWidth: 0.5
+          },
+          emphasis: {
+            itemStyle: { areaColor: '#cbd5e1' }
+          }
+        },
+        series: [{
+          type: 'scatter',
+          coordinateSystem: 'geo',
+          data: mapData,
+          symbol: 'path://M16 0C10.5 0 6 4.5 6 10c0 7.5 10 22 10 22s10-14.5 10-22C26 4.5 21.5 0 16 0zm0 14c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z',
+          symbolSize: 28,
+          itemStyle: {
+            color: '#ef4444',
+            shadowBlur: 10,
+            shadowColor: 'rgba(239, 68, 68, 0.5)'
+          },
+          label: {
+            show: true,
+            formatter: function(params) {
+              return params.data.brandName + '\n第' + params.data.niceClasses.join('、') + '类';
+            },
+            position: 'top',
+            fontSize: 11,
+            fontWeight: 600,
+            color: '#1e293b',
+            backgroundColor: 'rgba(255,255,255,0.9)',
+            padding: [3, 6],
+            borderRadius: 4,
+            lineHeight: 16
+          },
+          emphasis: {
+            scale: 1.5,
+            itemStyle: { color: '#dc2626' }
+          }
+        }]
+      };
+      chart.setOption(option);
+    })
+    .catch(function(err) {
+      console.error('Map load failed:', err);
+      chartDom.innerHTML = '<div style="text-align:center;padding:80px;color:var(--text-muted);">地图加载失败，请检查网络连接</div>';
+    });
+
+  // 渲染下方高风险案件列表
+  let listHtml = '';
+  if (highRiskCases.length === 0) {
+    listHtml = '<div style="text-align:center;padding:20px;color:var(--text-muted);">暂无高风险案件</div>';
+  } else {
+    listHtml = '<div style="display:flex;flex-direction:column;gap:10px;">';
+    highRiskCases.forEach(function(c) {
+      const typeLabel = c.type === 'domestic' ? '国内' : '海外';
+      listHtml += '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#f8fafc;border-radius:var(--radius-md);border-left:4px solid #ef4444;">' +
+        '<span style="font-size:20px;">🚩</span>' +
+        '<div style="flex:1;">' +
+          '<div style="font-weight:600;">' + c.brandName + '（' + c.id + '）</div>' +
+          '<div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">' +
+            c.country + ' · ' + c.businessType + ' · 第' + c.niceClasses.join('、') + '类 · ' + typeLabel +
+          '</div>' +
+        '</div>' +
+        '<span class="tag tag-red">' + c.status + '</span>' +
+      '</div>';
+    });
+    listHtml += '</div>';
+  }
+  document.getElementById('regionAnalysis').innerHTML = listHtml;
 }
 
 // ==================== View Switch ====================
@@ -523,6 +622,12 @@ function switchView(view, el) {
   document.getElementById('timelineView').style.display = view === 'timeline' ? 'block' : 'none';
   document.getElementById('regionView').style.display = view === 'region' ? 'block' : 'none';
   document.getElementById('matrixControls').style.display = view === 'matrix' ? 'block' : 'none';
+  if (view === 'region') {
+    setTimeout(function() {
+      if (window.regionChart) { window.regionChart.resize(); }
+      else { renderRegions(); }
+    }, 100);
+  }
 }
 
 // ==================== Init ====================

@@ -63,6 +63,8 @@
                 <th style="width:40px;"><input type="checkbox"></th>
                 <th>案件编号</th>
                 <th>商标名称</th>
+                <th>商标号</th>
+                <th>国家</th>
                 <th>业务类型</th>
                 <th>当前节点</th>
                 <th>官方绝限</th>
@@ -94,7 +96,7 @@
         </div>
         <div class="form-section">
           <label class="form-label">案件类别 <span class="required">*</span></label>
-          <select class="form-select" id="caseCategory">
+          <select class="form-select" id="caseCategory" onchange="updateCaseTypeOptions()">
             <option value="国内案件">国内案件</option>
             <option value="海外案件">海外案件</option>
           </select>
@@ -104,14 +106,21 @@
         <div class="form-section">
           <label class="form-label">业务类型 <span class="required">*</span></label>
           <select class="form-select" id="caseType">
-            <option>新申请</option>
-            <option>驳回复审</option>
+            <option>风险评估</option>
+            <option>新申请补位申请</option>
+            <option>驳回</option>
+            <option>撤三申请</option>
             <option>异议申请</option>
-            <option>异议答辩</option>
             <option>无效宣告</option>
-            <option>撤三答辩</option>
-            <option>续展</option>
-            <option>行政诉讼</option>
+            <option>商标诉讼</option>
+            <option>变转续补</option>
+            <option>商标购入</option>
+            <option>使用证据/宣誓</option>
+            <option>线上线下调查</option>
+            <option>谈判类（共存/和解）</option>
+            <option>手续文件</option>
+            <option>维权相关</option>
+            <option>其他</option>
             <option>马德里申请</option>
             <option>单一国家申请</option>
           </select>
@@ -184,11 +193,23 @@ function renderCases(list) {
     internalDl.setDate(internalDl.getDate() - 3);
     const intStr = c.deadline ? internalDl.toISOString().slice(0,10) : '-';
     const urgent = c.deadline && c.deadline <= '2026-05-07';
+    // 尝试从 DataService 获取商标号和国家
+    let regNum = '-';
+    let country = '-';
+    try {
+      const dsCase = DataService && DataService.getCaseById ? DataService.getCaseById(c.id) : null;
+      if (dsCase) {
+        regNum = dsCase.registrationNumber || (dsCase.applicationNumber ? dsCase.applicationNumber : '-');
+        country = dsCase.country || '-';
+      }
+    } catch (e) {}
     tbody.innerHTML += `
       <tr>
         <td><input type="checkbox"></td>
         <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">${c.id}</span></td>
         <td><strong>${c.name}</strong></td>
+        <td><span style="font-size:12px;color:var(--text-secondary);">${regNum}</span></td>
+        <td><span style="font-size:12px;">${country}</span></td>
         <td><span class="tag tag-blue">${c.type}</span></td>
         <td>${getStatusTag(c.status)}</td>
         <td style="color:${urgent?'#ef4444':''};font-weight:${urgent?'600':'400'};">${c.deadline || '-'}</td>
@@ -252,6 +273,20 @@ function openNewCaseModal() {
   renderCatGrid();
   // 默认申请日为今天
   document.getElementById('caseApplyDate').value = new Date().toISOString().slice(0,10);
+  updateCaseTypeOptions();
+}
+
+function updateCaseTypeOptions() {
+  const category = document.getElementById('caseCategory').value;
+  const select = document.getElementById('caseType');
+  const domesticTypes = [
+    '风险评估', '新申请补位申请', '驳回', '撤三申请', '异议申请',
+    '无效宣告', '商标诉讼', '变转续补', '商标购入', '使用证据/宣誓',
+    '线上线下调查', '谈判类（共存/和解）', '手续文件', '维权相关', '其他'
+  ];
+  const overseasTypes = domesticTypes.concat(['马德里申请', '单一国家申请']);
+  const types = category === '国内案件' ? domesticTypes : overseasTypes;
+  select.innerHTML = types.map(function(t) { return '<option>' + t + '</option>'; }).join('');
 }
 
 function closeModal() {

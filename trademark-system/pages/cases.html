@@ -104,11 +104,11 @@
       <div class="filter-bar">
         <div class="filter-item active" data-filter="all" onclick="filterCases(this,'all')">全部类型</div>
         <div class="filter-item" data-filter="新申请" onclick="filterCases(this,'新申请')">新申请</div>
-        <div class="filter-item" data-filter="驳回复审" onclick="filterCases(this,'驳回复审')">驳回复审</div>
-        <div class="filter-item" data-filter="异议/无效" onclick="filterCases(this,'异议/无效')">异议/无效</div>
-        <div class="filter-item" data-filter="续展" onclick="filterCases(this,'续展')">续展</div>
-        <div class="filter-item" data-filter="撤三" onclick="filterCases(this,'撤三')">撤三</div>
+        <div class="filter-item" data-filter="驳回" onclick="filterCases(this,'驳回')">驳回</div>
+        <div class="filter-item" data-filter="异议" onclick="filterCases(this,'异议')">异议/无效</div>
+        <div class="filter-item" data-filter="变转续补" onclick="filterCases(this,'变转续补')">变转续补</div>
         <div class="filter-item" data-filter="诉讼" onclick="filterCases(this,'诉讼')">诉讼</div>
+        <div class="filter-item" data-filter="其他" onclick="filterCases(this,'其他')">其他</div>
         <div style="margin-left:auto; display:flex; gap:8px;">
           <input type="text" class="search-input" placeholder="搜索案件编号、商标名称..." id="caseSearch" oninput="searchCases(this.value)">
           <select class="filter-item" id="statusFilter" onchange="filterByStatus(this.value)">
@@ -189,7 +189,7 @@
         </div>
         <div class="form-section">
           <label class="form-label">案件类别 <span class="required">*</span></label>
-          <select class="form-select" id="caseCategory">
+          <select class="form-select" id="caseCategory" onchange="updateCaseTypeOptions()">
             <option value="国内案件">国内案件</option>
             <option value="海外案件">海外案件</option>
           </select>
@@ -199,14 +199,21 @@
         <div class="form-section">
           <label class="form-label">业务类型 <span class="required">*</span></label>
           <select class="form-select" id="caseType">
-            <option>新申请</option>
-            <option>驳回复审</option>
+            <option>风险评估</option>
+            <option>新申请补位申请</option>
+            <option>驳回</option>
+            <option>撤三申请</option>
             <option>异议申请</option>
-            <option>异议答辩</option>
             <option>无效宣告</option>
-            <option>撤三答辩</option>
-            <option>续展</option>
-            <option>行政诉讼</option>
+            <option>商标诉讼</option>
+            <option>变转续补</option>
+            <option>商标购入</option>
+            <option>使用证据/宣誓</option>
+            <option>线上线下调查</option>
+            <option>谈判类（共存/和解）</option>
+            <option>手续文件</option>
+            <option>维权相关</option>
+            <option>其他</option>
             <option>马德里申请</option>
             <option>单一国家申请</option>
           </select>
@@ -289,6 +296,8 @@ const defaultColumns = [
   { key: 'id', label: '案件编号', show: true },
   { key: 'brandName', label: '商标名称', show: true },
   { key: 'trademarkImage', label: '图样', width: '60px', show: true },
+  { key: 'registrationNumber', label: '商标号', show: true },
+  { key: 'country', label: '国家', show: true },
   { key: 'niceClasses', label: '尼斯分类', show: true },
   { key: 'businessType', label: '业务类型', show: true },
   { key: 'status', label: '当前状态', show: true },
@@ -392,8 +401,16 @@ function renderTable() {
     : DataService.getCases({ tab: currentTab });
   
   if (currentFilter !== 'all') {
-    data = data.filter(c => c.businessType.includes(currentFilter) || 
-      (currentFilter === '异议/无效' && (c.businessType.includes('异议') || c.businessType.includes('无效'))));
+    data = data.filter(c => {
+      if (currentFilter === '异议') {
+        return c.businessType.includes('异议') || c.businessType.includes('无效');
+      }
+      if (currentFilter === '其他') {
+        const mainTypes = ['新申请补位申请', '驳回', '异议申请', '无效宣告', '变转续补', '商标诉讼'];
+        return !mainTypes.includes(c.businessType);
+      }
+      return c.businessType.includes(currentFilter);
+    });
   }
   
   if (currentStatusFilter !== 'all' && currentStatusFilter !== 'deadline_this_week') {
@@ -412,7 +429,9 @@ function renderTable() {
     data = data.filter(c => 
       c.id.toLowerCase().includes(kw) || 
       c.brandName.toLowerCase().includes(kw) || 
-      c.businessType.toLowerCase().includes(kw)
+      c.businessType.toLowerCase().includes(kw) ||
+      (c.country && c.country.toLowerCase().includes(kw)) ||
+      (c.registrationNumber && c.registrationNumber.toLowerCase().includes(kw))
     );
   }
   
@@ -465,6 +484,13 @@ function renderCell(key, c) {
     case 'trademarkImage':
       const img = c.trademarkImage || '../assets/tm-yunzhi.png';
       return `<td><img src="${img}" alt="${c.brandName}" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#f8fafc;border:1px solid var(--border-color);"></td>`;
+    
+    case 'registrationNumber':
+      const regNum = c.registrationNumber || (c.applicationNumber ? c.applicationNumber : '-');
+      return `<td><span style="font-size:12px;color:var(--text-secondary);">${regNum}</span></td>`;
+    
+    case 'country':
+      return `<td><span style="font-size:12px;">${c.country || '-'}</span></td>`;
     
     case 'niceClasses':
       const tooltip = getNiceClassTooltip(c.niceClasses);
@@ -709,6 +735,20 @@ function openNewCaseModal() {
   selectedCats = [];
   renderCatGrid();
   document.getElementById('caseApplyDate').value = new Date().toISOString().slice(0,10);
+  updateCaseTypeOptions();
+}
+
+function updateCaseTypeOptions() {
+  const category = document.getElementById('caseCategory').value;
+  const select = document.getElementById('caseType');
+  const domesticTypes = [
+    '风险评估', '新申请补位申请', '驳回', '撤三申请', '异议申请',
+    '无效宣告', '商标诉讼', '变转续补', '商标购入', '使用证据/宣誓',
+    '线上线下调查', '谈判类（共存/和解）', '手续文件', '维权相关', '其他'
+  ];
+  const overseasTypes = domesticTypes.concat(['马德里申请', '单一国家申请']);
+  const types = category === '国内案件' ? domesticTypes : overseasTypes;
+  select.innerHTML = types.map(function(t) { return '<option>' + t + '</option>'; }).join('');
 }
 
 function closeModal() {
@@ -747,10 +787,13 @@ function submitCase() {
   }
   
   const typeCodeMap = {
-    '新申请': 'new_apply', '驳回复审': 'reexamination', '异议申请': 'opposition',
-    '异议答辩': 'defense', '无效宣告': 'invalidation', '撤三答辩': 'defense',
-    '续展': 'renewal', '行政诉讼': 'litigation', '马德里申请': 'madrid',
-    '单一国家申请': 'single_country'
+    '风险评估': 'risk_assessment', '新申请补位申请': 'new_apply', '驳回': 'rejection',
+    '撤三申请': 'cancellation', '异议申请': 'opposition', '无效宣告': 'invalidation',
+    '商标诉讼': 'litigation', '变转续补': 'transfer_renewal', '商标购入': 'acquisition',
+    '使用证据/宣誓': 'evidence_declaration', '线上线下调查': 'investigation',
+    '谈判类（共存/和解）': 'negotiation', '手续文件': 'formalities',
+    '维权相关': 'rights_protection', '其他': 'other',
+    '马德里申请': 'madrid', '单一国家申请': 'single_country'
   };
   
   const newCase = {

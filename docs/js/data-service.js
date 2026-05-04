@@ -23,7 +23,7 @@ const DataService = (function() {
     DRAFTS: 'tm_drafts'
   };
 
-  const CURRENT_VERSION = '2.1';
+  const CURRENT_VERSION = '2.2';
 
   const NICE_CLASS_NAMES = {
     1: '化工原料', 2: '颜料油漆', 3: '日化用品', 4: '燃料油脂',
@@ -285,8 +285,8 @@ const DataService = (function() {
       {
         id: 'TM-2026-0042', brandId: 'yunzhi', brandName: '云智',
         trademarkImage: '../assets/tm-yunzhi.png',
-        type: 'domestic', businessType: '驳回复审', businessTypeCode: 'reexamination',
-        status: '审查中', statusCode: 'examining',
+        type: 'domestic', country: '中国', businessType: '驳回', businessTypeCode: 'rejection', registrationNumber: '20260115001',
+        status: '已驳回', statusCode: 'rejected',
         niceClasses: [9, 35, 38, 42],
         niceClassNames: '9, 35, 38, 42',
         applicationDate: '2026-01-15',
@@ -342,7 +342,7 @@ const DataService = (function() {
       {
         id: 'TM-2026-0031', brandId: 'zhilian', brandName: '智联',
         trademarkImage: '../assets/tm-zhilian.png',
-        type: 'domestic', businessType: '异议答辩', businessTypeCode: 'defense',
+        type: 'domestic', country: '中国', businessType: '维权相关', businessTypeCode: 'rights_protection', registrationNumber: '20251110002',
         status: '答辩期', statusCode: 'defense_period',
         niceClasses: [9, 35, 38],
         niceClassNames: '9, 35, 38',
@@ -370,7 +370,7 @@ const DataService = (function() {
       {
         id: 'TM-2026-0056', brandId: 'yuedong', brandName: '悦动',
         trademarkImage: '../assets/tm-yuedong.png',
-        type: 'domestic', businessType: '新申请', businessTypeCode: 'new_apply',
+        type: 'domestic', country: '中国', businessType: '新申请补位申请', businessTypeCode: 'new_apply', registrationNumber: '20260320003',
         status: '受理中', statusCode: 'pending',
         niceClasses: [25, 35],
         niceClassNames: '25, 35',
@@ -393,7 +393,7 @@ const DataService = (function() {
       {
         id: 'TM-2026-0028', brandId: 'mingda', brandName: '明达',
         trademarkImage: '../assets/tm-mingda.png',
-        type: 'domestic', businessType: '不予注册复审', businessTypeCode: 'reexamination',
+        type: 'domestic', country: '中国', businessType: '驳回', businessTypeCode: 'rejection', registrationNumber: '20260201004',
         status: '准备材料', statusCode: 'preparing',
         niceClasses: [35, 36, 42],
         niceClassNames: '35, 36, 42',
@@ -417,7 +417,7 @@ const DataService = (function() {
       {
         id: 'TM-2025-0098', brandId: 'xinglian', brandName: '星联',
         trademarkImage: '../assets/tm-xinglian.png',
-        type: 'domestic', businessType: '续展', businessTypeCode: 'renewal',
+        type: 'domestic', country: '中国', businessType: '变转续补', businessTypeCode: 'transfer_renewal', registrationNumber: '20160110005',
         status: '待缴费', statusCode: 'waiting_payment',
         niceClasses: [9, 35, 38, 41, 42, 45],
         niceClassNames: '9, 35, 38, 41, 42, 45',
@@ -441,7 +441,7 @@ const DataService = (function() {
       {
         id: 'TM-2026-0071', brandId: 'ruisi', brandName: '睿思',
         trademarkImage: '../assets/tm-ruisi.png',
-        type: 'domestic', businessType: '撤三答辩', businessTypeCode: 'defense',
+        type: 'domestic', country: '中国', businessType: '维权相关', businessTypeCode: 'rights_protection', registrationNumber: '20240601006',
         status: '证据收集', statusCode: 'evidence',
         niceClasses: [9, 35, 38, 42],
         niceClassNames: '9, 35, 38, 42',
@@ -464,7 +464,7 @@ const DataService = (function() {
       {
         id: 'TM-2026-0012', brandId: 'yuanjian', brandName: '远见',
         trademarkImage: '../assets/tm-yuanjian.png',
-        type: 'domestic', businessType: '异议申请', businessTypeCode: 'opposition',
+        type: 'domestic', country: '中国', businessType: '异议申请', businessTypeCode: 'opposition', registrationNumber: '20260120007',
         status: '准备材料', statusCode: 'preparing',
         niceClasses: [35, 42],
         niceClassNames: '35, 42',
@@ -487,8 +487,8 @@ const DataService = (function() {
       {
         id: 'TM-2025-0156', brandId: 'horizon', brandName: 'Horizon',
         trademarkImage: '../assets/tm-horizon.png',
-        type: 'overseas', businessType: '行政诉讼', businessTypeCode: 'litigation',
-        status: '一审中', statusCode: 'first_instance',
+        type: 'overseas', country: '美国', businessType: '商标诉讼', businessTypeCode: 'litigation', applicationNumber: '98/765,432', registrationNumber: '',
+        status: '行政诉讼', statusCode: 'appeal',
         niceClasses: [9, 38],
         niceClassNames: '9, 38',
         applicationDate: '2025-08-15',
