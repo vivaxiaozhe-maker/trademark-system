@@ -217,6 +217,9 @@ function toggleMessagePanel() {
 }
 
 function initApp(activePage) {
+  if (typeof DataService !== 'undefined') {
+    DataService.init();
+  }
   renderSidebar(activePage);
   renderHeader();
 }
