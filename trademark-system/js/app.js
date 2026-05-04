@@ -1,3 +1,34 @@
+const breadcrumbMap = {
+  'dashboard': [{ label: '首页', href: 'index.html' }],
+  'todo': [{ label: '首页', href: 'index.html' }, { label: '待办事项' }],
+  'done': [{ label: '首页', href: 'index.html' }, { label: '已办事项' }],
+  'my-cases': [{ label: '首页', href: 'index.html' }, { label: '我的案件' }],
+  'cc': [{ label: '首页', href: 'index.html' }, { label: '抄送案件' }],
+  'drafts': [{ label: '首页', href: 'index.html' }, { label: '我的草稿' }],
+  'cases': [{ label: '首页', href: 'index.html' }, { label: '案件管理中心' }],
+  'cases-domestic': [{ label: '首页', href: 'index.html' }, { label: '案件管理中心', href: 'pages/cases.html' }, { label: '国内案件' }],
+  'cases-overseas': [{ label: '首页', href: 'index.html' }, { label: '案件管理中心', href: 'pages/cases.html' }, { label: '海外案件' }],
+  'case-detail': [{ label: '首页', href: 'index.html' }, { label: '案件管理中心', href: 'pages/cases.html' }, { label: '案件详情' }],
+  'brand': [{ label: '首页', href: 'index.html' }, { label: '品牌管理' }],
+  'brand-internal': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '内部品牌' }],
+  'brand-external': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '外部合作' }],
+  'brand-map': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '品牌图谱' }],
+  'collab': [{ label: '首页', href: 'index.html' }, { label: '律所协作中心' }],
+  'fees': [{ label: '首页', href: 'index.html' }, { label: '费用中心' }],
+  'fees-bills': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '账单导入' }],
+  'fees-overview': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '费用总览' }],
+  'fees-approval': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '付款审批' }],
+  'fees-analysis': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '费用分析' }],
+  'fee-apply': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '费用申请' }],
+  'decision': [{ label: '首页', href: 'index.html' }, { label: '管理决策中心' }],
+  'monitor': [{ label: '首页', href: 'index.html' }, { label: '监测中心' }],
+  'tools': [{ label: '首页', href: 'index.html' }, { label: '商标工具Link' }],
+  'admin-users': [{ label: '首页', href: 'index.html' }, { label: '账号与权限' }],
+  'report': [{ label: '首页', href: 'index.html' }, { label: '生成报告' }],
+  'search-new': [{ label: '首页', href: 'index.html' }, { label: '商标检索' }],
+  'doc-new': [{ label: '首页', href: 'index.html' }, { label: '新建文档' }]
+};
+
 const menuConfig = [
   { group: "个人中心", items: [
     { label: "仪表盘", icon: "📊", page: "dashboard", href: "index.html" },
@@ -99,20 +130,22 @@ function renderHeader() {
   const header = document.querySelector('.top-header');
   if (!header) return;
   
-  const unreadCount = AppData.messages.filter(m => !m.read).length;
+  const unreadCount = getUnreadNotificationCount();
   
   header.innerHTML = `
-    <div style="display:flex;align-items:center;flex:1;">
+    <div style="display:flex;align-items:center;flex:1;position:relative;">
       <div class="mobile-menu-btn" onclick="openMobileSidebar()">
         ☰
       </div>
-      <div class="header-search">
+      <div class="header-search" style="position:relative;">
         <span style="color:var(--text-muted);font-size:14px;">🔍</span>
-        <input type="text" placeholder="搜索案件、商标、律所、文档..." id="globalSearch">
+        <input type="text" placeholder="搜索案件、商标、律所、文档..." id="globalSearch"
+          onfocus="showSearchDropdown()" onblur="hideSearchDropdownDelayed()" oninput="handleSearchInput(this.value)">
+        <div class="search-dropdown" id="searchDropdown"></div>
       </div>
     </div>
     <div class="header-actions">
-      <div class="btn-icon" title="消息通知" onclick="toggleMessagePanel()">
+      <div class="btn-icon" title="消息通知" onclick="toggleNotifDrawer()">
         🔔
         ${unreadCount > 0 ? `<span class="badge">${unreadCount}</span>` : ''}
       </div>
@@ -167,53 +200,280 @@ function navigateTo(href) {
   window.location.href = href;
 }
 
-function toggleMessagePanel() {
-  let panel = document.querySelector('.message-panel');
-  if (panel) {
-    panel.remove();
+function getUnreadNotificationCount() {
+  if (typeof DataService !== 'undefined' && DataService.getUnreadCount) {
+    return DataService.getUnreadCount();
+  }
+  return AppData.messages.filter(m => !m.read).length;
+}
+
+let currentNotifTab = 'all';
+
+function toggleNotifDrawer() {
+  const overlay = document.getElementById('notifDrawerOverlay');
+  if (overlay && overlay.classList.contains('active')) {
+    closeNotifDrawer();
+    return;
+  }
+  openNotifDrawer();
+}
+
+function openNotifDrawer() {
+  let overlay = document.getElementById('notifDrawerOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'notifDrawerOverlay';
+    overlay.className = 'notif-drawer-overlay';
+    overlay.innerHTML = `
+      <div class="notif-drawer" onclick="event.stopPropagation()">
+        <div class="notif-drawer-header">
+          <div style="font-weight:600;">🔔 通知中心</div>
+          <div style="cursor:pointer;font-size:20px;color:var(--text-muted);" onclick="closeNotifDrawer()">×</div>
+        </div>
+        <div class="notif-tabs">
+          <div class="notif-tab active" onclick="switchNotifTab('all', this)">全部</div>
+          <div class="notif-tab" onclick="switchNotifTab('deadline', this)">期限预警</div>
+          <div class="notif-tab" onclick="switchNotifTab('collaboration', this)">协作消息</div>
+          <div class="notif-tab" onclick="switchNotifTab('approval', this)">审批提醒</div>
+          <div class="notif-tab" onclick="switchNotifTab('system', this)">系统公告</div>
+        </div>
+        <div class="notif-drawer-body" id="notifDrawerBody"></div>
+        <div class="notif-drawer-footer">
+          <button class="btn btn-sm btn-secondary" onclick="markAllNotificationsRead()">一键已读</button>
+          <button class="btn btn-sm btn-secondary" onclick="closeNotifDrawer()">关闭</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.onclick = closeNotifDrawer;
+  }
+  overlay.classList.add('active');
+  renderNotifList();
+}
+
+function closeNotifDrawer() {
+  const overlay = document.getElementById('notifDrawerOverlay');
+  if (overlay) overlay.classList.remove('active');
+}
+
+function switchNotifTab(tab, el) {
+  currentNotifTab = tab;
+  document.querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderNotifList();
+}
+
+function renderNotifList() {
+  const body = document.getElementById('notifDrawerBody');
+  if (!body) return;
+  
+  let notifs = [];
+  if (typeof DataService !== 'undefined' && DataService.getNotifications) {
+    notifs = DataService.getNotifications();
+  }
+  
+  if (currentNotifTab !== 'all') {
+    notifs = notifs.filter(n => n.type === currentNotifTab);
+  }
+  
+  if (notifs.length === 0) {
+    body.innerHTML = '<div class="notif-empty">📭 暂无通知</div>';
     return;
   }
   
-  panel = document.createElement('div');
-  panel.className = 'message-panel';
-  const isMobile = window.innerWidth <= 768;
-  panel.style.cssText = `
-    position:fixed; top:${isMobile?'52px':'52px'}; right:${isMobile?'8px':'20px'}; width:${isMobile?'calc(100% - 16px)':'320px'};
-    background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.12);
-    border:1px solid #e2e8f0; z-index:200; overflow:hidden;
-  `;
-  
-  let html = `
-    <div style="padding:12px 16px; border-bottom:1px solid #e2e8f0; font-weight:600; font-size:14px;">
-      消息通知
-    </div>
-    <div style="max-height:360px; overflow-y:auto;">
-  `;
-  
-  AppData.messages.forEach(m => {
+  let html = '<div class="notif-list">';
+  notifs.forEach(n => {
     html += `
-      <div style="padding:12px 16px; border-bottom:1px solid #f1f5f9; cursor:pointer; ${!m.read?'background:#eff6ff;':''}">
-        <div style="font-size:13px; font-weight:${!m.read?'600':'400'}; color:${!m.read?'#2563eb':'#1e293b'};">${m.title}</div>
-        <div style="font-size:11px; color:#94a3b8; margin-top:4px;">${m.time}</div>
+      <div class="notif-item ${n.isRead ? '' : 'unread'}" onclick="handleNotifClick('${n.id}')">
+        <div class="notif-item-title">${n.title}</div>
+        <div class="notif-item-content">${n.content}</div>
+        <div class="notif-item-meta">
+          <span>${n.typeLabel} · ${n.createdAt}</span>
+          ${n.actionText ? `<a href="${n.actionUrl || '#'}" style="color:var(--primary);font-weight:500;" onclick="event.stopPropagation()">${n.actionText} →</a>` : ''}
+        </div>
       </div>
     `;
   });
+  html += '</div>';
+  body.innerHTML = html;
+}
+
+function handleNotifClick(id) {
+  if (typeof DataService !== 'undefined' && DataService.markNotificationRead) {
+    DataService.markNotificationRead(id);
+    renderNotifList();
+    renderHeader();
+  }
+}
+
+function markAllNotificationsRead() {
+  if (typeof DataService !== 'undefined' && DataService.markAllNotificationsRead) {
+    DataService.markAllNotificationsRead();
+    renderNotifList();
+    renderHeader();
+    showToast('全部通知已标记为已读', 'success');
+  }
+}
+
+function renderBreadcrumb(activePage) {
+  const container = document.querySelector('.page-header > div:first-child');
+  if (!container) return;
   
-  html += `</div>
-    <div style="padding:10px 16px; text-align:center; border-top:1px solid #e2e8f0;">
-      <a href="#" style="font-size:13px; color:#2563eb; font-weight:500;">查看全部消息</a>
+  const existing = container.querySelector('.breadcrumb-nav');
+  if (existing) existing.remove();
+  
+  const path = breadcrumbMap[activePage];
+  if (!path) return;
+  
+  let html = '<nav class="breadcrumb-nav">';
+  path.forEach((item, idx) => {
+    const isLast = idx === path.length - 1;
+    if (isLast) {
+      html += `<span class="current">${item.label}</span>`;
+    } else {
+      html += `<a href="${resolveHref(item.href)}">${item.label}</a> / `;
+    }
+  });
+  html += '</nav>';
+  
+  container.insertAdjacentHTML('beforeend', html);
+}
+
+// ==================== Search Dropdown ====================
+function showSearchDropdown() {
+  const dropdown = document.getElementById('searchDropdown');
+  if (!dropdown) return;
+  
+  let recentSearches = [];
+  try {
+    recentSearches = JSON.parse(localStorage.getItem('tm_search_history') || '[]');
+  } catch(e) {}
+  
+  let html = '';
+  
+  // Search scope
+  html += `
+    <div class="search-scope-bar">
+      <button class="search-scope-btn active">全部</button>
+      <button class="search-scope-btn">案件</button>
+      <button class="search-scope-btn">品牌</button>
+      <button class="search-scope-btn">律所</button>
+      <button class="search-scope-btn">文档</button>
     </div>
   `;
   
-  panel.innerHTML = html;
-  document.querySelector('.top-header').appendChild(panel);
+  // Recent searches
+  if (recentSearches.length > 0) {
+    html += `<div class="search-section">
+      <div class="search-section-title">最近搜索</div>
+      ${recentSearches.slice(0, 5).map(s => `
+        <div class="search-item" onclick="performSearch('${s}')">
+          <div class="search-item-icon">🕐</div>
+          <span>${s}</span>
+        </div>
+      `).join('')}
+    </div>`;
+  }
   
-  document.addEventListener('click', function close(e) {
-    if (!panel.contains(e.target) && !e.target.closest('.btn-icon')) {
-      panel.remove();
-      document.removeEventListener('click', close);
-    }
-  });
+  // Quick search
+  html += `<div class="search-section">
+    <div class="search-section-title">快捷搜索</div>
+    <div class="search-item" onclick="performSearch('案件')">
+      <div class="search-item-icon">⚖️</div>
+      <span>搜索案件</span>
+    </div>
+    <div class="search-item" onclick="performSearch('品牌')">
+      <div class="search-item-icon">🏷️</div>
+      <span>搜索品牌</span>
+    </div>
+    <div class="search-item" onclick="performSearch('律所')">
+      <div class="search-item-icon">🏢</div>
+      <span>搜索律所</span>
+    </div>
+  </div>`;
+  
+  dropdown.innerHTML = html;
+  dropdown.classList.add('show');
+}
+
+function hideSearchDropdownDelayed() {
+  setTimeout(() => {
+    const dropdown = document.getElementById('searchDropdown');
+    if (dropdown) dropdown.classList.remove('show');
+  }, 200);
+}
+
+function handleSearchInput(value) {
+  if (!value.trim()) return;
+  // Real-time search suggestions could go here
+}
+
+function performSearch(keyword) {
+  const input = document.getElementById('globalSearch');
+  if (input) input.value = keyword;
+  
+  // Save to history
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem('tm_search_history') || '[]'); } catch(e) {}
+  history = [keyword, ...history.filter(h => h !== keyword)].slice(0, 10);
+  localStorage.setItem('tm_search_history', JSON.stringify(history));
+  
+  const dropdown = document.getElementById('searchDropdown');
+  if (dropdown) dropdown.classList.remove('show');
+  
+  showToast(`正在搜索「${keyword}」...`, 'success');
+}
+
+// ==================== Toast ====================
+function showToast(message, type) {
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️';
+  toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+// ==================== Skeleton ====================
+function showSkeleton(containerId, template) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.dataset.originalContent = container.innerHTML;
+  container.innerHTML = template || `
+    <div class="skeleton-card">
+      <div class="skeleton-card-header">
+        <div class="skeleton skeleton-circle" style="width:40px;height:40px;"></div>
+        <div style="flex:1;">
+          <div class="skeleton skeleton-title" style="margin-bottom:8px;"></div>
+          <div class="skeleton skeleton-text" style="width:40%;"></div>
+        </div>
+      </div>
+      <div class="skeleton-card-body">
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-text" style="width:80%;"></div>
+        <div class="skeleton skeleton-text" style="width:60%;"></div>
+      </div>
+    </div>
+  `;
+}
+
+function hideSkeleton(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (container.dataset.originalContent !== undefined) {
+    container.innerHTML = container.dataset.originalContent;
+    delete container.dataset.originalContent;
+  }
 }
 
 function initApp(activePage) {
@@ -222,6 +482,7 @@ function initApp(activePage) {
   }
   renderSidebar(activePage);
   renderHeader();
+  renderBreadcrumb(activePage);
 }
 
 // ===== Enhanced Chart Drawing Helpers =====
