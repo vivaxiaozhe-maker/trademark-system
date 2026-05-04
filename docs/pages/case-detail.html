@@ -329,9 +329,6 @@ window.addEventListener('error', function(e) {
   console.error('[CaseDetail] Global error:', e.message, e.filename, e.lineno, e.error);
 });
 
-initApp('case-detail');
-_debug('initApp done');
-
 // ==================== State ====================
 const params = new URLSearchParams(location.search);
 const caseId = params.get('id') || 'TM-2026-0042';
@@ -928,6 +925,9 @@ function renderAll() {
   try { renderMessages(); } catch (e) { console.error('[CaseDetail] renderMessages error:', e); }
   _debug('renderAll done');
 }
+
+initApp('case-detail');
+_debug('initApp done');
 
 renderAll();
 </script>
