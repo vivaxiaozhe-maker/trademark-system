@@ -15,6 +15,7 @@ const breadcrumbMap = {
   'brand-map': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '品牌图谱' }],
   'search-case': [{ label: '首页', href: 'index.html' }, { label: '检索中心' }, { label: '检索案卷' }],
   'collab': [{ label: '首页', href: 'index.html' }, { label: '律所协作中心' }],
+  'seal-process': [{ label: '首页', href: 'index.html' }, { label: '律所协作中心' }, { label: '用印流程' }],
   'fees': [{ label: '首页', href: 'index.html' }, { label: '费用中心' }],
   'fees-bills': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '账单导入' }],
   'fees-overview': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '费用总览' }],
@@ -56,7 +57,9 @@ const menuConfig = [
     { label: "检索案卷", icon: "🔍", page: "search-case", href: "pages/search-case.html" }
   ]},
   { group: "协作与费用", items: [
-    { label: "律所协作中心", icon: "🤝", page: "collab", href: "pages/collab.html" },
+    { label: "律所协作中心", icon: "🤝", page: "collab", href: "pages/collab.html", children: [
+      { label: "用印流程", page: "seal-process", href: "pages/seal-process.html" }
+    ] },
     { label: "费用中心", icon: "💰", page: "fees", href: "pages/fees.html", children: [
       { label: "账单导入", page: "fees-bills", href: "pages/fees.html?tab=bills" },
       { label: "费用总览", page: "fees-overview", href: "pages/fees.html?tab=overview" },

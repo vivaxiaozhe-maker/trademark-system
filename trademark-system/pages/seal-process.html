@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用印流程 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+/* Status filter tags */
+.status-filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.status-filter-tag {
+  padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border-color); background: #fff;
+  color: var(--text-secondary); transition: var(--transition);
+}
+.status-filter-tag:hover { border-color: var(--primary); color: var(--primary); }
+.status-filter-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Extra status tags */
+.tag-purple { background: #8b5cf6; color: #fff; }
+.tag-yellow { background: #fef08a; color: #854d0e; }
+
+/* Table card */
+.table-card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.table-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--border-color); }
+.table-header .left { font-size: 15px; font-weight: 700; }
+.table-header .right { display: flex; gap: 8px; }
+
+/* Modal form */
+.modal-form-group { margin-bottom: 14px; }
+.modal-form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
+.modal-form-group input, .modal-form-group select, .modal-form-group textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; background: var(--bg-card); outline: none;
+}
+.modal-form-group textarea { min-height: 60px; resize: vertical; }
+.modal-form-group input:focus, .modal-form-group select:focus, .modal-form-group textarea:focus { border-color: var(--primary); }
+.readonly-field { background: var(--bg-body) !important; color: var(--text-muted); }
+
+/* File upload */
+.file-upload-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border: 1px dashed var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; color: var(--text-muted);
+  cursor: pointer; background: var(--bg-card); transition: var(--transition);
+}
+.file-upload-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.file-name { font-size: 12px; color: var(--primary); margin-top: 4px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .status-filter-bar { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <div class="page-title">用印流程</div>
+          <div class="page-desc">律所文件用印申请与审批跟踪</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('create')">➕ 发起用印</button>
+      </div>
+
+      <!-- Status Filter Tags -->
+      <div class="status-filter-bar" id="statusFilterBar"></div>
+
+      <!-- Table -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="left">用印申请列表</div>
+          <div class="right">
+            <button class="btn btn-secondary btn-sm">📥 导出</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox"></th>
+                <th>用印编号</th>
+                <th>律所名称</th>
+                <th>文件名称</th>
+                <th>发起人</th>
+                <th>发起时间</th>
+                <th>企业流程秘书</th>
+                <th>用印审批单号</th>
+                <th>当前状态</th>
+                <th style="text-align:center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="sealList"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal 1: 发起用印 -->
+<div class="modal-overlay" id="modalCreate">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">发起用印申请</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal('create')">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-form-group">
+        <label>律所名称 <span style="color:var(--danger);">*</span></label>
+        <select class="form-select" id="cLawFirm"><option value="">请选择律所</option></select>
+      </div>
+      <div class="modal-form-group">
+        <label>文件名称 <span style="color:var(--danger);">*</span></label>
+        <input type="text" id="cFileName" placeholder="请输入文件名称">
+      </div>
+      <div class="modal-form-group">
+        <label>原文件 <span style="color:var(--danger);">*</span></label>
+        <div class="file-upload-btn" onclick="document.getElementById('cOriginalFile').click()">📎 选择文件</div>
+        <input type="file" id="cOriginalFile" accept=".pdf" style="display:none;" onchange="showFileName('cOriginalFile','cFileLabel')">
+        <div class="file-name" id="cFileLabel"></div>
+      </div>
+      <div class="modal-form-group">
+        <label>备注</label>
+        <textarea id="cRemarks" placeholder="请输入备注..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('create')">取消</button>
+      <button class="btn btn-primary" onclick="submitCreate()">提交</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: 提交用印审批 -->
+<div class="modal-overlay" id="modalApprove">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">提交用印审批</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal('approve')">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="aId">
+      <div class="modal-form-group">
+        <label>用印审批单号 <span style="color:var(--danger);">*</span></label>
+        <input type="text" id="aApprovalNo" placeholder="如 AP-2026-0001">
+      </div>
+      <div class="modal-form-group">
+        <label>备注</label>
+        <textarea id="aRemarks" placeholder="请输入备注..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('approve')">取消</button>
+      <button class="btn btn-primary" onclick="submitApprove()">提交审批</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: 上传盖章文件 -->
+<div class="modal-overlay" id="modalUpload">
+  <div class="modal" style="max-width:440px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">上传盖章文件</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal('upload')">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="uId">
+      <div class="modal-form-group">
+        <label>盖章版文件 <span style="color:var(--danger);">*</span></label>
+        <div class="file-upload-btn" onclick="document.getElementById('uStampedFile').click()">📎 选择盖章版文件</div>
+        <input type="file" id="uStampedFile" accept=".pdf" style="display:none;" onchange="showFileName('uStampedFile','uFileLabel')">
+        <div class="file-name" id="uFileLabel"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('upload')">取消</button>
+      <button class="btn btn-primary" onclick="submitUpload()">上传</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4: 律所确认 -->
+<div class="modal-overlay" id="modalConfirm">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">盖章文件确认</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal('confirm')">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cfId">
+      <div class="modal-form-group">
+        <label>文件名称</label>
+        <input type="text" class="readonly-field" id="cfFileName" readonly>
+      </div>
+      <div class="modal-form-group">
+        <label>用印审批单号</label>
+        <input type="text" class="readonly-field" id="cfApprovalNo" readonly>
+      </div>
+      <div class="modal-form-group">
+        <label>确认意见</label>
+        <textarea id="cfOpinion" placeholder="请输入确认意见..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('confirm')">取消</button>
+      <button class="btn btn-danger" onclick="submitConfirm(false)">驳回</button>
+      <button class="btn btn-primary" onclick="submitConfirm(true)">确认通过</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/data-service.js"></script>
+<script>
+initApp('seal-process');
+
+var STATUS_CONFIG = {
+  all:              { label: '全部',        cls: '' },
+  pending_approval: { label: '待企业审批',   cls: 'tag-orange' },
+  approving:        { label: '企业审批中',   cls: 'tag-blue' },
+  sealed:           { label: '已盖章',      cls: 'tag-purple' },
+  pending_confirm:  { label: '待律所确认',   cls: 'tag-yellow' },
+  completed:        { label: '已完成',      cls: 'tag-green' }
+};
+
+var currentFilter = 'all';
+var currentData = [];
+
+/* ============ Status Filter ============ */
+function renderStatusFilter() {
+  var bar = document.getElementById('statusFilterBar');
+  var data = AppData.sealProcesses || [];
+  var counts = {
+    all: data.length,
+    pending_approval: data.filter(function(d) { return d.status === 'pending_approval'; }).length,
+    approving:        data.filter(function(d) { return d.status === 'approving'; }).length,
+    sealed:           data.filter(function(d) { return d.status === 'sealed'; }).length,
+    pending_confirm:  data.filter(function(d) { return d.status === 'pending_confirm'; }).length,
+    completed:        data.filter(function(d) { return d.status === 'completed'; }).length
+  };
+
+  var html = '';
+  Object.keys(STATUS_CONFIG).forEach(function(key) {
+    var cfg = STATUS_CONFIG[key];
+    var isActive = key === currentFilter;
+    var count = counts[key];
+    html += '<div class="status-filter-tag ' + (isActive ? 'active' : '') + '" onclick="switchStatusFilter(\'' + key + '\')">' + cfg.label + ' (' + count + ')</div>';
+  });
+  bar.innerHTML = html;
+}
+
+function switchStatusFilter(status) {
+  currentFilter = status;
+  renderStatusFilter();
+  applyFilters();
+}
+
+function getStatusTag(status) {
+  var cfg = STATUS_CONFIG[status];
+  if (!cfg) return '<span class="tag tag-gray">未知</span>';
+  return '<span class="tag ' + cfg.cls + '">' + cfg.label + '</span>';
+}
+
+/* ============ Table ============ */
+function renderTable() {
+  var tbody = document.getElementById('sealList');
+  tbody.innerHTML = '';
+  if (currentData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted);">暂无用印申请</td></tr>';
+    return;
+  }
+
+  currentData.forEach(function(item) {
+    var actions = getActions(item);
+    tbody.innerHTML +=
+      '<tr>' +
+        '<td><input type="checkbox"></td>' +
+        '<td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">' + item.sealNo + '</span></td>' +
+        '<td><strong>' + item.lawFirmName + '</strong></td>' +
+        '<td>' + item.fileName + '</td>' +
+        '<td>' + item.initiator + '</td>' +
+        '<td><span style="font-size:12px;color:var(--text-secondary);">' + item.submitTime + '</span></td>' +
+        '<td>' + (item.processSecretary || '-') + '</td>' +
+        '<td>' + (item.sealApprovalNo || '-') + '</td>' +
+        '<td>' + getStatusTag(item.status) + '</td>' +
+        '<td style="text-align:center;">' + actions + '</td>' +
+      '</tr>';
+  });
+}
+
+function getActions(item) {
+  var s = item.status;
+  if (s === 'pending_approval') {
+    return '<button class="btn btn-sm btn-primary" style="padding:4px 10px;font-size:12px;" onclick="openApproveModal(\'' + item.id + '\')">提交用印审批</button>';
+  }
+  if (s === 'sealed') {
+    return '<button class="btn btn-sm btn-primary" style="padding:4px 10px;font-size:12px;" onclick="openUploadModal(\'' + item.id + '\')">上传盖章文件</button>';
+  }
+  if (s === 'pending_confirm') {
+    return '<div style="display:flex;gap:6px;justify-content:center;">' +
+      '<button class="btn btn-sm btn-primary" style="padding:4px 10px;font-size:12px;" onclick="openConfirmModal(\'' + item.id + '\')">确认</button>' +
+      '<button class="btn btn-sm btn-danger" style="padding:4px 10px;font-size:12px;" onclick="rejectSeal(\'' + item.id + '\')">驳回</button>' +
+      '</div>';
+  }
+  if (s === 'completed') {
+    return '<button class="btn btn-sm btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="viewSeal(\'' + item.id + '\')">查看</button>';
+  }
+  return '-';
+}
+
+function applyFilters() {
+  var data = [...(AppData.sealProcesses || [])];
+  if (currentFilter !== 'all') {
+    data = data.filter(function(d) { return d.status === currentFilter; });
+  }
+  currentData = data;
+  renderTable();
+}
+
+/* ============ Modal Helpers ============ */
+function openModal(type) {
+  var id = 'modal' + type.charAt(0).toUpperCase() + type.slice(1);
+  document.getElementById(id).classList.add('active');
+}
+
+function closeModal(type) {
+  var id = 'modal' + type.charAt(0).toUpperCase() + type.slice(1);
+  document.getElementById(id).classList.remove('active');
+}
+
+function showFileName(inputId, labelId) {
+  var file = document.getElementById(inputId).files[0];
+  document.getElementById(labelId).textContent = file ? file.name : '';
+}
+
+/* ============ Modal 1: Create ============ */
+function submitCreate() {
+  var lawFirm = document.getElementById('cLawFirm').value;
+  var fileName = document.getElementById('cFileName').value.trim();
+  if (!lawFirm || !fileName) { alert('请填写必填项'); return; }
+
+  var newItem = {
+    id: 'SP-' + Date.now(),
+    sealNo: 'SP-2026-' + String(Math.floor(Math.random() * 9000) + 1000),
+    lawFirmName: lawFirm,
+    fileName: fileName,
+    originalFile: document.getElementById('cFileLabel').textContent,
+    stampedFile: '',
+    initiator: AppData.user.name,
+    initiatorRole: '律所',
+    processSecretary: '',
+    sealApprovalNo: '',
+    status: 'pending_approval',
+    submitTime: new Date().toISOString().slice(0, 10),
+    sealTime: '',
+    confirmTime: '',
+    remarks: document.getElementById('cRemarks').value.trim(),
+    confirmOpinion: ''
+  };
+
+  AppData.sealProcesses.push(newItem);
+  closeModal('create');
+  // reset form
+  document.getElementById('cLawFirm').value = '';
+  document.getElementById('cFileName').value = '';
+  document.getElementById('cOriginalFile').value = '';
+  document.getElementById('cFileLabel').textContent = '';
+  document.getElementById('cRemarks').value = '';
+  renderStatusFilter();
+  applyFilters();
+  alert('用印申请已发起');
+}
+
+/* ============ Modal 2: Approve ============ */
+function openApproveModal(id) {
+  document.getElementById('aId').value = id;
+  document.getElementById('aApprovalNo').value = '';
+  document.getElementById('aRemarks').value = '';
+  openModal('approve');
+}
+
+function submitApprove() {
+  var id = document.getElementById('aId').value;
+  var approvalNo = document.getElementById('aApprovalNo').value.trim();
+  if (!approvalNo) { alert('请填写用印审批单号'); return; }
+
+  var item = AppData.sealProcesses.find(function(d) { return d.id === id; });
+  if (item) {
+    item.sealApprovalNo = approvalNo;
+    item.processSecretary = AppData.user.name;
+    item.status = 'approving';
+    item.remarks = document.getElementById('aRemarks').value.trim();
+  }
+  closeModal('approve');
+  renderStatusFilter();
+  applyFilters();
+  alert('用印审批已提交');
+}
+
+/* ============ Modal 3: Upload ============ */
+function openUploadModal(id) {
+  document.getElementById('uId').value = id;
+  document.getElementById('uFileLabel').textContent = '';
+  document.getElementById('uStampedFile').value = '';
+  openModal('upload');
+}
+
+function submitUpload() {
+  var id = document.getElementById('uId').value;
+  var fileName = document.getElementById('uFileLabel').textContent;
+  if (!fileName) { alert('请选择盖章版文件'); return; }
+
+  var item = AppData.sealProcesses.find(function(d) { return d.id === id; });
+  if (item) {
+    item.stampedFile = fileName;
+    item.status = 'pending_confirm';
+    item.sealTime = new Date().toISOString().slice(0, 10);
+  }
+  closeModal('upload');
+  renderStatusFilter();
+  applyFilters();
+  alert('盖章文件已上传，等待律所确认');
+}
+
+/* ============ Modal 4: Confirm ============ */
+function openConfirmModal(id) {
+  var item = AppData.sealProcesses.find(function(d) { return d.id === id; });
+  if (!item) return;
+  document.getElementById('cfId').value = id;
+  document.getElementById('cfFileName').value = item.fileName;
+  document.getElementById('cfApprovalNo').value = item.sealApprovalNo || '-';
+  document.getElementById('cfOpinion').value = '';
+  openModal('confirm');
+}
+
+function submitConfirm(isPass) {
+  var id = document.getElementById('cfId').value;
+  var opinion = document.getElementById('cfOpinion').value.trim();
+  var item = AppData.sealProcesses.find(function(d) { return d.id === id; });
+  if (!item) return;
+
+  item.confirmOpinion = opinion;
+  item.confirmTime = new Date().toISOString().slice(0, 10);
+
+  if (isPass) {
+    item.status = 'completed';
+    closeModal('confirm');
+    renderStatusFilter();
+    applyFilters();
+    alert('盖章文件已确认通过');
+  } else {
+    item.status = 'pending_approval';
+    closeModal('confirm');
+    renderStatusFilter();
+    applyFilters();
+    alert('已驳回，退回至待企业审批状态');
+  }
+}
+
+function rejectSeal(id) {
+  if (!confirm('确定要驳回该用印申请吗？')) return;
+  var item = AppData.sealProcesses.find(function(d) { return d.id === id; });
+  if (item) {
+    item.status = 'pending_approval';
+    renderStatusFilter();
+    applyFilters();
+    alert('已驳回');
+  }
+}
+
+function viewSeal(id) {
+  var item = AppData.sealProcesses.find(function(d) { return d.id === id; });
+  if (!item) return;
+  var cfg = STATUS_CONFIG[item.status];
+  alert('用印详情：\n编号：' + item.sealNo + '\n律所：' + item.lawFirmName + '\n文件：' + item.fileName + '\n审批单号：' + (item.sealApprovalNo || '-') + '\n状态：' + (cfg ? cfg.label : item.status) + '\n确认意见：' + (item.confirmOpinion || '无'));
+}
+
+/* ============ Init ============ */
+function initLawFirmOptions() {
+  var sel = document.getElementById('cLawFirm');
+  if (!sel) return;
+  var firms = AppData.lawFirms || [];
+  sel.innerHTML = '<option value="">请选择律所</option>' +
+    firms.map(function(f) { return '<option value="' + f.name + '">' + f.name + '</option>'; }).join('');
+}
+
+renderStatusFilter();
+applyFilters();
+initLawFirmOptions();
+</script>
+</body>
+</html>

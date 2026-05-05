@@ -205,7 +205,17 @@ const AppData = {
   searchMethods: ['近似检索', '综合检索', '官方数据库检索', '第三方平台检索', '人工分析检索'],
   searchAgencies: ['智联知识产权', '元健律师事务所', 'Horizon Law Group', '启航知识产权', '海翼律师事务所', '金诚律师事务所'],
   agencySuggestions: ['建议注册', '不建议注册', '需补充检索', '建议分割申请', '建议变更'],
-  adminSuggestions: ['同意', '驳回', '需补充材料', '转交上级']
+  adminSuggestions: ['同意', '驳回', '需补充材料', '转交上级'],
+
+  // 用印流程数据
+  sealProcesses: [
+    { id: 'SP-2026-0001', sealNo: 'SP-2026-0001', lawFirmName: '智联知识产权', fileName: '驳回复审委托书.pdf', originalFile: '驳回委托书_v1.pdf', stampedFile: '', initiator: '李律师·合伙人', initiatorRole: '律所', processSecretary: '', sealApprovalNo: '', status: 'pending_approval', submitTime: '2026-05-03', sealTime: '', confirmTime: '', remarks: ' urgent', confirmOpinion: '' },
+    { id: 'SP-2026-0002', sealNo: 'SP-2026-0002', lawFirmName: '元健律师事务所', fileName: '异议答辩授权书.pdf', originalFile: '授权书_v1.pdf', stampedFile: '', initiator: '王律师·主任', initiatorRole: '律所', processSecretary: '张秘书', sealApprovalNo: 'AP-2026-0042', status: 'approving', submitTime: '2026-05-02', sealTime: '', confirmTime: '', remarks: '', confirmOpinion: '' },
+    { id: 'SP-2026-0003', sealNo: 'SP-2026-0003', lawFirmName: 'Horizon Law Group', fileName: '美国商标行政诉讼委托书.pdf', originalFile: '委托书_v1.pdf', stampedFile: '委托书_stamped.pdf', initiator: 'Michael Chen', initiatorRole: '律所', processSecretary: '李秘书', sealApprovalNo: 'AP-2026-0031', status: 'sealed', submitTime: '2026-04-28', sealTime: '2026-05-01', confirmTime: '', remarks: '', confirmOpinion: '' },
+    { id: 'SP-2026-0004', sealNo: 'SP-2026-0004', lawFirmName: '启航知识产权', fileName: '续展申请书.pdf', originalFile: '续展申请_v1.pdf', stampedFile: '续展申请_stamped.pdf', initiator: '张律师·合伙人', initiatorRole: '律所', processSecretary: '王秘书', sealApprovalNo: 'AP-2026-0098', status: 'pending_confirm', submitTime: '2026-04-25', sealTime: '2026-04-30', confirmTime: '', remarks: '', confirmOpinion: '' },
+    { id: 'SP-2026-0005', sealNo: 'SP-2026-0005', lawFirmName: '海翼律师事务所', fileName: '不予注册复审委托书.pdf', originalFile: '复审委托书_v1.pdf', stampedFile: '复审委托书_stamped.pdf', initiator: '陈律师·合伙人', initiatorRole: '律所', processSecretary: '赵秘书', sealApprovalNo: 'AP-2026-0028', status: 'completed', submitTime: '2026-04-20', sealTime: '2026-04-25', confirmTime: '2026-04-27', remarks: '', confirmOpinion: '盖章文件无误，确认通过' },
+    { id: 'SP-2026-0006', sealNo: 'SP-2026-0006', lawFirmName: '金诚律师事务所', fileName: '马德里申请委托书.pdf', originalFile: '马德里委托书_v1.pdf', stampedFile: '', initiator: '孙律师·主任', initiatorRole: '律所', processSecretary: '', sealApprovalNo: '', status: 'pending_approval', submitTime: '2026-05-04', sealTime: '', confirmTime: '', remarks: '', confirmOpinion: '' }
+  ]
 };
 
 function getPriorityTag(p) {
