@@ -80,6 +80,7 @@ const menuConfig = [
 ];
 
 function resolveHref(href) {
+  if (!href) return '#';
   const inPages = location.pathname.includes('/pages/');
   if (!inPages) return href;
   if (href === 'index.html') return '../index.html';
@@ -341,8 +342,10 @@ function renderBreadcrumb(activePage) {
     const isLast = idx === path.length - 1;
     if (isLast) {
       html += `<span class="current">${item.label}</span>`;
-    } else {
+    } else if (item.href) {
       html += `<a href="${resolveHref(item.href)}">${item.label}</a> / `;
+    } else {
+      html += `<span>${item.label}</span> / `;
     }
   });
   html += '</nav>';
