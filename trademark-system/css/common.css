@@ -396,6 +396,9 @@ ul { list-style:none; }
 .tag-gray { background:#f1f5f9; color:#475569; }
 .tag-gray::before { background:#94a3b8; }
 
+.tag-purple { background:#ede9fe; color:#6d28d9; }
+.tag-purple::before { background:#8b5cf6; }
+
 /* Progress */
 .progress-bar {
   height: 6px; background: var(--bg-body); border-radius:3px; overflow:hidden;

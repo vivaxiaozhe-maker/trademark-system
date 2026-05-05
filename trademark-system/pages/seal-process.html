@@ -493,40 +493,18 @@ function initLawFirmOptions() {
     firms.map(function(f) { return '<option value="' + f.name + '">' + f.name + '</option>'; }).join('');
 }
 
-console.log('[DEBUG] AppData type:', typeof AppData);
-console.log('[DEBUG] sealProcesses type:', typeof AppData.sealProcesses);
-console.log('[DEBUG] sealProcesses length:', AppData.sealProcesses ? AppData.sealProcesses.length : 'N/A');
-
-// 添加调试面板
-var debugPanel = document.createElement('div');
-debugPanel.id = 'debugPanel';
-debugPanel.style.cssText = 'position:fixed;bottom:10px;right:10px;z-index:9999;background:#fff;border:2px solid #f59e0b;border-radius:8px;padding:12px;font-size:12px;max-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-debugPanel.innerHTML = '<div style="font-weight:600;margin-bottom:6px;">🐛 调试信息</div><div id="debugContent">加载中...</div>';
-document.body.appendChild(debugPanel);
-
-function updateDebug(msg) {
-  var el = document.getElementById('debugContent');
-  if (el) el.innerHTML += '<div style="margin-top:4px;">' + msg + '</div>';
-}
-
-updateDebug('AppData: ' + (typeof AppData !== 'undefined' ? '✅ 已加载' : '❌ 未加载'));
-if (typeof AppData !== 'undefined') {
-  updateDebug('sealProcesses: ' + (AppData.sealProcesses ? AppData.sealProcesses.length + ' 条' : '❌ 不存在'));
-}
-
 if (typeof AppData === 'undefined' || !AppData.sealProcesses || AppData.sealProcesses.length === 0) {
   document.querySelector('.page-container').innerHTML =
     '<div style="text-align:center;padding:60px 20px;">' +
     '<div style="font-size:48px;margin-bottom:16px;">⚠️</div>' +
     '<div style="font-size:18px;font-weight:600;margin-bottom:8px;">数据加载异常</div>' +
-    '<div style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;">sealProcesses 无数据（长度=' + (typeof AppData !== 'undefined' && AppData.sealProcesses ? AppData.sealProcesses.length : 'undefined') + '）</div>' +
+    '<div style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;">sealProcesses 无数据</div>' +
     '<button class="btn btn-primary" onclick="location.reload(true)">强制刷新</button>' +
     '</div>';
 } else {
   renderStatusFilter();
   applyFilters();
   initLawFirmOptions();
-  updateDebug('表格已渲染');
 }
 </script>
 </body>

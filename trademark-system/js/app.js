@@ -13,6 +13,8 @@ const breadcrumbMap = {
   'brand-internal': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '内部品牌' }],
   'brand-external': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '外部合作' }],
   'brand-map': [{ label: '首页', href: 'index.html' }, { label: '品牌管理', href: 'pages/brand.html' }, { label: '品牌图谱' }],
+  'brand-auth-external': [{ label: '首页', href: 'index.html' }, { label: '品牌管理' }, { label: '授权外部使用' }],
+  'brand-auth-internal': [{ label: '首页', href: 'index.html' }, { label: '品牌管理' }, { label: '授权内部使用' }],
   'search-case': [{ label: '首页', href: 'index.html' }, { label: '检索中心' }, { label: '检索案卷' }],
   'collab': [{ label: '首页', href: 'index.html' }, { label: '律所协作中心' }],
   'seal-process': [{ label: '首页', href: 'index.html' }, { label: '律所协作中心' }, { label: '用印流程' }],
@@ -50,7 +52,9 @@ const menuConfig = [
     { label: "品牌管理", icon: "🏷️", page: "brand", href: "pages/brand.html", children: [
       { label: "内部品牌", page: "brand-internal", href: "pages/brand.html?tab=internal" },
       { label: "外部合作", page: "brand-external", href: "pages/brand.html?tab=external" },
-      { label: "品牌图谱", page: "brand-map", href: "pages/brand-map.html" }
+      { label: "品牌图谱", page: "brand-map", href: "pages/brand-map.html" },
+      { label: "授权外部使用", page: "brand-auth-external", href: "pages/brand-auth-external.html" },
+      { label: "授权内部使用", page: "brand-auth-internal", href: "pages/brand-auth-internal.html" }
     ]}
   ]},
   { group: "检索中心", items: [

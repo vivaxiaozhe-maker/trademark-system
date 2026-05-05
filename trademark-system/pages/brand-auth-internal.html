@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>授权内部使用 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+/* Status filter */
+.status-filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.status-filter-tag {
+  padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border-color); background: #fff;
+  color: var(--text-secondary); transition: var(--transition);
+}
+.status-filter-tag:hover { border-color: var(--primary); color: var(--primary); }
+.status-filter-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Certificate tag */
+.tag-cert-yes { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #d1fae5; color: #059669; }
+.tag-cert-no { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #f1f5f9; color: #64748b; }
+
+/* Modal */
+.modal-form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px; }
+.modal-form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
+.modal-form-group input, .modal-form-group select, .modal-form-group textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; background: var(--bg-card); outline: none;
+}
+.modal-form-group textarea { min-height: 60px; resize: vertical; }
+.modal-form-group input:focus, .modal-form-group select:focus, .modal-form-group textarea:focus { border-color: var(--primary); }
+.readonly-card { background: var(--bg-body); border-radius: var(--radius-md); padding: 14px; margin-bottom: 14px; }
+.readonly-card-title { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); }
+.readonly-item { display: flex; margin-bottom: 8px; font-size: 13px; }
+.readonly-label { width: 120px; color: var(--text-muted); flex-shrink: 0; }
+.readonly-value { color: var(--text-primary); font-weight: 500; }
+.date-range { display: flex; align-items: center; gap: 8px; }
+.date-range input { flex: 1; }
+.date-range span { color: var(--text-muted); font-size: 12px; }
+.radio-group-inline { display: flex; gap: 16px; }
+.radio-item-inline { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.radio-item-inline input { width: 16px; height: 16px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-form-row { grid-template-columns: 1fr; }
+  .status-filter-bar { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <div class="page-title">授权内部使用</div>
+          <div class="page-desc">商标内部授权申请与审批管理</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openCreateModal()">➕ 新建授权申请</button>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="status-filter-bar" id="statusFilterBar"></div>
+
+      <!-- Table -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox"></th>
+                <th>申请编号</th>
+                <th>商标名称</th>
+                <th>需求部门</th>
+                <th>需求人</th>
+                <th>使用场景</th>
+                <th>国家区域</th>
+                <th>授权期限</th>
+                <th>被授权人姓名</th>
+                <th>需商标证</th>
+                <th>状态</th>
+                <th style="text-align:center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="authList"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal 1: Create -->
+<div class="modal-overlay" id="createModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">新建授权申请</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal('createModal')">×</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>需求部门 <span style="color:var(--danger);">*</span></label>
+          <select id="cDept"><option value="">请选择</option></select>
+        </div>
+        <div class="modal-form-group">
+          <label>需求人飞书邮箱 <span style="color:var(--danger);">*</span></label>
+          <input type="text" id="cEmail" placeholder="zhangsan@company.com">
+        </div>
+      </div>
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>商标名称 <span style="color:var(--danger);">*</span></label>
+          <select id="cTrademark"><option value="">请选择</option></select>
+        </div>
+        <div class="modal-form-group">
+          <label>飞书品牌审批单号</label>
+          <input type="text" id="cFeishuNo" placeholder="如 FS-BRAND-2025-001">
+        </div>
+      </div>
+      <div class="modal-form-group">
+        <label>使用场景 <span style="color:var(--danger);">*</span></label>
+        <textarea id="cScenario" placeholder="产品包装、宣传物料、官网展示等"></textarea>
+      </div>
+      <div class="modal-form-group">
+        <label>国家区域 <span style="color:var(--danger);">*</span></label>
+        <input type="text" id="cCountries" placeholder="多个用逗号分隔，如 中国,美国,欧盟">
+      </div>
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>授权期限 <span style="color:var(--danger);">*</span></label>
+          <div class="date-range">
+            <input type="date" id="cStartDate"><span>至</span><input type="date" id="cEndDate">
+          </div>
+        </div>
+        <div class="modal-form-group">
+          <label>被授权人姓名 <span style="color:var(--danger);">*</span></label>
+          <input type="text" id="cLicensee" placeholder="请输入被授权人姓名">
+        </div>
+      </div>
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>是否需要商标证 <span style="color:var(--danger);">*</span></label>
+          <div class="radio-group-inline">
+            <label class="radio-item-inline"><input type="radio" name="cNeedCert" value="true" checked> 是</label>
+            <label class="radio-item-inline"><input type="radio" name="cNeedCert" value="false"> 否</label>
+          </div>
+        </div>
+        <div class="modal-form-group">
+          <label>水印信息</label>
+          <input type="text" id="cWatermark" value="内部使用，未经授权禁止转载">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('createModal')">取消</button>
+      <button class="btn btn-primary" onclick="submitCreate()">提交申请</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Approve -->
+<div class="modal-overlay" id="approveModal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <div style="font-weight:600;">授权申请审批</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeModal('approveModal')">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="aId">
+      <div class="readonly-card">
+        <div class="readonly-card-title">📋 申请信息</div>
+        <div class="readonly-item"><div class="readonly-label">申请编号</div><div class="readonly-value" id="aAppNo"></div></div>
+        <div class="readonly-item"><div class="readonly-label">商标名称</div><div class="readonly-value" id="aTrademark"></div></div>
+        <div class="readonly-item"><div class="readonly-label">需求部门</div><div class="readonly-value" id="aDept"></div></div>
+        <div class="readonly-item"><div class="readonly-label">使用场景</div><div class="readonly-value" id="aScenario"></div></div>
+        <div class="readonly-item"><div class="readonly-label">国家区域</div><div class="readonly-value" id="aCountries"></div></div>
+        <div class="readonly-item"><div class="readonly-label">授权期限</div><div class="readonly-value" id="aPeriod"></div></div>
+        <div class="readonly-item"><div class="readonly-label">被授权人</div><div class="readonly-value" id="aLicensee"></div></div>
+        <div class="readonly-item"><div class="readonly-label">需商标证</div><div class="readonly-value" id="aNeedCert"></div></div>
+        <div class="readonly-item"><div class="readonly-label">水印信息</div><div class="readonly-value" id="aWatermark"></div></div>
+      </div>
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>具体商标号</label>
+          <input type="text" id="aSpecificNo" placeholder="法务补充准确注册号">
+        </div>
+        <div class="modal-form-group">
+          <label>确认水印内容</label>
+          <input type="text" id="aConfirmWatermark">
+        </div>
+      </div>
+      <div class="modal-form-group">
+        <label>审批意见 <span style="color:var(--danger);">*</span></label>
+        <textarea id="aOpinion" placeholder="请输入审批意见..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('approveModal')">取消</button>
+      <button class="btn btn-danger" onclick="submitApprove('reject')">驳回</button>
+      <button class="btn btn-success" id="btnDirectPass" onclick="submitApprove('direct')">直接通过</button>
+      <button class="btn btn-primary" id="btnCertPass" onclick="submitApprove('cert')">通过并生成商标证</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js?v=2.4"></script>
+<script src="../js/app.js?v=2.4"></script>
+<script src="../js/data-service.js?v=2.4"></script>
+<script src="../js/certificate-generator.js?v=2.4"></script>
+<script>
+initApp('brand-auth-internal');
+
+var STATUS_CONFIG = {
+  all:       { label: '全部',   cls: '' },
+  pending:   { label: '待审批', cls: 'tag-yellow' },
+  reviewing: { label: '审批中', cls: 'tag-blue' },
+  approved:  { label: '已通过', cls: 'tag-green' },
+  rejected:  { label: '已驳回', cls: 'tag-red' }
+};
+
+var currentFilter = 'all';
+var currentData = [];
+
+/* ============ Init dropdowns ============ */
+function initDropdowns() {
+  var deptSel = document.getElementById('cDept');
+  if (deptSel && AppData.departments) {
+    deptSel.innerHTML = '<option value="">请选择</option>' +
+      AppData.departments.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join('');
+  }
+  var tmSel = document.getElementById('cTrademark');
+  if (tmSel && AppData.brandList) {
+    tmSel.innerHTML = '<option value="">请选择</option>' +
+      AppData.brandList.map(function(b) { return '<option value="' + b + '">' + b + '</option>'; }).join('');
+  }
+}
+
+/* ============ Status Filter ============ */
+function renderStatusFilter() {
+  var bar = document.getElementById('statusFilterBar');
+  var data = AppData.authInternal || [];
+  var counts = {
+    all: data.length,
+    pending:   data.filter(function(d) { return d.status === 'pending'; }).length,
+    reviewing: data.filter(function(d) { return d.status === 'reviewing'; }).length,
+    approved:  data.filter(function(d) { return d.status === 'approved'; }).length,
+    rejected:  data.filter(function(d) { return d.status === 'rejected'; }).length
+  };
+  var html = '';
+  Object.keys(STATUS_CONFIG).forEach(function(key) {
+    var isActive = key === currentFilter;
+    html += '<div class="status-filter-tag ' + (isActive ? 'active' : '') + '" onclick="switchFilter(\'' + key + '\')">' + STATUS_CONFIG[key].label + ' (' + counts[key] + ')</div>';
+  });
+  bar.innerHTML = html;
+}
+
+function switchFilter(status) {
+  currentFilter = status;
+  renderStatusFilter();
+  applyFilters();
+}
+
+function getStatusTag(status) {
+  var cfg = STATUS_CONFIG[status];
+  if (!cfg) return '<span class="tag tag-gray">未知</span>';
+  return '<span class="tag ' + cfg.cls + '">' + cfg.label + '</span>';
+}
+
+/* ============ Table ============ */
+function renderTable() {
+  var tbody = document.getElementById('authList');
+  tbody.innerHTML = '';
+  if (currentData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:40px;color:var(--text-muted);">暂无授权申请</td></tr>';
+    return;
+  }
+  currentData.forEach(function(item) {
+    var certTag = item.needCertificate ? '<span class="tag-cert-yes">是</span>' : '<span class="tag-cert-no">否</span>';
+    var period = (item.authPeriodStart || '-') + ' 至 ' + (item.authPeriodEnd || '-');
+    var countries = Array.isArray(item.countries) ? item.countries.join(', ') : item.countries;
+    tbody.innerHTML +=
+      '<tr>' +
+        '<td><input type="checkbox"></td>' +
+        '<td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">' + item.appNo + '</span></td>' +
+        '<td><strong>' + item.trademarkName + '</strong></td>' +
+        '<td>' + item.dept + '</td>' +
+        '<td><span style="font-size:12px;color:var(--text-secondary);">' + item.requesterEmail + '</span></td>' +
+        '<td><span style="font-size:12px;">' + item.usageScenario + '</span></td>' +
+        '<td><span style="font-size:12px;">' + countries + '</span></td>' +
+        '<td><span style="font-size:12px;">' + period + '</span></td>' +
+        '<td>' + item.licenseeName + '</td>' +
+        '<td>' + certTag + '</td>' +
+        '<td>' + getStatusTag(item.status) + '</td>' +
+        '<td style="text-align:center;">' +
+          '<div style="display:flex;gap:8px;justify-content:center;">' +
+            '<span class="link-blue" style="cursor:pointer;color:var(--primary);font-size:13px;font-weight:500;" onclick="viewAuth(\'' + item.id + '\')">查看</span>' +
+            (item.status === 'pending' || item.status === 'reviewing' ? '<span class="link-blue" style="cursor:pointer;color:var(--primary);font-size:13px;font-weight:500;" onclick="openApproveModal(\'' + item.id + '\')">审批</span>' : '') +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+  });
+}
+
+function applyFilters() {
+  var data = [...(AppData.authInternal || [])];
+  if (currentFilter !== 'all') {
+    data = data.filter(function(d) { return d.status === currentFilter; });
+  }
+  currentData = data;
+  renderTable();
+}
+
+/* ============ Modal helpers ============ */
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+/* ============ Create ============ */
+function openCreateModal() {
+  document.getElementById('cDept').value = '';
+  document.getElementById('cEmail').value = '';
+  document.getElementById('cTrademark').value = '';
+  document.getElementById('cScenario').value = '';
+  document.getElementById('cCountries').value = '';
+  document.getElementById('cStartDate').value = '';
+  document.getElementById('cEndDate').value = '';
+  document.getElementById('cLicensee').value = '';
+  document.getElementById('cFeishuNo').value = '';
+  document.querySelector('input[name="cNeedCert"][value="true"]').checked = true;
+  document.getElementById('cWatermark').value = '内部使用，未经授权禁止转载';
+  openModal('createModal');
+}
+
+function submitCreate() {
+  var dept = document.getElementById('cDept').value;
+  var email = document.getElementById('cEmail').value.trim();
+  var trademark = document.getElementById('cTrademark').value;
+  var scenario = document.getElementById('cScenario').value.trim();
+  var countries = document.getElementById('cCountries').value.trim();
+  var startDate = document.getElementById('cStartDate').value;
+  var endDate = document.getElementById('cEndDate').value;
+  var licensee = document.getElementById('cLicensee').value.trim();
+  if (!dept || !email || !trademark || !scenario || !countries || !startDate || !endDate || !licensee) {
+    alert('请填写所有必填项'); return;
+  }
+  var needCert = document.querySelector('input[name="cNeedCert"]:checked').value === 'true';
+  var newItem = {
+    id: 'AI-' + Date.now(),
+    appNo: 'AI-2026-' + String(Math.floor(Math.random() * 9000) + 1000),
+    trademarkName: trademark,
+    dept: dept,
+    requesterEmail: email,
+    usageScenario: scenario,
+    countries: countries.split(',').map(function(s) { return s.trim(); }),
+    authPeriodStart: startDate,
+    authPeriodEnd: endDate,
+    licenseeName: licensee,
+    feishuApprovalNo: document.getElementById('cFeishuNo').value.trim(),
+    needCertificate: needCert,
+    watermarkText: document.getElementById('cWatermark').value.trim(),
+    status: 'pending',
+    specificTrademarkNo: '', confirmedWatermark: '', finalFeishuNo: '', approver: '', approvalTime: '', approvalOpinion: ''
+  };
+  AppData.authInternal.push(newItem);
+  closeModal('createModal');
+  renderStatusFilter();
+  applyFilters();
+  alert('授权申请已提交');
+}
+
+/* ============ Approve ============ */
+function openApproveModal(id) {
+  var item = (AppData.authInternal || []).find(function(d) { return d.id === id; });
+  if (!item) return;
+  document.getElementById('aId').value = id;
+  document.getElementById('aAppNo').textContent = item.appNo;
+  document.getElementById('aTrademark').textContent = item.trademarkName;
+  document.getElementById('aDept').textContent = item.dept;
+  document.getElementById('aScenario').textContent = item.usageScenario;
+  document.getElementById('aCountries').textContent = Array.isArray(item.countries) ? item.countries.join(', ') : item.countries;
+  document.getElementById('aPeriod').textContent = item.authPeriodStart + ' 至 ' + item.authPeriodEnd;
+  document.getElementById('aLicensee').textContent = item.licenseeName;
+  document.getElementById('aNeedCert').textContent = item.needCertificate ? '是' : '否';
+  document.getElementById('aWatermark').textContent = item.watermarkText;
+  document.getElementById('aSpecificNo').value = item.specificTrademarkNo || '';
+  document.getElementById('aConfirmWatermark').value = item.confirmedWatermark || item.watermarkText;
+  document.getElementById('aOpinion').value = '';
+  document.getElementById('btnCertPass').style.display = item.needCertificate ? 'inline-block' : 'none';
+  document.getElementById('btnDirectPass').style.display = item.needCertificate ? 'none' : 'inline-block';
+  openModal('approveModal');
+}
+
+function submitApprove(action) {
+  var id = document.getElementById('aId').value;
+  var opinion = document.getElementById('aOpinion').value.trim();
+  if (!opinion) { alert('请填写审批意见'); return; }
+  var item = (AppData.authInternal || []).find(function(d) { return d.id === id; });
+  if (!item) return;
+  item.approvalOpinion = opinion;
+  item.specificTrademarkNo = document.getElementById('aSpecificNo').value.trim();
+  item.confirmedWatermark = document.getElementById('aConfirmWatermark').value.trim();
+  item.approver = AppData.user.name;
+  item.approvalTime = new Date().toISOString().slice(0, 10);
+
+  if (action === 'reject') {
+    item.status = 'rejected';
+    alert('已驳回');
+    closeModal('approveModal');
+    renderStatusFilter();
+    applyFilters();
+    return;
+  }
+
+  // 通过审批（直接通过 或 生成商标证）
+  item.status = 'approved';
+  item.finalFeishuNo = item.feishuApprovalNo + '-A';
+
+  if (action === 'direct') {
+    closeModal('approveModal');
+    renderStatusFilter();
+    applyFilters();
+    alert('审批已通过，已记录飞书单号，主办法务已收到通知（模拟）');
+    return;
+  }
+
+  if (action === 'cert') {
+    showLoadingOverlay('正在生成商标证...');
+    setTimeout(function() {
+      var regDate = '—';
+      var validDate = '—';
+      var goodsServices = '第9类：计算机软件；智能手机；可穿戴设备';
+      if (AppData.citedMarks) {
+        var found = AppData.citedMarks.find(function(m) {
+          return m.name === item.trademarkName || m.no === item.specificTrademarkNo;
+        });
+        if (found) {
+          regDate = found.regDate || regDate;
+          validDate = found.validDate || validDate;
+        }
+      }
+      if (AppData.caseDetail && AppData.caseDetail.goodsServices) {
+        goodsServices = AppData.caseDetail.goodsServices;
+      }
+
+      var certData = generateCertificate({
+        trademarkName: item.trademarkName,
+        registerNo: item.specificTrademarkNo || item.appNo,
+        licensee: item.licenseeName,
+        goodsServices: goodsServices,
+        regDate: regDate,
+        validDate: validDate
+      }, item.confirmedWatermark || item.watermarkText);
+
+      downloadCertificate(certData.dataUrl, certData.fileName);
+      hideLoadingOverlay();
+      closeModal('approveModal');
+      renderStatusFilter();
+      applyFilters();
+      alert('商标证已生成并自动下载，飞书通知已发送（模拟）');
+    }, 1500);
+  }
+}
+
+/* ============ View ============ */
+function viewAuth(id) {
+  var item = (AppData.authInternal || []).find(function(d) { return d.id === id; });
+  if (!item) return;
+  var cfg = STATUS_CONFIG[item.status];
+  alert('申请详情：\n编号：' + item.appNo + '\n商标：' + item.trademarkName + '\n部门：' + item.dept + '\n场景：' + item.usageScenario + '\n期限：' + item.authPeriodStart + ' 至 ' + item.authPeriodEnd + '\n状态：' + (cfg ? cfg.label : item.status) + '\n审批意见：' + (item.approvalOpinion || '无'));
+}
+
+/* ============ Init ============ */
+initDropdowns();
+renderStatusFilter();
+applyFilters();
+</script>
+</body>
+</html>
