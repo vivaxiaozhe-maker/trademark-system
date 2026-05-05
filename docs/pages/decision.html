@@ -23,7 +23,7 @@
       <div class="tabs">
         <div class="tab active" onclick="switchTab('global',this)">🌐 商标全局视图</div>
         <div class="tab" onclick="switchTab('risk',this)">⚠️ 品牌风险地图</div>
-        <div class="tab" onclick="switchTab('firm',this)">🏢 律所管理</div>
+
         <div class="tab" onclick="switchTab('fee',this)">💰 费用管理</div>
         <div class="tab" onclick="switchTab('intel',this)">🧠 案件智能分析</div>
       </div>
@@ -104,48 +104,7 @@
         </div>
       </div>
       
-      <div id="firmPanel" style="display:none;">
-        <div class="card">
-          <div class="card-header"><div class="card-title">律所绩效评估</div></div>
-          <div class="card-body" style="padding:0;">
-            <table class="data-table">
-              <thead>
-                <tr><th>律所</th><th>案件数</th><th>成功率</th><th>响应速度</th><th>费用性价比</th><th>客户评分</th><th>综合评级</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>智联知识产权</strong></td>
-                  <td>45</td>
-                  <td style="color:var(--success);font-weight:600;">92%</td>
-                  <td>2.3小时</td>
-                  <td>★★★☆</td>
-                  <td><span style="color:#f59e0b;">★</span> 4.8</td>
-                  <td><span class="tag tag-green">A+</span></td>
-                </tr>
-                <tr>
-                  <td><strong>元健律师事务所</strong></td>
-                  <td>38</td>
-                  <td style="color:var(--success);font-weight:600;">88%</td>
-                  <td>4.1小时</td>
-                  <td>★★★★</td>
-                  <td><span style="color:#f59e0b;">★</span> 4.5</td>
-                  <td><span class="tag tag-green">A</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Horizon Law Group</strong></td>
-                  <td>12</td>
-                  <td style="color:var(--success);font-weight:600;">90%</td>
-                  <td>8.5小时</td>
-                  <td>★★★☆</td>
-                  <td><span style="color:#f59e0b;">★</span> 4.7</td>
-                  <td><span class="tag tag-green">A</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      
+
       <div id="feePanel" style="display:none;">
         <div class="row row-2">
           <div class="card">
@@ -196,7 +155,7 @@ drawLineChart('feeForecast', [320000,340000,310000,360000,380000,400000,420000],
 function switchTab(tab, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  ['global','risk','firm','fee','intel'].forEach(p => {
+  ['global','risk','fee','intel'].forEach(p => {
     document.getElementById(p+'Panel').style.display = p===tab?'block':'none';
   });
 }

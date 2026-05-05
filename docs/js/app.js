@@ -21,9 +21,11 @@ const breadcrumbMap = {
   'fees-approval': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '付款审批' }],
   'fees-analysis': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '费用分析' }],
   'fee-apply': [{ label: '首页', href: 'index.html' }, { label: '费用中心', href: 'pages/fees.html' }, { label: '费用申请' }],
-  'decision': [{ label: '首页', href: 'index.html' }, { label: '管理决策中心' }],
-  'monitor': [{ label: '首页', href: 'index.html' }, { label: '监测中心' }],
-  'tools': [{ label: '首页', href: 'index.html' }, { label: '商标工具Link' }],
+  'decision': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '管理决策中心' }],
+  'law-firm-management': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '律所管理' }],
+  'staff-management': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '员工管理' }],
+  'monitor': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '监测中心' }],
+  'tools': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '商标工具Link' }],
   'admin-users': [{ label: '首页', href: 'index.html' }, { label: '账号与权限' }],
   'report': [{ label: '首页', href: 'index.html' }, { label: '生成报告' }],
   'search-new': [{ label: '首页', href: 'index.html' }, { label: '商标检索' }],
@@ -64,6 +66,8 @@ const menuConfig = [
   ]},
   { group: "决策与监测", items: [
     { label: "管理决策中心", icon: "📈", page: "decision", href: "pages/decision.html" },
+    { label: "律所管理", icon: "🏢", page: "law-firm-management", href: "pages/law-firm-management.html" },
+    { label: "员工管理", icon: "👥", page: "staff-management", href: "pages/staff-management.html" },
     { label: "监测中心", icon: "🔍", page: "monitor", href: "pages/monitor.html" },
     { label: "商标工具Link", icon: "🔗", page: "tools", href: "pages/tools.html" }
   ]},

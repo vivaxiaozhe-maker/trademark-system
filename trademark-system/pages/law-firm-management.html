@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>律所管理 - 商标管理系统</title>
+<link rel="stylesheet" href="../css/common.css">
+<style>
+/* Stats cards */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.stat-card {
+  background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+  padding: 20px; display: flex; align-items: center; gap: 14px;
+}
+.stat-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.stat-icon.blue { background: #dbeafe; }
+.stat-icon.orange { background: #fef3c7; }
+.stat-icon.green { background: #d1fae5; }
+.stat-icon.purple { background: #f3e8ff; }
+.stat-info { flex: 1; }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.stat-value.orange { color: #d97706; }
+.stat-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* Filter card */
+.filter-card {
+  background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+  padding: 16px 20px; margin-bottom: 16px;
+}
+.filter-row { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.filter-group { flex: 1; min-width: 160px; }
+.filter-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+.filter-group input, .filter-group select {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; background: var(--bg-card);
+  outline: none;
+}
+.filter-group input:focus, .filter-group select:focus { border-color: var(--primary); }
+
+/* Table card */
+.table-card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.table-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--border-color);
+}
+.table-header .left { font-size: 15px; font-weight: 700; }
+.table-header .right { display: flex; gap: 8px; align-items: center; }
+
+/* Status tags */
+.tag-status {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 12px; font-weight: 600;
+}
+.tag-status.active { background: #d1fae5; color: #059669; }
+.tag-status.warning { background: #fef3c7; color: #d97706; }
+.tag-status.danger { background: #fee2e2; color: #dc2626; }
+
+/* Link */
+.link-blue { color: var(--primary); font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; }
+.link-blue:hover { text-decoration: underline; }
+
+/* Pagination */
+.pagination { display: flex; align-items: center; gap: 4px; }
+.pagination button {
+  padding: 5px 10px; border: 1px solid var(--border-color); background: #fff;
+  border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; transition: var(--transition);
+}
+.pagination button:hover { border-color: var(--primary); color: var(--primary); }
+.pagination button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Modal form */
+.modal-form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 14px; }
+.modal-form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
+.modal-form-group input, .modal-form-group select {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); font-size: 13px; background: var(--bg-card); outline: none;
+}
+.modal-form-group input:focus, .modal-form-group select:focus { border-color: var(--primary); }
+.input-prefix {
+  display: flex; align-items: center; gap: 0;
+}
+.input-prefix .prefix {
+  padding: 9px 10px; background: var(--bg-body); border: 1px solid var(--border-color);
+  border-right: none; border-radius: var(--radius-md) 0 0 var(--radius-md);
+  font-size: 13px; color: var(--text-muted);
+}
+.input-prefix input {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+  flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .filter-row { flex-direction: column; align-items: stretch; }
+  .filter-group { min-width: auto; }
+  .modal-form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar"></aside>
+  <div class="main-content">
+    <header class="top-header"></header>
+    <div class="page-container">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <div class="page-title">律所管理</div>
+          <div class="page-desc">合作律所服务期与合同管理</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openLawFirmModal()">➕ 新增律所</button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-row" id="statsRow"></div>
+
+      <!-- Filter Card -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>律所名称</label>
+            <input type="text" id="filterName" placeholder="搜索律所名称..." oninput="applyFilters()">
+          </div>
+          <div class="filter-group">
+            <label>对接人</label>
+            <input type="text" id="filterContact" placeholder="搜索对接人..." oninput="applyFilters()">
+          </div>
+          <div class="filter-group">
+            <label>服务状态</label>
+            <select id="filterStatus" onchange="applyFilters()">
+              <option value="">全部</option>
+              <option value="active">合作中</option>
+              <option value="warning">即将到期</option>
+              <option value="danger">已到期</option>
+            </select>
+          </div>
+          <div style="display:flex; gap:8px; padding-bottom:2px;">
+            <button class="btn btn-primary" onclick="applyFilters()">🔍 查询</button>
+            <button class="btn btn-secondary" onclick="resetFilters()">🔄 重置</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Card -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="left">律所列表</div>
+          <div class="right">
+            <button class="btn btn-secondary btn-sm">📥 导出</button>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox" onclick="toggleSelectAll(this)"></th>
+                <th>律所名称</th>
+                <th>服务年限</th>
+                <th>续期日期</th>
+                <th>律所对接人</th>
+                <th>联系邮箱</th>
+                <th>合同文件</th>
+                <th>续期基础费</th>
+                <th>状态</th>
+                <th style="text-align:center;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="lawFirmList"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="lawFirmModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <div style="font-weight:600;" id="modalTitle">➕ 新增律所</div>
+      <div style="cursor:pointer;font-size:18px;color:var(--text-muted);" onclick="closeLawFirmModal()">×</div>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>律所名称 <span style="color:var(--danger);">*</span></label>
+          <input type="text" id="mName" placeholder="请输入律所名称">
+        </div>
+        <div class="modal-form-group">
+          <label>服务年限</label>
+          <input type="number" id="mServiceYears" placeholder="如 3" min="0">
+        </div>
+      </div>
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>续期日期</label>
+          <input type="date" id="mRenewDate">
+        </div>
+        <div class="modal-form-group">
+          <label>律所对接人</label>
+          <input type="text" id="mContactPerson" placeholder="请输入对接人姓名">
+        </div>
+      </div>
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>联系邮箱</label>
+          <input type="email" id="mContactEmail" placeholder="example@law.com">
+        </div>
+        <div class="modal-form-group">
+          <label>续期基础费</label>
+          <div class="input-prefix">
+            <span class="prefix">¥</span>
+            <input type="number" id="mBaseFee" placeholder="金额">
+          </div>
+        </div>
+      </div>
+      <div class="modal-form-row">
+        <div class="modal-form-group">
+          <label>合同文件</label>
+          <input type="file" id="mContractFile" accept=".pdf,.doc,.docx" onchange="handleContractUpload(this)">
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">支持 PDF、DOC、DOCX</div>
+          <div id="contractFileName" style="font-size:12px;color:var(--primary);margin-top:4px;"></div>
+        </div>
+        <div class="modal-form-group">
+          <label>服务状态</label>
+          <select id="mStatus">
+            <option value="active">合作中</option>
+            <option value="warning">即将到期</option>
+            <option value="danger">已到期</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeLawFirmModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveLawFirm()">💾 保存</button>
+    </div>
+  </div>
+</div>
+
+<script src="../js/data.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/data-service.js"></script>
+<script>
+initApp('law-firm-management');
+
+let currentData = [];
+let pageSize = 10;
+let currentPage = 1;
+let editingId = null;
+let selectedIds = new Set();
+
+/* ============ Status Helpers ============ */
+function getStatusTag(status) {
+  const map = {
+    active:   { cls: 'tag-status active',   text: '合作中' },
+    warning:  { cls: 'tag-status warning',  text: '即将到期' },
+    danger:   { cls: 'tag-status danger',   text: '已到期' }
+  };
+  const r = map[status] || map.active;
+  return '<span class="' + r.cls + '">' + r.text + '</span>';
+}
+
+/* ============ Stats ============ */
+function renderStats() {
+  const data = AppData.lawFirmsManagement || [];
+  const today = new Date();
+  const thisMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+
+  const total = data.length;
+  const expiringSoon = data.filter(d => {
+    const rd = new Date(d.renewDate);
+    return d.status === 'warning' || (rd > today && rd <= new Date(today.getTime() + 30 * 86400000));
+  }).length;
+  const renewingThisMonth = data.filter(d => {
+    const rd = new Date(d.renewDate);
+    return rd.getMonth() === today.getMonth() && rd.getFullYear() === today.getFullYear();
+  }).length;
+  const annualTotal = data.reduce((sum, d) => sum + (d.baseFee || 0), 0);
+
+  document.getElementById('statsRow').innerHTML =
+    '<div class="stat-card">' +
+      '<div class="stat-icon blue">🏢</div>' +
+      '<div class="stat-info"><div class="stat-value">' + total + '</div><div class="stat-label">合作律所总数</div></div>' +
+    '</div>' +
+    '<div class="stat-card">' +
+      '<div class="stat-icon orange">⏰</div>' +
+      '<div class="stat-info"><div class="stat-value orange">' + expiringSoon + '</div><div class="stat-label">本月即将到期</div></div>' +
+    '</div>' +
+    '<div class="stat-card">' +
+      '<div class="stat-icon green">🔄</div>' +
+      '<div class="stat-info"><div class="stat-value">' + renewingThisMonth + '</div><div class="stat-label">本月续期数</div></div>' +
+    '</div>' +
+    '<div class="stat-card">' +
+      '<div class="stat-icon purple">💰</div>' +
+      '<div class="stat-info"><div class="stat-value">¥' + (annualTotal / 10000).toFixed(1) + '万</div><div class="stat-label">年度合同总额</div></div>' +
+    '</div>';
+}
+
+/* ============ Table ============ */
+function renderTable(list) {
+  const tbody = document.getElementById('lawFirmList');
+  tbody.innerHTML = '';
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的律所</td></tr>';
+    renderPagination(0);
+    return;
+  }
+
+  const start = (currentPage - 1) * pageSize;
+  const pageData = list.slice(start, start + pageSize);
+
+  pageData.forEach(function(item) {
+    const checked = selectedIds.has(item.id) ? 'checked' : '';
+    tbody.innerHTML +=
+      '<tr>' +
+        '<td><input type="checkbox" ' + checked + ' onchange="toggleSelectRow(\'' + item.id + '\', this)"></td>' +
+        '<td><strong>' + item.name + '</strong></td>' +
+        '<td>' + (item.serviceYears || '-') + ' 年</td>' +
+        '<td>' + (item.renewDate || '-') + '</td>' +
+        '<td>' + (item.contactPerson || '-') + '</td>' +
+        '<td><span style="font-size:12px;color:var(--text-secondary);">' + (item.contactEmail || '-') + '</span></td>' +
+        '<td><span class="link-blue" onclick="alert(\'下载合同：' + (item.contractFile || '-') + '\')">📄 下载</span></td>' +
+        '<td><span style="font-weight:600;">¥' + (item.baseFee || 0).toLocaleString() + '</span></td>' +
+        '<td>' + getStatusTag(item.status) + '</td>' +
+        '<td style="text-align:center;">' +
+          '<div style="display:flex;gap:6px;justify-content:center;">' +
+            '<button class="btn btn-sm btn-secondary" style="padding:4px 10px;font-size:12px;" onclick="editLawFirm(\'' + item.id + '\')">编辑</button>' +
+            '<button class="btn btn-sm btn-primary" style="padding:4px 10px;font-size:12px;" onclick="renewLawFirm(\'' + item.id + '\')">续期</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+  });
+
+  renderPagination(list.length);
+}
+
+/* ============ Pagination ============ */
+function renderPagination(total) {
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  const el = document.getElementById('pagination');
+  let html = '';
+  html += '<button onclick="goPage(' + (currentPage - 1) + ')" ' + (currentPage <= 1 ? 'disabled' : '') + '>上一页</button>';
+  for (var i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+      html += '<button class="' + (i === currentPage ? 'active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+    } else if (Math.abs(i - currentPage) === 2) {
+      html += '<span style="font-size:12px;color:var(--text-muted);padding:0 4px;">...</span>';
+    }
+  }
+  html += '<button onclick="goPage(' + (currentPage + 1) + ')" ' + (currentPage >= totalPages ? 'disabled' : '') + '>下一页</button>';
+  el.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = (AppData.lawFirmsManagement || []).length;
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  if (p < 1 || p > totalPages) return;
+  currentPage = p;
+  applyFilters();
+}
+
+/* ============ Filters ============ */
+function applyFilters() {
+  var result = [...(AppData.lawFirmsManagement || [])];
+  var name = document.getElementById('filterName').value.trim().toLowerCase();
+  var contact = document.getElementById('filterContact').value.trim().toLowerCase();
+  var status = document.getElementById('filterStatus').value;
+
+  if (name) result = result.filter(function(d) { return d.name.toLowerCase().includes(name); });
+  if (contact) result = result.filter(function(d) { return (d.contactPerson || '').toLowerCase().includes(contact); });
+  if (status) result = result.filter(function(d) { return d.status === status; });
+
+  currentData = result;
+  currentPage = 1;
+  renderTable(result);
+}
+
+function resetFilters() {
+  document.getElementById('filterName').value = '';
+  document.getElementById('filterContact').value = '';
+  document.getElementById('filterStatus').value = '';
+  selectedIds.clear();
+  currentPage = 1;
+  applyFilters();
+}
+
+/* ============ Selection ============ */
+function toggleSelectAll(cb) {
+  var checked = cb.checked;
+  var boxes = document.querySelectorAll('#lawFirmList input[type="checkbox"]');
+  boxes.forEach(function(box) {
+    box.checked = checked;
+    var id = box.getAttribute('onchange').match(/toggleSelectRow\('([^']+)'/);
+    if (id) {
+      if (checked) selectedIds.add(id[1]);
+      else selectedIds.delete(id[1]);
+    }
+  });
+}
+
+function toggleSelectRow(id, cb) {
+  if (cb.checked) selectedIds.add(id);
+  else selectedIds.delete(id);
+}
+
+/* ============ Modal ============ */
+function openLawFirmModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = '➕ 新增律所';
+  document.getElementById('editId').value = '';
+  document.getElementById('mName').value = '';
+  document.getElementById('mServiceYears').value = '';
+  document.getElementById('mRenewDate').value = '';
+  document.getElementById('mContactPerson').value = '';
+  document.getElementById('mContactEmail').value = '';
+  document.getElementById('mBaseFee').value = '';
+  document.getElementById('mStatus').value = 'active';
+  document.getElementById('contractFileName').textContent = '';
+  document.getElementById('lawFirmModal').classList.add('active');
+}
+
+function closeLawFirmModal() {
+  document.getElementById('lawFirmModal').classList.remove('active');
+}
+
+function editLawFirm(id) {
+  var item = (AppData.lawFirmsManagement || []).find(function(d) { return d.id === id; });
+  if (!item) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = '✏️ 编辑律所';
+  document.getElementById('editId').value = id;
+  document.getElementById('mName').value = item.name || '';
+  document.getElementById('mServiceYears').value = item.serviceYears || '';
+  document.getElementById('mRenewDate').value = item.renewDate || '';
+  document.getElementById('mContactPerson').value = item.contactPerson || '';
+  document.getElementById('mContactEmail').value = item.contactEmail || '';
+  document.getElementById('mBaseFee').value = item.baseFee || '';
+  document.getElementById('mStatus').value = item.status || 'active';
+  document.getElementById('contractFileName').textContent = item.contractFile || '';
+  document.getElementById('lawFirmModal').classList.add('active');
+}
+
+function handleContractUpload(input) {
+  var file = input.files && input.files[0];
+  if (file) {
+    document.getElementById('contractFileName').textContent = '已选择：' + file.name;
+  }
+}
+
+function saveLawFirm() {
+  var name = document.getElementById('mName').value.trim();
+  if (!name) { alert('请填写律所名称'); return; }
+
+  var item = {
+    id: editingId || 'LF-' + String(Date.now()).slice(-6),
+    name: name,
+    serviceYears: parseInt(document.getElementById('mServiceYears').value) || 0,
+    renewDate: document.getElementById('mRenewDate').value,
+    contactPerson: document.getElementById('mContactPerson').value.trim(),
+    contactEmail: document.getElementById('mContactEmail').value.trim(),
+    baseFee: parseInt(document.getElementById('mBaseFee').value) || 0,
+    status: document.getElementById('mStatus').value,
+    contractFile: document.getElementById('contractFileName').textContent.replace('已选择：', '') || ''
+  };
+
+  var list = AppData.lawFirmsManagement;
+  if (editingId) {
+    var idx = list.findIndex(function(d) { return d.id === editingId; });
+    if (idx !== -1) list[idx] = item;
+  } else {
+    list.push(item);
+  }
+
+  closeLawFirmModal();
+  renderStats();
+  applyFilters();
+  alert(editingId ? '律所信息已更新' : '律所添加成功');
+}
+
+function renewLawFirm(id) {
+  var item = (AppData.lawFirmsManagement || []).find(function(d) { return d.id === id; });
+  if (!item) return;
+  var newDate = prompt('请输入新的续期日期（当前：' + (item.renewDate || '-') + '）：', item.renewDate);
+  if (!newDate) return;
+  item.renewDate = newDate;
+  item.status = 'active';
+  renderStats();
+  applyFilters();
+  alert('续期成功！新续期日期：' + newDate);
+}
+
+/* ============ Init ============ */
+renderStats();
+applyFilters();
+</script>
+</body>
+</html>

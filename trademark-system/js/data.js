@@ -179,6 +179,15 @@ const AppData = {
   rejectionTypes: ['部分驳回', '全部驳回'],
   statusList: ['申请中', '初审公告', '已注册', '驳回复审中', '异议中', '无效宣告中', '撤销中', '已失效', '待提交'],
 
+  // 律所管理数据
+  lawFirmsManagement: [
+    { id: 'LF-001', name: '智联知识产权', serviceYears: 3, renewDate: '2026-08-15', contactPerson: '李律师·合伙人', contactEmail: 'lizl@zhilianip.com', contractFile: 'contract-zhilian-2026.pdf', baseFee: 85000, status: 'active' },
+    { id: 'LF-002', name: '元健律师事务所', serviceYears: 2, renewDate: '2026-06-01', contactPerson: '王律师·主任', contactEmail: 'wangyj@yuanjianlaw.com', contractFile: 'contract-yuanjian-2026.pdf', baseFee: 65000, status: 'warning' },
+    { id: 'LF-003', name: 'Horizon Law Group', serviceYears: 1, renewDate: '2026-12-20', contactPerson: 'Michael Chen·Partner', contactEmail: 'm.chen@horizonlaw.com', contractFile: 'contract-horizon-2026.pdf', baseFee: 120000, status: 'active' },
+    { id: 'LF-004', name: '启航知识产权', serviceYears: 4, renewDate: '2026-05-10', contactPerson: '张律师·合伙人', contactEmail: 'zhangqh@qihangip.com', contractFile: 'contract-qihang-2026.pdf', baseFee: 55000, status: 'danger' },
+    { id: 'LF-005', name: '海翼律师事务所', serviceYears: 2, renewDate: '2026-09-30', contactPerson: '陈律师·合伙人', contactEmail: 'chenhy@haiyilaw.com', contractFile: 'contract-haiyi-2026.pdf', baseFee: 72000, status: 'active' }
+  ],
+
   // 检索中心相关数据
   searchCases: [
     { caseNo: 'SC-2026-0001', subject: '云智商标检索', currentNode: '检索完成', handler: '张法务', prevTime: '2026-05-03', searchMethod: '近似检索', agency: '智联知识产权', requester: '王经理', dept: '品牌管理部', brand: '云智', product: '智能手机', project: '云智项目', priority: '高', country: '中国', appNo: 'TM-2026-0042', agencyAdvice: '建议注册', adminAdvice: '同意', searchDeadline: '2026-05-10', completeDeadline: '2026-05-15', createdDate: '2026-05-01' },
