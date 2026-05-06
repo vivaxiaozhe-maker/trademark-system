@@ -399,6 +399,50 @@ ul { list-style:none; }
 .tag-purple { background:#ede9fe; color:#6d28d9; }
 .tag-purple::before { background:#8b5cf6; }
 
+/* ===== Utility text colors ===== */
+.text-primary { color: var(--text-primary); }
+.text-muted { color: var(--text-muted); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+.fw-bold { font-weight: 700; }
+.fw-600 { font-weight: 600; }
+
+/* ===== Data error box (replaces inline styles) ===== */
+.data-error-box { text-align: center; padding: 60px 20px; }
+.data-error-icon { font-size: 48px; margin-bottom: 16px; }
+.data-error-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+.data-error-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
+
+/* ===== Report page utility classes ===== */
+.stat-box { text-align: center; padding: 12px; background: #f8fafc; border-radius: 8px; }
+.stat-box-lg { text-align: center; padding: 14px; background: #f8fafc; border-radius: 8px; }
+.stat-label { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+.stat-value-primary { font-size: 18px; font-weight: 700; color: var(--primary); }
+.stat-value-success { font-size: 18px; font-weight: 700; color: var(--success); }
+.check-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; }
+.section-divider { text-align: center; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+.alert-warning-box { padding: 12px; background: #fef3c7; border-radius: 8px; border-left: 3px solid var(--warning); margin-bottom: 8px; }
+.alert-warning-title { font-weight: 600; font-size: 13px; color: #92400e; }
+
+/* ===== Table action group (replaces inline flex styles) ===== */
+.action-group { display: flex; gap: 8px; justify-content: center; }
+.link-blue { cursor: pointer; color: var(--primary); font-size: 13px; font-weight: 500; }
+.link-blue:hover { text-decoration: underline; }
+.mono-primary { font-family: monospace; font-size: 12px; color: var(--primary); font-weight: 500; }
+.text-secondary { color: var(--text-secondary); }
+.text-sm { font-size: 12px; }
+
+/* ===== Status filter (shared component style) ===== */
+.status-filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.status-filter-tag {
+  padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 1px solid var(--border-color); background: #fff;
+  color: var(--text-secondary); transition: var(--transition);
+}
+.status-filter-tag:hover { border-color: var(--primary); color: var(--primary); }
+.status-filter-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
 /* Progress */
 .progress-bar {
   height: 6px; background: var(--bg-body); border-radius:3px; overflow:hidden;

@@ -6,16 +6,6 @@
 <title>授权外部使用 - 商标管理系统</title>
 <link rel="stylesheet" href="../css/common.css">
 <style>
-/* Status filter */
-.status-filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.status-filter-tag {
-  padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
-  cursor: pointer; border: 1px solid var(--border-color); background: #fff;
-  color: var(--text-secondary); transition: var(--transition);
-}
-.status-filter-tag:hover { border-color: var(--primary); color: var(--primary); }
-.status-filter-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-
 /* Certificate tag */
 .tag-cert-yes { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #d1fae5; color: #059669; }
 .tag-cert-no { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #f1f5f9; color: #64748b; }
@@ -61,7 +51,7 @@
           <div class="page-title">授权外部使用</div>
           <div class="page-desc">商标外部授权申请与审批管理</div>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="openCreateModal()">➕ 新建授权申请</button>
+        <button class="btn btn-primary btn-sm" id="btnCreate">➕ 新建授权申请</button>
       </div>
 
       <!-- Status Filter -->
@@ -210,10 +200,11 @@
   </div>
 </div>
 
-<script src="../js/data.js?v=2.4"></script>
-<script src="../js/app.js?v=2.4"></script>
-<script src="../js/data-service.js?v=2.4"></script>
-<script src="../js/certificate-generator.js?v=2.4"></script>
+<script src="../js/data.js?v=2.5"></script>
+<script src="../js/app.js?v=2.5"></script>
+<script src="../js/data-service.js?v=2.5"></script>
+<script src="../js/certificate-generator.js?v=2.5"></script>
+<script src="../js/page-utils.js?v=2.5"></script>
 <script>
 initApp('brand-auth-external');
 
@@ -242,70 +233,39 @@ function initDropdowns() {
   }
 }
 
-/* ============ Status Filter ============ */
-function renderStatusFilter() {
-  var bar = document.getElementById('statusFilterBar');
-  var data = AppData.authExternal || [];
-  var counts = {
-    all: data.length,
-    pending:   data.filter(function(d) { return d.status === 'pending'; }).length,
-    reviewing: data.filter(function(d) { return d.status === 'reviewing'; }).length,
-    approved:  data.filter(function(d) { return d.status === 'approved'; }).length,
-    rejected:  data.filter(function(d) { return d.status === 'rejected'; }).length
+/* ============ Status Filter (PageUtils) ============ */
+function refreshStatusFilter() {
+  PageUtils.StatusFilter.current = currentFilter;
+  PageUtils.StatusFilter.onChange = function(status) {
+    currentFilter = status;
+    applyFilters();
   };
-  var html = '';
-  Object.keys(STATUS_CONFIG).forEach(function(key) {
-    var isActive = key === currentFilter;
-    html += '<div class="status-filter-tag ' + (isActive ? 'active' : '') + '" onclick="switchFilter(\'' + key + '\')">' + STATUS_CONFIG[key].label + ' (' + counts[key] + ')</div>';
-  });
-  bar.innerHTML = html;
+  PageUtils.StatusFilter.render('statusFilterBar', STATUS_CONFIG, AppData.authExternal || []);
 }
 
-function switchFilter(status) {
-  currentFilter = status;
-  renderStatusFilter();
-  applyFilters();
-}
+/* ============ Table (PageUtils) ============ */
+var tableColumns = [
+  { field: 'appNo', formatter: function(row) { return '<span class="mono-primary">' + row.appNo + '</span>'; } },
+  { field: 'trademarkName', formatter: function(row) { return '<strong>' + row.trademarkName + '</strong>'; } },
+  { field: 'dept' },
+  { field: 'requesterEmail', formatter: function(row) { return '<span class="text-secondary text-sm">' + row.requesterEmail + '</span>'; } },
+  { field: 'usageScenario', formatter: function(row) { return '<span class="text-sm">' + row.usageScenario + '</span>'; } },
+  { field: 'countries', formatter: function(row) { return '<span class="text-sm">' + (Array.isArray(row.countries) ? row.countries.join(', ') : row.countries) + '</span>'; } },
+  { field: 'period', formatter: function(row) { return '<span class="text-sm">' + row.authPeriodStart + ' 至 ' + row.authPeriodEnd + '</span>'; } },
+  { field: 'licenseeName' },
+  { field: 'needCertificate', formatter: function(row) { return row.needCertificate ? '<span class="tag-cert-yes">是</span>' : '<span class="tag-cert-no">否</span>'; } },
+  { field: 'status', formatter: function(row) { return PageUtils.statusTag(row.status, STATUS_CONFIG); } },
+  { formatter: function(row) {
+      var html = '<span class="link-blue action-view" data-id="' + row.id + '">查看</span>';
+      if (row.status === 'pending' || row.status === 'reviewing') {
+        html += '<span class="link-blue action-approve" data-id="' + row.id + '">审批</span>';
+      }
+      return '<div class="action-group">' + html + '</div>';
+    }, align: 'center' }
+];
 
-function getStatusTag(status) {
-  var cfg = STATUS_CONFIG[status];
-  if (!cfg) return '<span class="tag tag-gray">未知</span>';
-  return '<span class="tag ' + cfg.cls + '">' + cfg.label + '</span>';
-}
-
-/* ============ Table ============ */
 function renderTable() {
-  var tbody = document.getElementById('authList');
-  tbody.innerHTML = '';
-  if (currentData.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:40px;color:var(--text-muted);">暂无授权申请</td></tr>';
-    return;
-  }
-  currentData.forEach(function(item) {
-    var certTag = item.needCertificate ? '<span class="tag-cert-yes">是</span>' : '<span class="tag-cert-no">否</span>';
-    var period = (item.authPeriodStart || '-') + ' 至 ' + (item.authPeriodEnd || '-');
-    var countries = Array.isArray(item.countries) ? item.countries.join(', ') : item.countries;
-    tbody.innerHTML +=
-      '<tr>' +
-        '<td><input type="checkbox"></td>' +
-        '<td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">' + item.appNo + '</span></td>' +
-        '<td><strong>' + item.trademarkName + '</strong></td>' +
-        '<td>' + item.dept + '</td>' +
-        '<td><span style="font-size:12px;color:var(--text-secondary);">' + item.requesterEmail + '</span></td>' +
-        '<td><span style="font-size:12px;">' + item.usageScenario + '</span></td>' +
-        '<td><span style="font-size:12px;">' + countries + '</span></td>' +
-        '<td><span style="font-size:12px;">' + period + '</span></td>' +
-        '<td>' + item.licenseeName + '</td>' +
-        '<td>' + certTag + '</td>' +
-        '<td>' + getStatusTag(item.status) + '</td>' +
-        '<td style="text-align:center;">' +
-          '<div style="display:flex;gap:8px;justify-content:center;">' +
-            '<span class="link-blue" style="cursor:pointer;color:var(--primary);font-size:13px;font-weight:500;" onclick="viewAuth(\'' + item.id + '\')">查看</span>' +
-            (item.status === 'pending' || item.status === 'reviewing' ? '<span class="link-blue" style="cursor:pointer;color:var(--primary);font-size:13px;font-weight:500;" onclick="openApproveModal(\'' + item.id + '\')">审批</span>' : '') +
-          '</div>' +
-        '</td>' +
-      '</tr>';
-  });
+  PageUtils.Table.render('authList', currentData, tableColumns, { hasCheckbox: true });
 }
 
 function applyFilters() {
@@ -317,9 +277,15 @@ function applyFilters() {
   renderTable();
 }
 
-/* ============ Modal helpers ============ */
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+/* ============ Event Delegation (replaces onclick) ============ */
+document.getElementById('authList').addEventListener('click', function(e) {
+  var viewBtn = e.target.closest('.action-view');
+  if (viewBtn) { viewAuth(viewBtn.dataset.id); return; }
+  var approveBtn = e.target.closest('.action-approve');
+  if (approveBtn) { openApproveModal(approveBtn.dataset.id); return; }
+});
+
+document.getElementById('btnCreate').addEventListener('click', openCreateModal);
 
 /* ============ Create ============ */
 function openCreateModal() {
@@ -334,7 +300,7 @@ function openCreateModal() {
   document.getElementById('cFeishuNo').value = '';
   document.querySelector('input[name="cNeedCert"][value="true"]').checked = true;
   document.getElementById('cWatermark').value = '内部使用，未经授权禁止转载';
-  openModal('createModal');
+  PageUtils.Modal.open('createModal');
 }
 
 function submitCreate() {
@@ -368,10 +334,10 @@ function submitCreate() {
     specificTrademarkNo: '', confirmedWatermark: '', finalFeishuNo: '', approver: '', approvalTime: '', approvalOpinion: ''
   };
   AppData.authExternal.push(newItem);
-  closeModal('createModal');
-  renderStatusFilter();
+  PageUtils.Modal.close('createModal');
+  refreshStatusFilter();
   applyFilters();
-  alert('授权申请已提交');
+  PageUtils.toast('授权申请已提交', 'success');
 }
 
 /* ============ Approve ============ */
@@ -393,7 +359,7 @@ function openApproveModal(id) {
   document.getElementById('aOpinion').value = '';
   document.getElementById('btnCertPass').style.display = item.needCertificate ? 'inline-block' : 'none';
   document.getElementById('btnDirectPass').style.display = item.needCertificate ? 'none' : 'inline-block';
-  openModal('approveModal');
+  PageUtils.Modal.open('approveModal');
 }
 
 function submitApprove(action) {
@@ -410,44 +376,36 @@ function submitApprove(action) {
 
   if (action === 'reject') {
     item.status = 'rejected';
-    alert('已驳回');
-    closeModal('approveModal');
-    renderStatusFilter();
+    PageUtils.Modal.close('approveModal');
+    refreshStatusFilter();
     applyFilters();
+    PageUtils.toast('已驳回', 'warning');
     return;
   }
 
-  // 通过审批（直接通过 或 生成商标证）
   item.status = 'approved';
   item.finalFeishuNo = item.feishuApprovalNo + '-A';
 
   if (action === 'direct') {
-    closeModal('approveModal');
-    renderStatusFilter();
+    PageUtils.Modal.close('approveModal');
+    refreshStatusFilter();
     applyFilters();
-    alert('审批已通过，已记录飞书单号，主办法务已收到通知（模拟）');
+    PageUtils.toast('审批已通过，已记录飞书单号，主办法务已收到通知（模拟）', 'success');
     return;
   }
 
   if (action === 'cert') {
     showLoadingOverlay('正在生成商标证...');
     setTimeout(function() {
-      // 尝试从 AppData 查找商标对应的注册信息
-      var regDate = '—';
-      var validDate = '—';
+      var regDate = '—', validDate = '—';
       var goodsServices = '第9类：计算机软件；智能手机；可穿戴设备';
       if (AppData.citedMarks) {
         var found = AppData.citedMarks.find(function(m) {
           return m.name === item.trademarkName || m.no === item.specificTrademarkNo;
         });
-        if (found) {
-          regDate = found.regDate || regDate;
-          validDate = found.validDate || validDate;
-        }
+        if (found) { regDate = found.regDate || regDate; validDate = found.validDate || validDate; }
       }
-      if (AppData.caseDetail && AppData.caseDetail.goodsServices) {
-        goodsServices = AppData.caseDetail.goodsServices;
-      }
+      if (AppData.caseDetail && AppData.caseDetail.goodsServices) goodsServices = AppData.caseDetail.goodsServices;
 
       var certData = generateCertificate({
         trademarkName: item.trademarkName,
@@ -460,10 +418,10 @@ function submitApprove(action) {
 
       downloadCertificate(certData.dataUrl, certData.fileName);
       hideLoadingOverlay();
-      closeModal('approveModal');
-      renderStatusFilter();
+      PageUtils.Modal.close('approveModal');
+      refreshStatusFilter();
       applyFilters();
-      alert('商标证已生成并自动下载，飞书通知已发送（模拟）');
+      PageUtils.toast('商标证已生成并自动下载，飞书通知已发送（模拟）', 'success');
     }, 1500);
   }
 }
@@ -477,9 +435,11 @@ function viewAuth(id) {
 }
 
 /* ============ Init ============ */
-initDropdowns();
-renderStatusFilter();
-applyFilters();
+PageUtils.dataGuard(AppData.authExternal, '.page-container', function() {
+  initDropdowns();
+  refreshStatusFilter();
+  applyFilters();
+}, { title: '数据加载异常', desc: 'authExternal 无数据', showReload: true });
 </script>
 </body>
 </html>
