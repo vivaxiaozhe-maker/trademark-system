@@ -5,107 +5,201 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>费用中心 - 商标管理系统</title>
 <link rel="stylesheet" href="../css/common.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1a56db',
+        'primary-light': '#dbeafe',
+        success: '#059669',
+        warning: '#ea580c',
+        danger: '#dc2626',
+        'text-main': '#111827',
+        'text-body': '#374151',
+        'text-muted': '#6b7280',
+        'border-light': '#e5e7eb',
+        'bg-page': '#f8f9fa',
+      },
+      fontFamily: {
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      }
+    }
+  }
+}
+</script>
 <style>
-/* Filter card */
-.filter-card {
-  background: var(--bg-card); border-radius: var(--radius-md);
-  border: 1px solid var(--border-color); padding: 20px;
-  margin-bottom: 20px;
+/* Tab underline indicator */
+.fee-tab {
+  position: relative;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.2s;
+  border: none;
+  background: none;
+  white-space: nowrap;
 }
-.filter-card-title {
-  font-size: 14px; font-weight: 600; margin-bottom: 16px;
-  display: flex; align-items: center; gap: 6px;
+.fee-tab:hover { color: #1a56db; }
+.fee-tab.active { color: #1a56db; font-weight: 600; }
+.fee-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #1a56db;
+  border-radius: 2px 2px 0 0;
+  transition: all 0.3s ease;
 }
-.filter-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
-.filter-section { margin-bottom: 0; }
-.filter-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; }
-.filter-input, .filter-select {
-  width: 100%; padding: 7px 10px; border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm); font-size: 13px; color: var(--text-primary);
-  background: var(--bg-card); outline: none;
-}
-.filter-input:focus, .filter-select:focus { border-color: var(--primary); }
 
-/* Date quick tags */
-.date-quick-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; }
-.date-quick-tag {
-  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
-  border: 1px solid var(--border-color); background: var(--bg-card); cursor: pointer;
-  transition: var(--transition); color: var(--text-secondary);
+/* Card */
+.fee-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  overflow: hidden;
 }
-.date-quick-tag:hover, .date-quick-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-.date-range-row { display: flex; gap: 8px; align-items: center; }
-.date-range-row input { flex: 1; }
-.date-range-row span { font-size: 12px; color: var(--text-muted); }
+.fee-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+.fee-card-body { padding: 20px; }
 
-/* Action bar */
-.action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.action-bar-left { display: flex; gap: 8px; }
-.action-bar-right { display: flex; gap: 8px; }
+/* Progress bar animation */
+.progress-track {
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.progress-bar-animate {
+  height: 100%;
+  border-radius: 6px;
+  background: #1a56db;
+  width: 0%;
+  transition: width 0.8s ease-out;
+}
 
-/* Dropdown export */
-.dropdown { position: relative; }
-.dropdown-menu {
-  position: absolute; top: 100%; right: 0;
-  background: var(--bg-card); border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm); box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  min-width: 140px; z-index: 100; display: none;
+/* Mini bar chart */
+.mini-bar {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 8px;
+  height: 140px;
 }
-.dropdown-menu.active { display: block; }
-.dropdown-item { padding: 8px 14px; font-size: 13px; cursor: pointer; }
-.dropdown-item:hover { background: var(--primary-light); color: var(--primary); }
+.mini-bar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  cursor: pointer;
+}
+.mini-bar-rect {
+  width: 100%;
+  max-width: 40px;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+.mini-bar-rect:hover { opacity: 0.85; transform: scaleY(1.03); transform-origin: bottom; }
+.mini-bar-label { font-size: 11px; color: #9ca3af; font-weight: 500; }
+.mini-bar-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111827;
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.mini-bar-rect:hover .mini-bar-tip { opacity: 1; }
 
-/* Pagination */
-.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 16px; }
-.page-btn {
-  padding: 5px 12px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 500;
-  border: 1px solid var(--border-color); background: var(--bg-card); cursor: pointer;
-  color: var(--text-secondary); transition: var(--transition);
-}
-.page-btn:hover { border-color: var(--primary); color: var(--primary); }
-.page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* Horizontal progress rows */
+.hprog-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+.hprog-label { width: 70px; font-size: 13px; color: #374151; font-weight: 500; flex-shrink: 0; }
+.hprog-track { flex: 1; height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden; }
+.hprog-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease-out; }
+.hprog-value { width: 120px; text-align: right; font-size: 13px; color: #374151; flex-shrink: 0; }
+.hprog-pct { width: 45px; text-align: right; font-size: 12px; color: #6b7280; flex-shrink: 0; }
 
-/* Fee Apply */
-.form-section { margin-bottom: 20px; }
-.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
-.form-label .required { color: var(--danger); margin-left: 2px; }
-.form-select, .form-textarea {
-  width: 100%; padding: 10px 14px; border: 1px solid var(--border-color);
-  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
-  background: var(--bg-card); outline: none; transition: var(--transition);
+/* Alert items */
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
 }
-.form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-.form-textarea { min-height: 80px; resize: vertical; }
-.form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
-.radio-card {
-  flex: 1; min-width: 100px; padding: 14px; border: 2px solid var(--border-color);
-  border-radius: var(--radius-md); cursor: pointer; text-align: center;
-  transition: var(--transition); background: var(--bg-card);
-}
-.radio-card:hover { border-color: var(--primary-light); }
-.radio-card.active { border-color: var(--primary); background: var(--primary-light); }
-.radio-card .icon { font-size: 22px; margin-bottom: 6px; }
-.radio-card .label { font-size: 13px; font-weight: 600; }
-.fee-line {
-  display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr 40px;
-  gap: 10px; align-items: center; padding: 12px; background: var(--bg-body);
-  border-radius: var(--radius-md); margin-bottom: 8px;
-}
-.upload-zone {
-  border: 2px dashed var(--border-color); border-radius: var(--radius-lg);
-  padding: 32px; text-align: center; cursor: pointer; transition: var(--transition);
-  background: var(--bg-body);
-}
-.upload-zone:hover { border-color: var(--primary); background: var(--primary-light); }
+.alert-item:hover { background: #f9fafb; }
+.alert-icon { font-size: 16px; line-height: 1; margin-top: 1px; flex-shrink: 0; }
+.alert-title { font-size: 13px; font-weight: 600; color: #111827; }
+.alert-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
 
-/* Responsive */
+/* Table */
+.fee-table { width: 100%; border-collapse: collapse; }
+.fee-table thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+.fee-table tbody td {
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+}
+.fee-table tbody tr:nth-child(even) { background: #fafafa; }
+.fee-table tbody tr:hover { background: #f3f4f6; }
+
+.status-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.status-paid { background: #d1fae5; color: #047857; }
+.status-pending { background: #ffedd5; color: #c2410c; }
+.status-rejected { background: #fee2e2; color: #b91c1c; }
+
+.amount { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 600; }
+
+/* Responsive grid */
+@media (max-width: 1200px) {
+  .fee-grid-row { flex-direction: column !important; }
+  .fee-col-60, .fee-col-40 { width: 100% !important; }
+}
 @media (max-width: 768px) {
-  .filter-row { grid-template-columns: repeat(2, 1fr); }
-  .action-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
-  .form-row { grid-template-columns: 1fr; }
-  .fee-line { grid-template-columns: 1fr; }
+  .fee-col-60, .fee-col-40 { width: 100% !important; }
+  .hprog-row { flex-wrap: wrap; }
+  .hprog-label { width: 100%; margin-bottom: 4px; }
+  .hprog-value, .hprog-pct { width: auto; }
 }
 </style>
 </head>
@@ -114,131 +208,179 @@
   <aside class="sidebar"></aside>
   <div class="main-content">
     <header class="top-header"></header>
-    <div class="page-container">
-      <div class="page-header">
+    <div class="page-container" style="background:#f8f9fa;">
+
+      <!-- Page Header -->
+      <div class="page-header" style="background:#fff; border-bottom:1px solid #e5e7eb; margin:0 -24px 0 -24px; padding:16px 24px;">
         <div>
-          <div class="page-title">费用中心</div>
-          <div class="page-desc">商标案件费用全链路数字化管控</div>
+          <div class="page-title" style="font-size:20px; font-weight:700; color:#111827;">费用中心</div>
         </div>
-        <button class="btn btn-primary btn-sm" onclick="switchTab('apply', document.querySelectorAll('.tab')[4])">📤 费用申请</button>
+        <button class="btn btn-sm" style="border:1px solid #e5e7eb; background:#fff; color:#374151; font-size:13px;" onclick="alert('演示模式：导出PDF')">📄 导出PDF</button>
       </div>
 
-      <div class="tabs">
-        <div class="tab active" onclick="switchTab('overview',this)">💰 费用总览</div>
-        <div class="tab" onclick="switchTab('query',this)">📑 账单查询</div>
-        <div class="tab" onclick="switchTab('approval',this)">✅ 付款审批</div>
-        <div class="tab" onclick="switchTab('analysis',this)">📊 费用分析</div>
-        <div class="tab" onclick="switchTab('apply',this)">📤 费用申请</div>
+      <!-- Tabs -->
+      <div style="display:flex; gap:4px; border-bottom:1px solid #e5e7eb; background:#fff; margin:0 -24px 16px -24px; padding:0 24px;">
+        <button class="fee-tab active" data-tab="overview" onclick="switchTab('overview',this)">💰 费用总览</button>
+        <button class="fee-tab" data-tab="query" onclick="switchTab('query',this)">📑 账单查询</button>
+        <button class="fee-tab" data-tab="approval" onclick="switchTab('approval',this)">✅ 付款审批</button>
+        <button class="fee-tab" data-tab="analysis" onclick="switchTab('analysis',this)">📊 费用分析</button>
+        <button class="fee-tab" data-tab="apply" onclick="switchTab('apply',this)">📤 费用申请</button>
       </div>
 
-      <!-- 费用总览 -->
+      <!-- ========== 费用总览 ========== -->
       <div id="overviewPanel">
-        <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom:16px;">
-          <div class="kpi-card" style="padding:16px;">
-            <div class="kpi-label">年度预算</div>
-            <div class="kpi-value" style="font-size:24px;">¥2,800,000</div>
-          </div>
-          <div class="kpi-card" style="padding:16px;">
-            <div class="kpi-label">已支出</div>
-            <div class="kpi-value" style="font-size:24px; color:var(--primary);">¥1,865,000</div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin:6px 0 4px;">
-              <span>预算 ¥2,800,000</span>
-              <span style="color:var(--primary); font-weight:600;">执行率 67%</span>
+
+        <!-- Row 1: Budget Progress + Trend Mini Chart -->
+        <div class="fee-grid-row" style="display:flex; gap:16px; margin-bottom:16px;">
+          <div class="fee-col-60" style="width:60%;">
+            <div class="fee-card">
+              <div class="fee-card-header">年度预算执行</div>
+              <div class="fee-card-body">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:13px; color:#6b7280;">预算 <span class="amount" style="color:#111827;">¥2,800,000</span></span>
+                  <span style="font-size:13px; color:#6b7280;">执行率 <span style="color:#1a56db; font-weight:700;">67%</span></span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-bar-animate" id="budgetProgress"></div>
+                </div>
+                <div style="display:flex; margin-top:16px; text-align:center;">
+                  <div style="flex:1; border-right:1px solid #f3f4f6;">
+                    <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">已支出</div>
+                    <div class="amount" style="font-size:18px; color:#1a56db; font-weight:700;">¥1,865,000</div>
+                  </div>
+                  <div style="flex:1; border-right:1px solid #f3f4f6; cursor:pointer;" onmouseenter="this.style.background='#fff7ed'" onmouseleave="this.style.background='transparent'" onclick="alert('查看待审批明细')">
+                    <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">待审批</div>
+                    <div class="amount" style="font-size:18px; color:#ea580c; font-weight:700;">¥450,000</div>
+                  </div>
+                  <div style="flex:1;">
+                    <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">剩余</div>
+                    <div class="amount" style="font-size:18px; color:#059669; font-weight:700;">¥935,000</div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="progress-bar" style="height:10px; border-radius:5px; background:#e2e8f0; overflow:hidden;">
-              <div class="progress-fill" style="width:0%; height:100%; border-radius:5px; background:linear-gradient(90deg, #2563eb, #0ea5e9); transition:width 1s ease;"></div>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px;">
-              <span style="color:var(--text-muted);">已用 <strong style="color:var(--primary);">¥1,865,000</strong></span>
-              <span style="color:var(--success);">剩余 <strong>¥935,000</strong></span>
-            </div>
           </div>
-          <div class="kpi-card" style="padding:16px;">
-            <div class="kpi-label">待审批</div>
-            <div class="kpi-value" style="font-size:24px; color:var(--warning);">¥450,000</div>
-          </div>
-          <div class="kpi-card" style="padding:16px;">
-            <div class="kpi-label">剩余预算</div>
-            <div class="kpi-value" style="font-size:24px; color:var(--success);">¥935,000</div>
+          <div class="fee-col-40" style="width:40%;">
+            <div class="fee-card">
+              <div class="fee-card-header">近6个月费用趋势</div>
+              <div class="fee-card-body" style="padding-bottom:12px;">
+                <div class="mini-bar" id="trendMiniChart"></div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="row row-2">
-          <div class="card">
-            <div class="card-header"><div class="card-title">费用构成分析</div></div>
-            <div class="card-body"><div class="chart-container" id="feePie"></div></div>
+
+        <!-- Row 2: Cost Composition + Alerts -->
+        <div class="fee-grid-row" style="display:flex; gap:16px; margin-bottom:16px;">
+          <div class="fee-col-60" style="width:60%;">
+            <div class="fee-card">
+              <div class="fee-card-header">费用构成分析</div>
+              <div class="fee-card-body" style="padding-top:8px;">
+                <div class="hprog-row">
+                  <div class="hprog-label">代理费</div>
+                  <div class="hprog-track"><div class="hprog-fill" style="background:#1a56db; width:0%;" data-width="60%"></div></div>
+                  <div class="hprog-value amount">¥1,119,000</div>
+                  <div class="hprog-pct">60%</div>
+                </div>
+                <div class="hprog-row">
+                  <div class="hprog-label">官费</div>
+                  <div class="hprog-track"><div class="hprog-fill" style="background:#3b82f6; width:0%;" data-width="28%"></div></div>
+                  <div class="hprog-value amount">¥522,200</div>
+                  <div class="hprog-pct">28%</div>
+                </div>
+                <div class="hprog-row">
+                  <div class="hprog-label">翻译费</div>
+                  <div class="hprog-track"><div class="hprog-fill" style="background:#059669; width:0%;" data-width="7%"></div></div>
+                  <div class="hprog-value amount">¥130,550</div>
+                  <div class="hprog-pct">7%</div>
+                </div>
+                <div class="hprog-row">
+                  <div class="hprog-label">其他</div>
+                  <div class="hprog-track"><div class="hprog-fill" style="background:#9ca3af; width:0%;" data-width="5%"></div></div>
+                  <div class="hprog-value amount">¥93,250</div>
+                  <div class="hprog-pct">5%</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">月度费用趋势</div></div>
-            <div class="card-body"><div class="chart-container" id="feeTrend"></div></div>
+          <div class="fee-col-40" style="width:40%;">
+            <div class="fee-card">
+              <div class="fee-card-header">待处理事项</div>
+              <div class="fee-card-body" style="padding:8px 0;">
+                <div class="alert-item" onclick="alert('查看超预算费用明细')">
+                  <div class="alert-icon">🔴</div>
+                  <div>
+                    <div class="alert-title">超预算阈值</div>
+                    <div class="alert-desc">3笔费用超预算，涉及¥87,500</div>
+                  </div>
+                </div>
+                <div class="alert-item" onclick="alert('查看滞留审批')">
+                  <div class="alert-icon">🟠</div>
+                  <div>
+                    <div class="alert-title">审批滞留</div>
+                    <div class="alert-desc">2笔付款审批超7天未处理</div>
+                  </div>
+                </div>
+                <div class="alert-item" onclick="alert('查看续展待缴')">
+                  <div class="alert-icon">🟢</div>
+                  <div>
+                    <div class="alert-title">续展待缴</div>
+                    <div class="alert-desc">5月续展费待缴纳，共¥128,000</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Recent Fee Table -->
+        <div class="fee-card" style="margin-bottom:16px;">
+          <div class="fee-card-header">最近费用记录</div>
+          <div class="fee-card-body" style="padding:0;">
+            <table class="fee-table">
+              <thead>
+                <tr>
+                  <th>日期</th>
+                  <th>商标名称</th>
+                  <th>费用类型</th>
+                  <th style="text-align:right;">金额</th>
+                  <th>状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="recentFeeTable">
+                <tr><td>2026-05-04</td><td><strong>云智</strong></td><td>驳回复审代理费</td><td class="amount" style="text-align:right;">¥85,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-05-03</td><td><strong>智联</strong></td><td>异议答辩官费</td><td class="amount" style="text-align:right;">¥1,500</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-05-02</td><td><strong>海翼</strong></td><td>马德里申请代理费</td><td class="amount" style="text-align:right;">¥45,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-05-01</td><td><strong>星联</strong></td><td>续展官费</td><td class="amount" style="text-align:right;">¥2,000</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-28</td><td><strong>明达</strong></td><td>不予注册复审代理费</td><td class="amount" style="text-align:right;">¥38,000</td><td><span class="status-tag status-rejected">已驳回</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-25</td><td><strong>悦动</strong></td><td>新申请官费</td><td class="amount" style="text-align:right;">¥300</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-22</td><td><strong>睿思</strong></td><td>撤三答辩代理费</td><td class="amount" style="text-align:right;">¥25,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-20</td><td><strong>启航</strong></td><td>单一国家申请代理费</td><td class="amount" style="text-align:right;">¥52,000</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-18</td><td><strong>云智</strong></td><td>翻译费</td><td class="amount" style="text-align:right;">¥4,500</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-15</td><td><strong>智联</strong></td><td>公证认证费</td><td class="amount" style="text-align:right;">¥1,200</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#1a56db; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- 账单查询 -->
+      <!-- ========== 账单查询 ========== -->
       <div id="queryPanel" style="display:none;">
-        <!-- 筛选卡片 -->
         <div class="filter-card">
           <div class="filter-card-title">🔍 筛选条件</div>
           <div class="filter-row">
-            <div class="filter-section">
-              <label class="filter-label">案卷号</label>
-              <input type="text" class="filter-input" id="qCaseFileNo" placeholder="请输入案卷号">
-            </div>
-            <div class="filter-section">
-              <label class="filter-label">商标号</label>
-              <input type="text" class="filter-input" id="qTrademarkNo" placeholder="请输入商标号">
-            </div>
-            <div class="filter-section">
-              <label class="filter-label">申请号</label>
-              <input type="text" class="filter-input" id="qAppNo" placeholder="请输入申请号">
-            </div>
-            <div class="filter-section">
-              <label class="filter-label">案卷类型</label>
-              <select class="filter-select" id="qCaseFileType">
-                <option value="">全部</option>
-                <option>代理费</option>
-                <option>官费</option>
-                <option>翻译费</option>
-                <option>调查费</option>
-                <option>检索费</option>
-                <option>其他</option>
-              </select>
-            </div>
+            <div class="filter-section"><label class="filter-label">案卷号</label><input type="text" class="filter-input" id="qCaseFileNo" placeholder="请输入案卷号"></div>
+            <div class="filter-section"><label class="filter-label">商标号</label><input type="text" class="filter-input" id="qTrademarkNo" placeholder="请输入商标号"></div>
+            <div class="filter-section"><label class="filter-label">申请号</label><input type="text" class="filter-input" id="qAppNo" placeholder="请输入申请号"></div>
+            <div class="filter-section"><label class="filter-label">案卷类型</label><select class="filter-select" id="qCaseFileType"><option value="">全部</option><option>代理费</option><option>官费</option><option>翻译费</option><option>调查费</option><option>检索费</option><option>其他</option></select></div>
           </div>
           <div class="filter-row">
-            <div class="filter-section">
-              <label class="filter-label">费用类型</label>
-              <select class="filter-select" id="qFeeType">
-                <option value="">全部</option>
-                <option>代理费</option>
-                <option>官费</option>
-                <option>翻译费</option>
-                <option>调查费</option>
-                <option>检索费</option>
-                <option>其他</option>
-              </select>
-            </div>
-            <div class="filter-section">
-              <label class="filter-label">费用名称</label>
-              <select class="filter-select" id="qFeeName">
-                <option value="">全部</option>
-              </select>
-            </div>
-            <div class="filter-section">
-              <label class="filter-label">申请人</label>
-              <input type="text" class="filter-input" id="qApplicant" placeholder="请输入申请人">
-            </div>
-            <div class="filter-section">
-              <label class="filter-label">状态</label>
-              <select class="filter-select" id="qStatus">
-                <option value="">全部</option>
-                <option>待审批</option>
-                <option>已审批</option>
-                <option>已付款</option>
-              </select>
-            </div>
+            <div class="filter-section"><label class="filter-label">费用类型</label><select class="filter-select" id="qFeeType"><option value="">全部</option><option>代理费</option><option>官费</option><option>翻译费</option><option>调查费</option><option>检索费</option><option>其他</option></select></div>
+            <div class="filter-section"><label class="filter-label">费用名称</label><select class="filter-select" id="qFeeName"><option value="">全部</option></select></div>
+            <div class="filter-section"><label class="filter-label">申请人</label><input type="text" class="filter-input" id="qApplicant" placeholder="请输入申请人"></div>
+            <div class="filter-section"><label class="filter-label">状态</label><select class="filter-select" id="qStatus"><option value="">全部</option><option>待审批</option><option>已审批</option><option>已付款</option></select></div>
           </div>
-          <!-- 缴费期限 -->
           <div style="margin-bottom:14px;">
             <label class="filter-label">缴费期限</label>
             <div class="date-quick-bar">
@@ -251,13 +393,8 @@
               <span class="date-quick-tag" onclick="setDateQuick('payment','future30',this)">未来30天</span>
               <span class="date-quick-tag" style="color:var(--danger);border-color:var(--danger);" onclick="setDateQuick('payment','clear',this)">清空</span>
             </div>
-            <div class="date-range-row" style="max-width:320px;">
-              <input type="date" class="filter-input" id="qPaymentStart">
-              <span>至</span>
-              <input type="date" class="filter-input" id="qPaymentEnd">
-            </div>
+            <div class="date-range-row" style="max-width:320px;"><input type="date" class="filter-input" id="qPaymentStart"><span>至</span><input type="date" class="filter-input" id="qPaymentEnd"></div>
           </div>
-          <!-- 实付日期 -->
           <div style="margin-bottom:16px;">
             <label class="filter-label">实付日期</label>
             <div class="date-quick-bar">
@@ -270,268 +407,73 @@
               <span class="date-quick-tag" onclick="setDateQuick('paid','future30',this)">未来30天</span>
               <span class="date-quick-tag" style="color:var(--danger);border-color:var(--danger);" onclick="setDateQuick('paid','clear',this)">清空</span>
             </div>
-            <div class="date-range-row" style="max-width:320px;">
-              <input type="date" class="filter-input" id="qPaidStart">
-              <span>至</span>
-              <input type="date" class="filter-input" id="qPaidEnd">
-            </div>
+            <div class="date-range-row" style="max-width:320px;"><input type="date" class="filter-input" id="qPaidStart"><span>至</span><input type="date" class="filter-input" id="qPaidEnd"></div>
           </div>
-          <!-- 按钮 -->
-          <div class="action-bar-left">
-            <button class="btn btn-primary" onclick="doQuery()">🔍 查询</button>
-            <button class="btn btn-secondary" onclick="resetQuery()">重置</button>
-          </div>
+          <div class="action-bar-left"><button class="btn btn-primary" onclick="doQuery()">🔍 查询</button><button class="btn btn-secondary" onclick="resetQuery()">重置</button></div>
         </div>
-
-        <!-- 列表卡片 -->
         <div class="card">
-          <div class="card-header">
-            <div class="card-title">📋 费用列表</div>
-            <div class="dropdown">
-              <button class="btn btn-secondary btn-sm" onclick="toggleExportDropdown()">📥 导出 ▼</button>
-              <div class="dropdown-menu" id="exportMenu">
-                <div class="dropdown-item" onclick="exportData('excel')">导出 Excel</div>
-                <div class="dropdown-item" onclick="exportData('csv')">导出 CSV</div>
-                <div class="dropdown-item" onclick="exportData('pdf')">导出 PDF</div>
-              </div>
-            </div>
-          </div>
+          <div class="card-header"><div class="card-title">📋 费用列表</div><div class="dropdown"><button class="btn btn-secondary btn-sm" onclick="toggleExportDropdown()">📥 导出 ▼</button><div class="dropdown-menu" id="exportMenu"><div class="dropdown-item" onclick="exportData('excel')">导出 Excel</div><div class="dropdown-item" onclick="exportData('csv')">导出 CSV</div><div class="dropdown-item" onclick="exportData('pdf')">导出 PDF</div></div></div></div>
           <div class="card-body" style="padding:0;">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>案卷号</th>
-                  <th>商标号</th>
-                  <th>申请号</th>
-                  <th>案卷类型</th>
-                  <th>费用类型</th>
-                  <th>费用名称</th>
-                  <th style="text-align:right;">费用金额</th>
-                  <th>币别</th>
-                  <th>缴费期限</th>
-                  <th>实付日期</th>
-                  <th>创建日期</th>
-                </tr>
-              </thead>
-              <tbody id="feeList"></tbody>
-            </table>
+            <table class="data-table"><thead><tr><th>案卷号</th><th>商标号</th><th>申请号</th><th>案卷类型</th><th>费用类型</th><th>费用名称</th><th style="text-align:right;">费用金额</th><th>币别</th><th>缴费期限</th><th>实付日期</th><th>创建日期</th></tr></thead><tbody id="feeList"></tbody></table>
             <div class="pagination" id="pagination"></div>
           </div>
         </div>
       </div>
 
-      <!-- 付款审批 -->
+      <!-- ========== 付款审批 ========== -->
       <div id="approvalPanel" style="display:none;">
-        <div class="card">
-          <div class="card-header"><div class="card-title">✅ 待审批付款</div></div>
-          <div class="card-body" style="padding:0;">
-            <table class="data-table">
-              <thead>
-                <tr><th>申请单号</th><th>律所</th><th>金额</th><th>案件</th><th>申请人</th><th>申请时间</th><th>审批状态</th><th>操作</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span style="font-family:monospace;color:var(--primary);font-weight:500;">PAY-2026-0089</span></td>
-                  <td>智联知识产权</td>
-                  <td style="font-weight:600;">¥85,000</td>
-                  <td>TM-2026-0042</td>
-                  <td>张法务</td>
-                  <td>2026-05-03</td>
-                  <td><span class="tag tag-orange">待审批</span></td>
-                  <td><button class="btn btn-sm btn-success" style="padding:4px 10px;">通过</button> <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">驳回</button></td>
-                </tr>
-                <tr>
-                  <td><span style="font-family:monospace;color:var(--primary);font-weight:500;">PAY-2026-0088</span></td>
-                  <td>Horizon Law Group</td>
-                  <td style="font-weight:600;">¥45,000</td>
-                  <td>TM-2025-0203</td>
-                  <td>李流程</td>
-                  <td>2026-05-01</td>
-                  <td><span class="tag tag-orange">待审批</span></td>
-                  <td><button class="btn btn-sm btn-success" style="padding:4px 10px;">通过</button> <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">驳回</button></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <div class="card"><div class="card-header"><div class="card-title">✅ 待审批付款</div></div><div class="card-body" style="padding:0;">
+          <table class="data-table"><thead><tr><th>申请单号</th><th>律所</th><th>金额</th><th>案件</th><th>申请人</th><th>申请时间</th><th>审批状态</th><th>操作</th></tr></thead><tbody>
+            <tr><td><span style="font-family:monospace;color:var(--primary);font-weight:500;">PAY-2026-0089</span></td><td>智联知识产权</td><td style="font-weight:600;">¥85,000</td><td>TM-2026-0042</td><td>张法务</td><td>2026-05-03</td><td><span class="tag tag-orange">待审批</span></td><td><button class="btn btn-sm btn-success" style="padding:4px 10px;">通过</button> <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">驳回</button></td></tr>
+            <tr><td><span style="font-family:monospace;color:var(--primary);font-weight:500;">PAY-2026-0088</span></td><td>Horizon Law Group</td><td style="font-weight:600;">¥45,000</td><td>TM-2025-0203</td><td>李流程</td><td>2026-05-01</td><td><span class="tag tag-orange">待审批</span></td><td><button class="btn btn-sm btn-success" style="padding:4px 10px;">通过</button> <button class="btn btn-sm btn-secondary" style="padding:4px 10px;">驳回</button></td></tr>
+          </tbody></table>
+        </div></div>
       </div>
 
-      <!-- 费用分析 -->
+      <!-- ========== 费用分析 ========== -->
       <div id="analysisPanel" style="display:none;">
         <div class="row row-2">
-          <div class="card">
-            <div class="card-header"><div class="card-title">律所费用对比</div></div>
-            <div class="card-body"><div class="chart-container" id="firmCompare"></div></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">案件类型费用分布</div></div>
-            <div class="card-body"><div class="chart-container" id="typeFee"></div></div>
-          </div>
+          <div class="card"><div class="card-header"><div class="card-title">律所费用对比</div></div><div class="card-body"><div class="chart-container" id="firmCompare"></div></div></div>
+          <div class="card"><div class="card-header"><div class="card-title">案件类型费用分布</div></div><div class="card-body"><div class="chart-container" id="typeFee"></div></div></div>
         </div>
         <div class="card mt-3">
           <div class="card-header"><div class="card-title">ROI分析</div></div>
           <div class="card-body" style="padding:0;">
-            <table class="data-table">
-              <thead>
-                <tr><th>品牌</th><th>总投入</th><th>品牌估值</th><th>ROI</th><th>保护范围</th><th>建议</th></tr>
-              </thead>
-              <tbody>
-                <tr><td><strong>云智</strong></td><td>¥320,000</td><td>¥5,200,000</td><td><span style="color:var(--success);font-weight:600;">1,525%</span></td><td>4类/中+美+欧</td><td><span class="tag tag-green">继续投入</span></td></tr>
-                <tr><td><strong>智联</strong></td><td>¥280,000</td><td>¥3,800,000</td><td><span style="color:var(--success);font-weight:600;">1,257%</span></td><td>5类/中+日+韩</td><td><span class="tag tag-green">继续投入</span></td></tr>
-                <tr><td><strong>悦动</strong></td><td>¥45,000</td><td>¥180,000</td><td><span style="color:var(--warning);font-weight:600;">300%</span></td><td>2类/仅中国</td><td><span class="tag tag-blue">评估扩展</span></td></tr>
-              </tbody>
-            </table>
+            <table class="data-table"><thead><tr><th>品牌</th><th>总投入</th><th>品牌估值</th><th>ROI</th><th>保护范围</th><th>建议</th></tr></thead><tbody>
+              <tr><td><strong>云智</strong></td><td>¥320,000</td><td>¥5,200,000</td><td><span style="color:var(--success);font-weight:600;">1,525%</span></td><td>4类/中+美+欧</td><td><span class="tag tag-green">继续投入</span></td></tr>
+              <tr><td><strong>智联</strong></td><td>¥280,000</td><td>¥3,800,000</td><td><span style="color:var(--success);font-weight:600;">1,257%</span></td><td>5类/中+日+韩</td><td><span class="tag tag-green">继续投入</span></td></tr>
+              <tr><td><strong>悦动</strong></td><td>¥45,000</td><td>¥180,000</td><td><span style="color:var(--warning);font-weight:600;">300%</span></td><td>2类/仅中国</td><td><span class="tag tag-blue">评估扩展</span></td></tr>
+            </tbody></table>
           </div>
         </div>
       </div>
 
-      <!-- 费用申请 -->
+      <!-- ========== 费用申请 ========== -->
       <div id="applyPanel" style="display:none;">
         <div class="row row-3">
           <div style="grid-column: span 2;">
-            <div class="card">
-              <div class="card-header"><div class="card-title">📤 费用申请单</div></div>
-              <div class="card-body">
-                <div class="form-section">
-                  <label class="form-label">申请类型 <span class="required">*</span></label>
-                  <div class="radio-group">
-                    <div class="radio-card active" onclick="selectRadio(this,'applyType','budget')">
-                      <div class="icon">📋</div>
-                      <div class="label">预算申请</div>
-                    </div>
-                    <div class="radio-card" onclick="selectRadio(this,'applyType','reimburse')">
-                      <div class="icon">🧾</div>
-                      <div class="label">费用报销</div>
-                    </div>
-                    <div class="radio-card" onclick="selectRadio(this,'applyType','supplement')">
-                      <div class="icon">➕</div>
-                      <div class="label">追加预算</div>
-                    </div>
-                    <div class="radio-card" onclick="selectRadio(this,'applyType','advance')">
-                      <div class="icon">💵</div>
-                      <div class="label">预付款申请</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-section">
-                    <label class="form-label">关联案件 <span class="required">*</span></label>
-                    <select class="form-select" id="applyCase">
-                      <option>请选择关联案件</option>
-                      <option>TM-2026-0042 云智-驳回复审</option>
-                      <option>TM-2026-0031 智联-异议答辩</option>
-                      <option>TM-2025-0189 海翼-马德里申请</option>
-                      <option>TM-2025-0098 星联-续展</option>
-                      <option>无特定案件（通用预算）</option>
-                    </select>
-                  </div>
-                  <div class="form-section">
-                    <label class="form-label">费用承担方</label>
-                    <select class="form-select" id="applyDept">
-                      <option>知识产权部</option>
-                      <option>品牌管理部</option>
-                      <option>海外市场部</option>
-                    </select>
-                  </div>
-                  <div class="form-section">
-                    <label class="form-label">预算年度</label>
-                    <select class="form-select" id="applyYear">
-                      <option>2026年度</option>
-                      <option>2027年度</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-section">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <label class="form-label" style="margin:0;">费用明细 <span class="required">*</span></label>
-                    <button class="btn btn-sm btn-secondary" onclick="addFeeLine()">➕ 添加明细</button>
-                  </div>
-                  <div id="feeLines">
-                    <div class="fee-line">
-                      <select class="form-select" style="min-width:0;"><option>代理费</option><option>官费</option><option>翻译费</option><option>公证认证费</option><option>差旅费</option><option>其他</option></select>
-                      <input type="number" class="form-input" placeholder="金额" value="85000">
-                      <select class="form-select" style="min-width:0;"><option>CNY</option><option>USD</option><option>EUR</option><option>JPY</option></select>
-                      <input type="text" class="form-input" placeholder="费用说明" value="云智驳回复审代理费">
-                      <div style="color:var(--text-muted);cursor:pointer;font-size:16px;" onclick="this.parentElement.remove()">🗑️</div>
-                    </div>
-                    <div class="fee-line">
-                      <select class="form-select" style="min-width:0;"><option>官费</option><option>代理费</option><option>翻译费</option><option>公证认证费</option><option>差旅费</option><option>其他</option></select>
-                      <input type="number" class="form-input" placeholder="金额" value="1500">
-                      <select class="form-select" style="min-width:0;"><option>CNY</option><option>USD</option><option>EUR</option><option>JPY</option></select>
-                      <input type="text" class="form-input" placeholder="费用说明" value="驳回复审官费">
-                      <div style="color:var(--text-muted);cursor:pointer;font-size:16px;" onclick="this.parentElement.remove()">🗑️</div>
-                    </div>
-                  </div>
-                  <div style="text-align:right; margin-top:10px; font-size:14px; font-weight:600;">
-                    合计：<span style="color:var(--primary);font-size:18px;" id="feeTotal">¥86,500</span>
-                  </div>
-                </div>
-                <div class="form-section">
-                  <label class="form-label">附件上传</label>
-                  <div class="upload-zone" onclick="alert('演示模式：点击上传文件')">
-                    <div style="font-size:28px; margin-bottom:8px;">📎</div>
-                    <div style="font-weight:500; margin-bottom:4px;">点击上传或拖拽文件至此</div>
-                    <div style="font-size:12px; color:var(--text-muted);">支持 PDF、JPG、PNG，单文件不超过 50MB</div>
-                  </div>
-                </div>
-                <div class="form-section">
-                  <label class="form-label">申请说明</label>
-                  <textarea class="form-textarea" id="applyRemark" placeholder="请说明费用用途、必要性及预期成果..."></textarea>
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:10px;">
-                  <button class="btn btn-secondary" onclick="alert('已保存草稿')">💾 保存草稿</button>
-                  <button class="btn btn-primary" onclick="submitFeeApply()">📤 提交申请</button>
-                </div>
-              </div>
-            </div>
+            <div class="card"><div class="card-header"><div class="card-title">📤 费用申请单</div></div><div class="card-body">
+              <div class="form-section"><label class="form-label">申请类型 <span class="required">*</span></label><div class="radio-group"><div class="radio-card active" onclick="selectRadio(this,'applyType','budget')"><div class="icon">📋</div><div class="label">预算申请</div></div><div class="radio-card" onclick="selectRadio(this,'applyType','reimburse')"><div class="icon">🧾</div><div class="label">费用报销</div></div><div class="radio-card" onclick="selectRadio(this,'applyType','supplement')"><div class="icon">➕</div><div class="label">追加预算</div></div><div class="radio-card" onclick="selectRadio(this,'applyType','advance')"><div class="icon">💵</div><div class="label">预付款申请</div></div></div></div>
+              <div class="form-row"><div class="form-section"><label class="form-label">关联案件 <span class="required">*</span></label><select class="form-select" id="applyCase"><option>请选择关联案件</option><option>TM-2026-0042 云智-驳回复审</option><option>TM-2026-0031 智联-异议答辩</option><option>TM-2025-0189 海翼-马德里申请</option><option>TM-2025-0098 星联-续展</option><option>无特定案件（通用预算）</option></select></div><div class="form-section"><label class="form-label">费用承担方</label><select class="form-select" id="applyDept"><option>知识产权部</option><option>品牌管理部</option><option>海外市场部</option></select></div><div class="form-section"><label class="form-label">预算年度</label><select class="form-select" id="applyYear"><option>2026年度</option><option>2027年度</option></select></div></div>
+              <div class="form-section"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><label class="form-label" style="margin:0;">费用明细 <span class="required">*</span></label><button class="btn btn-sm btn-secondary" onclick="addFeeLine()">➕ 添加明细</button></div><div id="feeLines"><div class="fee-line"><select class="form-select" style="min-width:0;"><option>代理费</option><option>官费</option><option>翻译费</option><option>公证认证费</option><option>差旅费</option><option>其他</option></select><input type="number" class="form-input" placeholder="金额" value="85000"><select class="form-select" style="min-width:0;"><option>CNY</option><option>USD</option><option>EUR</option><option>JPY</option></select><input type="text" class="form-input" placeholder="费用说明" value="云智驳回复审代理费"><div style="color:var(--text-muted);cursor:pointer;font-size:16px;" onclick="this.parentElement.remove()">🗑️</div></div><div class="fee-line"><select class="form-select" style="min-width:0;"><option>官费</option><option>代理费</option><option>翻译费</option><option>公证认证费</option><option>差旅费</option><option>其他</option></select><input type="number" class="form-input" placeholder="金额" value="1500"><select class="form-select" style="min-width:0;"><option>CNY</option><option>USD</option><option>EUR</option><option>JPY</option></select><input type="text" class="form-input" placeholder="费用说明" value="驳回复审官费"><div style="color:var(--text-muted);cursor:pointer;font-size:16px;" onclick="this.parentElement.remove()">🗑️</div></div></div><div style="text-align:right; margin-top:10px; font-size:14px; font-weight:600;">合计：<span style="color:var(--primary);font-size:18px;" id="feeTotal">¥86,500</span></div></div>
+              <div class="form-section"><label class="form-label">附件上传</label><div class="upload-zone" onclick="alert('演示模式：点击上传文件')"><div style="font-size:28px; margin-bottom:8px;">📎</div><div style="font-weight:500; margin-bottom:4px;">点击上传或拖拽文件至此</div><div style="font-size:12px; color:var(--text-muted);">支持 PDF、JPG、PNG，单文件不超过 50MB</div></div></div>
+              <div class="form-section"><label class="form-label">申请说明</label><textarea class="form-textarea" id="applyRemark" placeholder="请说明费用用途、必要性及预期成果..."></textarea></div>
+              <div style="display:flex; justify-content:flex-end; gap:10px;"><button class="btn btn-secondary" onclick="alert('已保存草稿')">💾 保存草稿</button><button class="btn btn-primary" onclick="submitFeeApply()">📤 提交申请</button></div>
+            </div></div>
           </div>
           <div>
-            <div class="card" style="margin-bottom:16px;">
-              <div class="card-header"><div class="card-title">📊 预算概览</div></div>
-              <div class="card-body">
-                <div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">2026年度 · 知识产权部</div>
-                <div style="font-size:24px; font-weight:700; margin-bottom:4px;">¥935,000</div>
-                <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">剩余预算</div>
-                <div class="progress-bar" style="height:8px; border-radius:4px; background:#e2e8f0; overflow:hidden;">
-                  <div class="progress-fill" style="width:67%; height:100%; border-radius:4px; background:linear-gradient(90deg, #2563eb, #0ea5e9);"></div>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px; color:var(--text-muted);">
-                  <span>已用 67%</span>
-                  <span>总额 ¥2,800,000</span>
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-header"><div class="card-title">👤 审批流程</div></div>
-              <div class="card-body">
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-                  <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--primary), var(--secondary)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:13px;">张</div>
-                  <div>
-                    <div style="font-size:13px; font-weight:600;">张法务</div>
-                    <div style="font-size:11px; color:var(--text-muted);">申请人 · 知识产权部</div>
-                  </div>
-                </div>
-                <div style="width:2px; height:20px; background:var(--border-color); margin-left:17px;"></div>
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-                  <div style="width:36px; height:36px; border-radius:50%; background:var(--bg-body); display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:600; font-size:13px;">李</div>
-                  <div>
-                    <div style="font-size:13px; font-weight:600;">李总监</div>
-                    <div style="font-size:11px; color:var(--text-muted);">部门审批</div>
-                  </div>
-                </div>
-                <div style="width:2px; height:20px; background:var(--border-color); margin-left:17px;"></div>
-                <div style="display:flex; align-items:center; gap:10px;">
-                  <div style="width:36px; height:36px; border-radius:50%; background:var(--bg-body); display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:600; font-size:13px;">财</div>
-                  <div>
-                    <div style="font-size:13px; font-weight:600;">财务部</div>
-                    <div style="font-size:11px; color:var(--text-muted);">费用审核</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="card" style="margin-bottom:16px;"><div class="card-header"><div class="card-title">📊 预算概览</div></div><div class="card-body"><div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">2026年度 · 知识产权部</div><div style="font-size:24px; font-weight:700; margin-bottom:4px;">¥935,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">剩余预算</div><div class="progress-bar" style="height:8px; border-radius:4px; background:#e2e8f0; overflow:hidden;"><div class="progress-fill" style="width:67%; height:100%; border-radius:4px; background:linear-gradient(90deg, #2563eb, #0ea5e9);"></div></div><div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px; color:var(--text-muted);"><span>已用 67%</span><span>总额 ¥2,800,000</span></div></div></div>
+            <div class="card"><div class="card-header"><div class="card-title">👤 审批流程</div></div><div class="card-body">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;"><div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--primary), var(--secondary)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:13px;">张</div><div><div style="font-size:13px; font-weight:600;">张法务</div><div style="font-size:11px; color:var(--text-muted);">申请人 · 知识产权部</div></div></div>
+              <div style="width:2px; height:20px; background:var(--border-color); margin-left:17px;"></div>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;"><div style="width:36px; height:36px; border-radius:50%; background:var(--bg-body); display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:600; font-size:13px;">李</div><div><div style="font-size:13px; font-weight:600;">李总监</div><div style="font-size:11px; color:var(--text-muted);">部门审批</div></div></div>
+              <div style="width:2px; height:20px; background:var(--border-color); margin-left:17px;"></div>
+              <div style="display:flex; align-items:center; gap:10px;"><div style="width:36px; height:36px; border-radius:50%; background:var(--bg-body); display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-weight:600; font-size:13px;">财</div><div><div style="font-size:13px; font-weight:600;">财务部</div><div style="font-size:11px; color:var(--text-muted);">费用审核</div></div></div>
+            </div></div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -541,50 +483,78 @@
 <script>
 initApp('fees');
 
-// ==================== Charts ====================
-drawPieChart('feePie', [520000,1120000,125000,100000], ['官费','代理费','翻译费','其他'], ['#2563eb','#0ea5e9','#10b981','#94a3b8']);
-drawBarChart('feeTrend', [120000,180000,150000,220000,280000,195000], ['12月','1月','2月','3月','4月','5月'], ['#2563eb','#2563eb','#2563eb','#2563eb','#2563eb','#2563eb']);
-drawBarChart('firmCompare', [420000,380000,180000,120000,95000], ['智联','元健','Horizon','瑞思','云智科技'], ['#2563eb','#0ea5e9','#10b981','#f59e0b','#94a3b8']);
-drawPieChart('typeFee', [35,28,18,12,7], ['新申请','复审','异议','续展','其他'], ['#2563eb','#0ea5e9','#10b981','#f59e0b','#94a3b8']);
-
-// Animate budget progress bar
+// ==================== Overview: Budget Progress Animation ====================
 setTimeout(function() {
-  var bar = document.querySelector('#overviewPanel .progress-fill');
+  var bar = document.getElementById('budgetProgress');
   if (bar) bar.style.width = '67%';
 }, 300);
 
+// ==================== Overview: Mini Bar Chart (SVG-free, pure DOM) ====================
+(function renderTrendMiniChart() {
+  var data = [
+    { month: '12月', value: 120000, isPeak: false },
+    { month: '1月',  value: 180000, isPeak: false },
+    { month: '2月',  value: 150000, isPeak: false },
+    { month: '3月',  value: 220000, isPeak: false },
+    { month: '4月',  value: 280000, isPeak: true },
+    { month: '5月',  value: 195000, isPeak: false }
+  ];
+  var max = Math.max.apply(null, data.map(function(d) { return d.value; }));
+  var container = document.getElementById('trendMiniChart');
+  if (!container) return;
+  var html = '';
+  data.forEach(function(d, i) {
+    var h = Math.max((d.value / max) * 100, 4);
+    var color = d.isPeak ? '#1a56db' : '#93c5fd';
+    var label = d.isPeak ? '<div style="font-size:11px; color:#1a56db; font-weight:700; margin-bottom:4px;">¥28万</div>' : '<div style="font-size:11px; color:#9ca3af; font-weight:500; margin-bottom:4px; opacity:0;">.</div>';
+    html += '<div class="mini-bar-item">' +
+      label +
+      '<div class="mini-bar-rect" style="height:0%; background:' + color + ';" data-target-height="' + h + '%">' +
+        '<div class="mini-bar-tip">¥' + (d.value / 10000).toFixed(1) + '万</div>' +
+      '</div>' +
+      '<div class="mini-bar-label">' + d.month + '</div>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+  // Animate
+  setTimeout(function() {
+    container.querySelectorAll('.mini-bar-rect').forEach(function(bar, i) {
+      setTimeout(function() { bar.style.height = bar.dataset.targetHeight; }, i * 80);
+    });
+  }, 300);
+})();
+
+// ==================== Overview: Horizontal Progress Bars Animation ====================
+setTimeout(function() {
+  document.querySelectorAll('.hprog-fill').forEach(function(bar) {
+    bar.style.width = bar.dataset.width;
+  });
+}, 400);
+
+// ==================== Charts (Other Tabs) ====================
+drawPieChart('feePie', [520000,1120000,125000,100000], ['官费','代理费','翻译费','其他'], ['#2563eb','#0ea5e9','#10b981','#94a3b8']);
+drawBarChart('firmCompare', [420000,380000,180000,120000,95000], ['智联','元健','Horizon','瑞思','云智科技'], ['#2563eb','#0ea5e9','#10b981','#f59e0b','#94a3b8']);
+drawPieChart('typeFee', [35,28,18,12,7], ['新申请','复审','异议','续展','其他'], ['#2563eb','#0ea5e9','#10b981','#f59e0b','#94a3b8']);
+
 // ==================== Tab Switch ====================
 function switchTab(tab, el) {
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.fee-tab').forEach(function(t) { t.classList.remove('active'); });
   if (el) el.classList.add('active');
   ['overview','query','approval','analysis','apply'].forEach(function(p) {
-    var panel = document.getElementById(p+'Panel');
-    if (panel) panel.style.display = p===tab?'block':'none';
+    var panel = document.getElementById(p + 'Panel');
+    if (panel) panel.style.display = p === tab ? 'block' : 'none';
   });
   if (tab === 'query') { renderFeeList(); renderPagination(); }
 }
 
-function selectRadio(el, name, value) {
-  el.parentElement.querySelectorAll('.radio-card').forEach(function(c) { c.classList.remove('active'); });
-  el.classList.add('active');
-}
-
-function addFeeLine() {
-  var container = document.getElementById('feeLines');
-  var div = document.createElement('div');
-  div.className = 'fee-line';
-  div.innerHTML = '<select class="form-select" style="min-width:0;"><option>代理费</option><option>官费</option><option>翻译费</option><option>公证认证费</option><option>差旅费</option><option>其他</option></select>' +
-    '<input type="number" class="form-input" placeholder="金额">' +
-    '<select class="form-select" style="min-width:0;"><option>CNY</option><option>USD</option><option>EUR</option><option>JPY</option></select>' +
-    '<input type="text" class="form-input" placeholder="费用说明">' +
-    '<div style="color:var(--text-muted);cursor:pointer;font-size:16px;" onclick="this.parentElement.remove()">🗑️</div>';
-  container.appendChild(div);
-}
-
-function submitFeeApply() {
-  var caseSel = document.getElementById('applyCase').value;
-  if (caseSel.indexOf('请选择') >= 0) { alert('请选择关联案件'); return; }
-  alert('费用申请已提交，审批流程已启动！');
+// ==================== URL Tab Param ====================
+var params = new URLSearchParams(location.search);
+var tabOrder = ['overview','query','approval','analysis','apply'];
+var targetTab = params.get('tab');
+if (targetTab && tabOrder.indexOf(targetTab) >= 0) {
+  var idx = tabOrder.indexOf(targetTab);
+  var tabEl = document.querySelectorAll('.fee-tab')[idx];
+  if (tabEl) switchTab(targetTab, tabEl);
 }
 
 // ==================== Date Quick Tags ====================
@@ -594,12 +564,9 @@ function setDateQuick(field, type, el) {
   var startEl = document.getElementById(startId);
   var endEl = document.getElementById(endId);
   var today = new Date();
-
   el.parentElement.querySelectorAll('.date-quick-tag').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active');
-
   if (type==='clear' || type==='all') { startEl.value=''; endEl.value=''; return; }
-
   var s, e;
   var fmt = function(d) { return d.toISOString().slice(0,10); };
   if (type==='today') { s=today; e=today; }
@@ -608,7 +575,6 @@ function setDateQuick(field, type, el) {
   else if (type==='future7') { s=today; e=new Date(today); e.setDate(e.getDate()+6); }
   else if (type==='past30') { s=new Date(today); s.setDate(s.getDate()-29); e=today; }
   else if (type==='future30') { s=today; e=new Date(today); e.setDate(e.getDate()+29); }
-
   if (s && e) { startEl.value=fmt(s); endEl.value=fmt(e); }
 }
 
@@ -616,11 +582,7 @@ function setDateQuick(field, type, el) {
 var PAGE_SIZE = 10;
 var currentPage = 1;
 var filteredBills = [];
-
-function getAllBills() {
-  return (typeof AppData !== 'undefined' && AppData.bills) ? AppData.bills : [];
-}
-
+function getAllBills() { return (typeof AppData !== 'undefined' && AppData.bills) ? AppData.bills : []; }
 function doQuery() {
   currentPage = 1;
   var bills = getAllBills();
@@ -636,15 +598,14 @@ function doQuery() {
   var qPaymentEnd = document.getElementById('qPaymentEnd').value;
   var qPaidStart = document.getElementById('qPaidStart').value;
   var qPaidEnd = document.getElementById('qPaidEnd').value;
-
   filteredBills = bills.filter(function(b) {
-    if (qCaseFileNo && (!b.caseFileNo || b.caseFileNo.toLowerCase().indexOf(qCaseFileNo)===-1)) return false;
-    if (qTrademarkNo && (!b.trademarkNo || b.trademarkNo.toLowerCase().indexOf(qTrademarkNo)===-1)) return false;
-    if (qAppNo && (!b.appNo || b.appNo.toLowerCase().indexOf(qAppNo)===-1)) return false;
+    if (qCaseFileNo && !(b.caseFileNo || '').toLowerCase().includes(qCaseFileNo)) return false;
+    if (qTrademarkNo && !(b.trademarkNo || '').toLowerCase().includes(qTrademarkNo)) return false;
+    if (qAppNo && !(b.appNo || '').toLowerCase().includes(qAppNo)) return false;
     if (qCaseFileType && b.caseFileType !== qCaseFileType) return false;
     if (qFeeType && b.feeType !== qFeeType) return false;
-    if (qFeeName && (!b.feeName || b.feeName.indexOf(qFeeName)===-1)) return false;
-    if (qApplicant && (!b.applicant || b.applicant.toLowerCase().indexOf(qApplicant)===-1)) return false;
+    if (qFeeName && b.feeName !== qFeeName) return false;
+    if (qApplicant && !(b.applicant || '').toLowerCase().includes(qApplicant)) return false;
     if (qStatus && b.status !== qStatus) return false;
     if (qPaymentStart && b.paymentDeadline && b.paymentDeadline < qPaymentStart) return false;
     if (qPaymentEnd && b.paymentDeadline && b.paymentDeadline > qPaymentEnd) return false;
@@ -652,45 +613,27 @@ function doQuery() {
     if (qPaidEnd && b.paidDate && b.paidDate > qPaidEnd) return false;
     return true;
   });
-
   renderFeeList();
   renderPagination();
 }
-
 function resetQuery() {
-  ['qCaseFileNo','qTrademarkNo','qAppNo','qApplicant'].forEach(function(id) {
-    document.getElementById(id).value='';
+  ['qCaseFileNo','qTrademarkNo','qAppNo','qCaseFileType','qFeeType','qFeeName','qApplicant','qStatus','qPaymentStart','qPaymentEnd','qPaidStart','qPaidEnd'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
   });
-  ['qCaseFileType','qFeeType','qFeeName','qStatus'].forEach(function(id) {
-    document.getElementById(id).selectedIndex=0;
-  });
-  ['qPaymentStart','qPaymentEnd','qPaidStart','qPaidEnd'].forEach(function(id) {
-    document.getElementById(id).value='';
-  });
-  document.querySelectorAll('.date-quick-bar').forEach(function(bar) {
-    bar.querySelectorAll('.date-quick-tag').forEach(function(t) { t.classList.remove('active'); });
-    bar.querySelector('.date-quick-tag').classList.add('active');
-  });
-  currentPage = 1;
+  document.querySelectorAll('.date-quick-bar .date-quick-tag').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.date-quick-bar .date-quick-tag:first-child').forEach(function(t) { t.classList.add('active'); });
   filteredBills = getAllBills();
   renderFeeList();
   renderPagination();
 }
-
-// ==================== Render List ====================
 function renderFeeList() {
-  var tbody = document.getElementById('feeList');
   var bills = filteredBills.length > 0 ? filteredBills : getAllBills();
   var start = (currentPage - 1) * PAGE_SIZE;
   var pageData = bills.slice(start, start + PAGE_SIZE);
-
-  if (pageData.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的数据</td></tr>';
-    return;
-  }
-
+  var tbody = document.getElementById('feeList');
+  var currencySymbol = '¥';
   tbody.innerHTML = pageData.map(function(b) {
-    var currencySymbol = b.currency === 'USD' ? '$' : b.currency === 'EUR' ? '€' : '¥';
     return '<tr>' +
       '<td><span style="font-family:monospace;color:var(--primary);font-weight:500;">' + (b.caseFileNo || '-') + '</span></td>' +
       '<td>' + (b.trademarkNo || '-') + '</td>' +
@@ -706,13 +649,10 @@ function renderFeeList() {
     '</tr>';
   }).join('');
 }
-
-// ==================== Pagination ====================
 function renderPagination() {
   var bills = filteredBills.length > 0 ? filteredBills : getAllBills();
   var totalPages = Math.max(1, Math.ceil(bills.length / PAGE_SIZE));
   var container = document.getElementById('pagination');
-
   var html = '';
   html += '<button class="page-btn" onclick="goPage(' + (currentPage-1) + ')" ' + (currentPage<=1?'disabled':'') + '>上一页</button>';
   for (var i=1; i<=totalPages; i++) {
@@ -722,7 +662,6 @@ function renderPagination() {
   html += '<span style="font-size:12px;color:var(--text-muted);margin-left:8px;">共 ' + bills.length + ' 条</span>';
   container.innerHTML = html;
 }
-
 function goPage(p) {
   var bills = filteredBills.length > 0 ? filteredBills : getAllBills();
   var totalPages = Math.ceil(bills.length / PAGE_SIZE);
@@ -733,16 +672,13 @@ function goPage(p) {
 }
 
 // ==================== Export ====================
-function toggleExportDropdown() {
-  document.getElementById('exportMenu').classList.toggle('active');
-}
+function toggleExportDropdown() { document.getElementById('exportMenu').classList.toggle('active'); }
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.dropdown')) {
     var menu = document.getElementById('exportMenu');
     if (menu) menu.classList.remove('active');
   }
 });
-
 function exportData(fmt) {
   var bills = filteredBills.length > 0 ? filteredBills : getAllBills();
   alert('导出' + fmt.toUpperCase() + '：共 ' + bills.length + ' 条记录\n（演示模式：实际导出需后端支持）');
@@ -760,22 +696,31 @@ function initFeeNameOptions() {
   }
 }
 
-// ==================== URL Tab Param ====================
-var params = new URLSearchParams(location.search);
-var tabMap = {overview:'overview',query:'query',approval:'approval',analysis:'analysis',apply:'apply'};
-var tabOrder = ['overview','query','approval','analysis','apply'];
-if (tabMap[params.get('tab')]) {
-  var idx = tabOrder.indexOf(params.get('tab'));
-  if (idx>=0) {
-    var tabEl = document.querySelectorAll('.tab')[idx];
-    if (tabEl) switchTab(params.get('tab'), tabEl);
-  }
+// ==================== Fee Apply Form ====================
+function selectRadio(el, name, value) {
+  el.parentElement.querySelectorAll('.radio-card').forEach(function(c) { c.classList.remove('active'); });
+  el.classList.add('active');
+}
+function addFeeLine() {
+  var container = document.getElementById('feeLines');
+  var div = document.createElement('div');
+  div.className = 'fee-line';
+  div.innerHTML = '<select class="form-select" style="min-width:0;"><option>代理费</option><option>官费</option><option>翻译费</option><option>公证认证费</option><option>差旅费</option><option>其他</option></select>' +
+    '<input type="number" class="form-input" placeholder="金额">' +
+    '<select class="form-select" style="min-width:0;"><option>CNY</option><option>USD</option><option>EUR</option><option>JPY</option></select>' +
+    '<input type="text" class="form-input" placeholder="费用说明">' +
+    '<div style="color:var(--text-muted);cursor:pointer;font-size:16px;" onclick="this.parentElement.remove()">🗑️</div>';
+  container.appendChild(div);
+}
+function submitFeeApply() {
+  var caseSel = document.getElementById('applyCase').value;
+  if (caseSel.indexOf('请选择') >= 0) { alert('请选择关联案件'); return; }
+  alert('费用申请已提交，审批流程已启动！');
 }
 
 // ==================== Init ====================
 filteredBills = getAllBills();
 initFeeNameOptions();
 </script>
-<script src="../js/data-service.js?v=2.5"></script>
 </body>
 </html>
