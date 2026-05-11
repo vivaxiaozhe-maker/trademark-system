@@ -190,16 +190,145 @@ tailwind.config = {
 
 .amount { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 600; }
 
-/* Responsive grid */
+/* ========== Query Panel Styles ========== */
+.filter-card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 16px;
+}
+.filter-card-title {
+  font-size: 14px; font-weight: 600; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 6px; color: #111827;
+}
+.filter-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+.filter-section { margin-bottom: 0; }
+.filter-label { display: block; font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 5px; }
+.filter-input, .filter-select {
+  width: 100%; padding: 7px 10px; border: 1px solid #e5e7eb;
+  border-radius: 6px; font-size: 13px; color: #374151;
+  background: #fff; outline: none;
+}
+.filter-input:focus, .filter-select:focus { border-color: #1a56db; }
+.date-quick-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; }
+.date-quick-tag {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
+  border: 1px solid #e5e7eb; background: #fff; cursor: pointer;
+  transition: all 0.15s; color: #6b7280;
+}
+.date-quick-tag:hover, .date-quick-tag.active { background: #1a56db; color: #fff; border-color: #1a56db; }
+.date-range-row { display: flex; gap: 8px; align-items: center; }
+.date-range-row input { flex: 1; }
+.date-range-row span { font-size: 12px; color: #9ca3af; }
+.action-bar-left { display: flex; gap: 8px; }
+
+/* ========== Dropdown ========== */
+.dropdown { position: relative; }
+.dropdown-menu {
+  position: absolute; top: 100%; right: 0;
+  background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  min-width: 140px; z-index: 100; display: none; padding: 4px 0;
+}
+.dropdown-menu.active { display: block; }
+.dropdown-item { padding: 8px 14px; font-size: 13px; cursor: pointer; }
+.dropdown-item:hover { background: #eff6ff; color: #1a56db; }
+
+/* ========== Pagination ========== */
+.pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 16px; padding-bottom: 16px; }
+.page-btn {
+  padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+  border: 1px solid #e5e7eb; background: #fff; cursor: pointer;
+  color: #6b7280; transition: all 0.15s;
+}
+.page-btn:hover { border-color: #1a56db; color: #1a56db; }
+.page-btn.active { background: #1a56db; color: #fff; border-color: #1a56db; }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ========== Fee Apply Form Styles ========== */
+.form-section { margin-bottom: 20px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+.form-label .required { color: #dc2626; margin-left: 2px; }
+.form-select, .form-textarea {
+  width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb;
+  border-radius: 8px; font-size: 13px; color: #374151;
+  background: #fff; outline: none; transition: all 0.15s;
+}
+.form-select:focus, .form-textarea:focus { border-color: #1a56db; box-shadow: 0 0 0 3px #dbeafe; }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+.radio-card {
+  flex: 1; min-width: 100px; padding: 14px; border: 2px solid #e5e7eb;
+  border-radius: 8px; cursor: pointer; text-align: center;
+  transition: all 0.15s; background: #fff;
+}
+.radio-card:hover { border-color: #dbeafe; }
+.radio-card.active { border-color: #1a56db; background: #eff6ff; }
+.radio-card .icon { font-size: 22px; margin-bottom: 6px; }
+.radio-card .label { font-size: 13px; font-weight: 600; color: #374151; }
+.fee-line {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr 40px;
+  gap: 10px; align-items: center; padding: 12px; background: #f9fafb;
+  border-radius: 8px; margin-bottom: 8px;
+}
+.upload-zone {
+  border: 2px dashed #e5e7eb; border-radius: 12px;
+  padding: 32px; text-align: center; cursor: pointer; transition: all 0.15s;
+  background: #f9fafb;
+}
+.upload-zone:hover { border-color: #1a56db; background: #eff6ff; }
+
+/* ========== Legacy Card Styles for Query/Approval/Analysis ========== */
+.card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 16px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid #f3f4f6;
+}
+.card-title { font-size: 15px; font-weight: 600; color: #111827; }
+.card-body { padding: 0; }
+.row { display: flex; gap: 16px; }
+.row-2 > div { flex: 1; }
+.row-3 > div { flex: 1; }
+.mt-3 { margin-top: 16px; }
+
+/* ========== Data Table (Legacy) ========== */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table thead th {
+  text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600;
+  color: #6b7280; border-bottom: 1px solid #e5e7eb; background: #f9fafb;
+}
+.data-table tbody td {
+  padding: 10px 14px; font-size: 13px; color: #374151; border-bottom: 1px solid #f3f4f6;
+}
+.data-table tbody tr:hover { background: #f9fafb; }
+
+/* ========== Tag Utilities ========== */
+.tag {
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 600;
+}
+.tag-gray { background: #f3f4f6; color: #4b5563; }
+.tag-green { background: #d1fae5; color: #047857; }
+.tag-blue { background: #dbeafe; color: #1d4ed8; }
+.tag-orange { background: #ffedd5; color: #c2410c; }
+
+/* ========== Responsive ========== */
 @media (max-width: 1200px) {
   .fee-grid-row { flex-direction: column !important; }
   .fee-col-60, .fee-col-40 { width: 100% !important; }
+  .row { flex-direction: column; }
 }
 @media (max-width: 768px) {
   .fee-col-60, .fee-col-40 { width: 100% !important; }
   .hprog-row { flex-wrap: wrap; }
   .hprog-label { width: 100%; margin-bottom: 4px; }
   .hprog-value, .hprog-pct { width: auto; }
+  .filter-row { grid-template-columns: repeat(2, 1fr); }
+  .form-row { grid-template-columns: 1fr; }
+  .fee-line { grid-template-columns: 1fr; }
+  .action-bar-left { flex-wrap: wrap; }
 }
 </style>
 </head>
