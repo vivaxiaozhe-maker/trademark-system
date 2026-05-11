@@ -36,6 +36,17 @@
 .bulk-bar.active { display: flex; }
 .bulk-bar-text { font-size: 13px; color: var(--primary); font-weight: 600; }
 
+/* More filter drawer */
+.more-filter-drawer { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px; }
+.more-filter-row { display: flex; gap: 24px; flex-wrap: wrap; }
+.more-filter-group { flex: 1; min-width: 200px; }
+.more-filter-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+.more-filter-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-chip { padding: 5px 14px; border-radius: 16px; font-size: 12px; font-weight: 500; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); cursor: pointer; transition: var(--transition); }
+.filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+.filter-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.filter-select-more { width: 100%; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px; background: var(--bg-card); outline: none; }
+
 /* Dropdown */
 .action-dropdown .dropdown-menu {
   display: none; position: absolute; right: 0; top: 100%;
@@ -101,24 +112,39 @@
         <div class="tab" onclick="switchTab('all',this)">📋 全部案件</div>
       </div>
       
-      <div class="filter-bar">
+      <div class="filter-bar" id="typeFilterBar">
         <div class="filter-item active" data-filter="all" onclick="filterCases(this,'all')">全部类型</div>
         <div class="filter-item" data-filter="新申请" onclick="filterCases(this,'新申请')">新申请</div>
         <div class="filter-item" data-filter="驳回" onclick="filterCases(this,'驳回')">驳回</div>
         <div class="filter-item" data-filter="异议" onclick="filterCases(this,'异议')">异议/无效</div>
-        <div class="filter-item" data-filter="变转续补" onclick="filterCases(this,'变转续补')">变转续补</div>
-        <div class="filter-item" data-filter="诉讼" onclick="filterCases(this,'诉讼')">诉讼</div>
-        <div class="filter-item" data-filter="其他" onclick="filterCases(this,'其他')">其他</div>
+        <div class="filter-item" onclick="toggleMoreFilters()" id="moreFilterBtn" style="background:var(--bg-body);color:var(--text-muted);">➕ 更多筛选</div>
         <div style="margin-left:auto; display:flex; gap:8px;">
           <input type="text" class="search-input" placeholder="搜索案件编号、商标名称..." id="caseSearch" oninput="searchCases(this.value)">
-          <select class="filter-item" id="statusFilter" onchange="filterByStatus(this.value)">
-            <option value="all">全部状态</option>
-            <option value="examining">审查中</option>
-            <option value="pending">受理中</option>
-            <option value="defense_period">答辩期</option>
-            <option value="preparing">准备材料</option>
-            <option value="waiting_payment">待缴费</option>
-          </select>
+        </div>
+      </div>
+      
+      <!-- More Filters Drawer -->
+      <div class="more-filter-drawer" id="moreFilterDrawer" style="display:none;">
+        <div class="more-filter-row">
+          <div class="more-filter-group">
+            <label class="more-filter-label">案件类型</label>
+            <div class="more-filter-chips">
+              <span class="filter-chip" data-filter="变转续补" onclick="filterCasesFromMore(this,'变转续补')">变转续补</span>
+              <span class="filter-chip" data-filter="诉讼" onclick="filterCasesFromMore(this,'诉讼')">诉讼</span>
+              <span class="filter-chip" data-filter="其他" onclick="filterCasesFromMore(this,'其他')">其他</span>
+            </div>
+          </div>
+          <div class="more-filter-group">
+            <label class="more-filter-label">案件状态</label>
+            <select class="filter-select-more" id="statusFilter" onchange="filterByStatus(this.value)">
+              <option value="all">全部状态</option>
+              <option value="examining">审查中</option>
+              <option value="pending">受理中</option>
+              <option value="defense_period">答辩期</option>
+              <option value="preparing">准备材料</option>
+              <option value="waiting_payment">待缴费</option>
+            </select>
+          </div>
         </div>
       </div>
       
@@ -153,6 +179,8 @@
         <div class="bulk-bar-text">已选择 <span id="bulkCount">0</span> 项</div>
         <button class="btn btn-sm btn-secondary" onclick="bulkExport()">📥 批量导出</button>
         <button class="btn btn-sm btn-secondary" onclick="bulkChangeOwner()">👤 修改责任人</button>
+        <button class="btn btn-sm btn-success" style="background:#d1fae5;color:#047857;border:none;" onclick="bulkEnable()">✅ 批量启用</button>
+        <button class="btn btn-sm btn-warning" style="background:#fef3c7;color:#92400e;border:none;" onclick="bulkDisable()">🚫 批量禁用</button>
         <button class="btn btn-sm btn-warning" style="background:#fef3c7;color:#92400e;border:none;" onclick="bulkRemind()">⏰ 催办</button>
         <button class="btn btn-sm btn-danger" style="background:#fee2e2;color:#b91c1c;border:none;" onclick="bulkDelete()">🗑️ 删除</button>
         <button class="btn btn-sm btn-secondary" onclick="clearSelection()" style="margin-left:auto;">取消</button>
@@ -491,6 +519,24 @@ function clearSelection() {
 function bulkExport() { alert('批量导出 ' + selectedCaseIds.size + ' 个案件'); }
 function bulkChangeOwner() { alert('批量修改责任人：' + Array.from(selectedCaseIds).join(', ')); }
 function bulkRemind() { alert('已发送催办通知给 ' + selectedCaseIds.size + ' 个案件的责任人'); }
+function bulkEnable() {
+  selectedCaseIds.forEach(id => {
+    const c = DataService.getCaseById(id);
+    if (c) { c.enabled = true; DataService.updateCase(c); }
+  });
+  clearSelection();
+  renderTable();
+  showToast('已批量启用 ' + selectedCaseIds.size + ' 个案件', 'success');
+}
+function bulkDisable() {
+  selectedCaseIds.forEach(id => {
+    const c = DataService.getCaseById(id);
+    if (c) { c.enabled = false; DataService.updateCase(c); }
+  });
+  clearSelection();
+  renderTable();
+  showToast('已批量禁用 ' + selectedCaseIds.size + ' 个案件', 'warning');
+}
 function bulkDelete() {
   if (!confirm('确定要删除选中的 ' + selectedCaseIds.size + ' 个案件吗？')) return;
   selectedCaseIds.forEach(id => DataService.deleteCase(id));
@@ -573,6 +619,25 @@ function switchTab(tab, el) {
 
 function filterCases(el, type) {
   document.querySelectorAll('.filter-bar .filter-item[data-filter]').forEach(item => item.classList.remove('active'));
+  document.querySelectorAll('.filter-chip').forEach(item => item.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = type;
+  renderTable();
+}
+
+function toggleMoreFilters() {
+  const drawer = document.getElementById('moreFilterDrawer');
+  const btn = document.getElementById('moreFilterBtn');
+  const showing = drawer.style.display !== 'none';
+  drawer.style.display = showing ? 'none' : 'block';
+  btn.textContent = showing ? '➕ 更多筛选' : '➖ 收起筛选';
+  btn.style.background = showing ? 'var(--bg-body)' : 'var(--primary-light)';
+  btn.style.color = showing ? 'var(--text-muted)' : 'var(--primary)';
+}
+
+function filterCasesFromMore(el, type) {
+  document.querySelectorAll('.filter-bar .filter-item[data-filter]').forEach(item => item.classList.remove('active'));
+  document.querySelectorAll('.filter-chip').forEach(item => item.classList.remove('active'));
   el.classList.add('active');
   currentFilter = type;
   renderTable();

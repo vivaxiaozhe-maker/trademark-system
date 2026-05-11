@@ -341,15 +341,28 @@ function renderBreadcrumb(activePage) {
   const path = breadcrumbMap[activePage];
   if (!path) return;
   
+  // Build a lookup from label to href from menuConfig
+  const menuHrefMap = {};
+  function scanMenu(items) {
+    items.forEach(item => {
+      if (item.href) menuHrefMap[item.label] = item.href;
+      if (item.children) scanMenu(item.children);
+    });
+  }
+  menuConfig.forEach(g => scanMenu(g.items));
+  
   let html = '<nav class="breadcrumb-nav">';
   path.forEach((item, idx) => {
     const isLast = idx === path.length - 1;
     if (isLast) {
       html += `<span class="current">${item.label}</span>`;
-    } else if (item.href) {
-      html += `<a href="${resolveHref(item.href)}">${item.label}</a> / `;
     } else {
-      html += `<span>${item.label}</span> / `;
+      const href = item.href || menuHrefMap[item.label];
+      if (href) {
+        html += `<a href="${resolveHref(href)}">${item.label}</a> / `;
+      } else {
+        html += `<span>${item.label}</span> / `;
+      }
     }
   });
   html += '</nav>';
@@ -422,8 +435,36 @@ function hideSearchDropdownDelayed() {
 }
 
 function handleSearchInput(value) {
-  if (!value.trim()) return;
-  // Real-time search suggestions could go here
+  const dropdown = document.getElementById('searchDropdown');
+  if (!value.trim()) { showSearchDropdown(); return; }
+  
+  // Real-time suggestions from searchable data
+  const keywords = value.trim().toLowerCase();
+  const suggestions = [];
+  
+  // Search cases
+  if (typeof AppData !== 'undefined') {
+    (AppData.cases || []).forEach(c => {
+      if ((c.name && c.name.includes(keywords)) || (c.id && c.id.toLowerCase().includes(keywords))) {
+        suggestions.push({ type: '案件', text: c.id + ' ' + c.name, icon: '⚖️' });
+      }
+    });
+    (AppData.brands || []).forEach(b => {
+      if (b.name && b.name.includes(keywords)) {
+        suggestions.push({ type: '品牌', text: b.name, icon: '🏷️' });
+      }
+    });
+  }
+  
+  const unique = suggestions.slice(0, 6);
+  if (unique.length === 0) {
+    dropdown.innerHTML = '<div class="search-section"><div class="search-item" style="color:var(--text-muted);cursor:default;"><div class="search-item-icon">🔍</div><span>无匹配结果，按回车全局搜索</span></div></div>';
+  } else {
+    dropdown.innerHTML = '<div class="search-section"><div class="search-section-title">搜索结果</div>' +
+      unique.map(s => `<div class="search-item" onclick="performSearch('${s.text}')"><div class="search-item-icon">${s.icon}</div><span>${s.text}</span><span style="margin-left:auto;font-size:11px;color:var(--text-muted);">${s.type}</span></div>`).join('') +
+      '</div>';
+  }
+  dropdown.classList.add('show');
 }
 
 function performSearch(keyword) {
@@ -435,6 +476,12 @@ function performSearch(keyword) {
   try { history = JSON.parse(localStorage.getItem('tm_search_history') || '[]'); } catch(e) {}
   history = [keyword, ...history.filter(h => h !== keyword)].slice(0, 10);
   localStorage.setItem('tm_search_history', JSON.stringify(history));
+  
+  // Update frequency for hot search
+  let freq = {};
+  try { freq = JSON.parse(localStorage.getItem('tm_search_freq') || '{}'); } catch(e) {}
+  freq[keyword] = (freq[keyword] || 0) + 1;
+  localStorage.setItem('tm_search_freq', JSON.stringify(freq));
   
   const dropdown = document.getElementById('searchDropdown');
   if (dropdown) dropdown.classList.remove('show');

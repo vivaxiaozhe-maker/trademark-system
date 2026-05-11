@@ -104,8 +104,17 @@
           <div class="kpi-card" style="padding:16px;">
             <div class="kpi-label">已支出</div>
             <div class="kpi-value" style="font-size:24px; color:var(--primary);">¥1,865,000</div>
-            <div class="progress-bar" style="margin-top:8px;"><div class="progress-fill" style="width:67%; background:var(--primary);"></div></div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">执行率 67%</div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin:6px 0 4px;">
+              <span>预算 ¥2,800,000</span>
+              <span style="color:var(--primary); font-weight:600;">执行率 67%</span>
+            </div>
+            <div class="progress-bar" style="height:10px; border-radius:5px; background:#e2e8f0; overflow:hidden;">
+              <div class="progress-fill" style="width:0%; height:100%; border-radius:5px; background:linear-gradient(90deg, #2563eb, #0ea5e9); transition:width 1s ease;"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px;">
+              <span style="color:var(--text-muted);">已用 <strong style="color:var(--primary);">¥1,865,000</strong></span>
+              <span style="color:var(--success);">剩余 <strong>¥935,000</strong></span>
+            </div>
           </div>
           <div class="kpi-card" style="padding:16px;">
             <div class="kpi-label">待审批</div>
@@ -349,9 +358,15 @@ initApp('fees');
 
 // ==================== Charts ====================
 drawPieChart('feePie', [520000,1120000,125000,100000], ['官费','代理费','翻译费','其他'], ['#2563eb','#0ea5e9','#10b981','#94a3b8']);
-drawBarChart('feeTrend', [120000,180000,150000,220000,280000,195000], ['12月','1月','2月','3月','4月','5月'], ['#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe','#dbeafe']);
+drawBarChart('feeTrend', [120000,180000,150000,220000,280000,195000], ['12月','1月','2月','3月','4月','5月'], ['#2563eb','#2563eb','#2563eb','#2563eb','#2563eb','#2563eb']);
 drawBarChart('firmCompare', [420000,380000,180000,120000,95000], ['智联','元健','Horizon','瑞思','云智科技'], ['#2563eb','#0ea5e9','#10b981','#f59e0b','#94a3b8']);
 drawPieChart('typeFee', [35,28,18,12,7], ['新申请','复审','异议','续展','其他'], ['#2563eb','#0ea5e9','#10b981','#f59e0b','#94a3b8']);
+
+// Animate budget progress bar
+setTimeout(function() {
+  var bar = document.querySelector('#overviewPanel .progress-fill');
+  if (bar) bar.style.width = '67%';
+}, 300);
 
 // ==================== Tab Switch ====================
 function switchTab(tab, el) {
