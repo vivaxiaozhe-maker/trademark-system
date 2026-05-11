@@ -65,10 +65,11 @@ const menuConfig = [
       { label: "用印流程", page: "seal-process", href: "pages/seal-process.html" }
     ] },
     { label: "费用中心", icon: "💰", page: "fees", href: "pages/fees.html", children: [
-      { label: "账单导入", page: "fees-bills", href: "pages/fees.html?tab=bills" },
       { label: "费用总览", page: "fees-overview", href: "pages/fees.html?tab=overview" },
+      { label: "账单查询", page: "fees-query", href: "pages/fees.html?tab=query" },
       { label: "付款审批", page: "fees-approval", href: "pages/fees.html?tab=approval" },
-      { label: "费用分析", page: "fees-analysis", href: "pages/fees.html?tab=analysis" }
+      { label: "费用分析", page: "fees-analysis", href: "pages/fees.html?tab=analysis" },
+      { label: "费用申请", page: "fee-apply", href: "pages/fees.html?tab=apply" }
     ]}
   ]},
   { group: "决策与监测", items: [
