@@ -557,13 +557,14 @@ function drawBarChart(containerId, data, labels, colors) {
   if (!el) return;
   const max = Math.max(...data);
   const id = 'bar-' + Math.random().toString(36).slice(2);
-  let html = `<div style="display:flex; align-items:flex-end; justify-content:space-around; height:100%; padding:10px 0;" id="${id}">`;
+  // FIX: align-self:stretch overrides parent flex align-items:center so height:100% works
+  let html = `<div style="display:flex; align-items:flex-end; justify-content:space-around; height:100%; padding:10px 0; align-self:stretch;" id="${id}">`;
   data.forEach((v, i) => {
-    const h = (v / max) * 75;
+    const h = Math.max((v / max) * 75, 4); // min 4% so tiny bars are visible
     html += `
-      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; cursor:pointer;">
-        <div style="font-size:11px; color:#64748b; font-weight:700; opacity:0; animation:fadeUp 0.4s ${i*0.08}s forwards;">${v}</div>
-        <div style="width:32px; background:${colors[i]||'var(--primary)'}; border-radius:6px 6px 0 0; height:0; opacity:0.9; transition:all 0.3s; box-shadow:0 4px 12px ${colors[i]||'var(--primary)'}40;" class="bar-col-${i}"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; cursor:pointer;" onmouseenter="this.querySelector('.bar-col-${i}').style.opacity='1';this.querySelector('.bar-col-${i}').style.transform='scaleX(1.15)';" onmouseleave="this.querySelector('.bar-col-${i}').style.opacity='0.9';this.querySelector('.bar-col-${i}').style.transform='scaleX(1)';">
+        <div style="font-size:11px; color:#64748b; font-weight:700; opacity:0; animation:fadeUp 0.4s ${i*0.08}s forwards;">${v.toLocaleString()}</div>
+        <div style="width:28px; background:${colors[i]||'var(--primary)'}; border-radius:6px 6px 0 0; height:0; opacity:0.9; transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1); box-shadow:0 4px 12px ${colors[i]||'var(--primary)'}40;" class="bar-col-${i}"></div>
         <div style="font-size:11px; color:#94a3b8; font-weight:500;">${labels[i]}</div>
       </div>
     `;
@@ -571,13 +572,15 @@ function drawBarChart(containerId, data, labels, colors) {
   html += '</div>';
   el.innerHTML = html;
   // Animate bars
-  setTimeout(() => {
-    data.forEach((v, i) => {
-      const h = (v / max) * 75;
-      const bar = document.querySelector(`#${id} .bar-col-${i}`);
-      if (bar) bar.style.height = h + '%';
-    });
-  }, 100);
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      data.forEach((v, i) => {
+        const h = Math.max((v / max) * 75, 4);
+        const bar = document.querySelector(`#${id} .bar-col-${i}`);
+        if (bar) bar.style.height = h + '%';
+      });
+    }, 50);
+  });
 }
 
 function drawPieChart(containerId, data, labels, colors) {
