@@ -38,7 +38,7 @@
 .toggle-switch.on { background: var(--success); }
 .toggle-switch::after {
   content: ""; position: absolute; top: 2px; left: 2px;
-  width: 18px; height: 18px; border-radius: 50%; background: #fff;
+  width: 18px; height: 18px; border-radius: 50%; background: rgba(30,41,59,0.6);
   box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: transform 0.25s;
 }
 .toggle-switch.on::after { transform: translateX(18px); }
@@ -65,7 +65,7 @@
   background: var(--bg-body); border-radius: var(--radius-md); cursor: pointer;
   font-weight: 600; font-size: 13px; transition: var(--transition);
 }
-.perm-parent:hover { background: #e2e8f0; }
+.perm-parent:hover { background: rgba(255,255,255,0.06); }
 .perm-children { padding-left: 24px; margin-top: 4px; }
 .perm-child {
   display: flex; align-items: center; gap: 8px; padding: 6px 12px;
@@ -398,12 +398,12 @@ const userData = [
 ];
 
 const roleData = [
-  { id: 1, name: '系统管理员', desc: '拥有系统全部权限，可管理账号、配置权限、查看所有数据', icon: '👑', color: '#fee2e2', iconColor: '#ef4444', users: 2 },
-  { id: 2, name: '部门总监', desc: '管理部门内所有数据，可审批案件、费用和查看报表', icon: '💼', color: '#fef3c7', iconColor: '#f59e0b', users: 3 },
-  { id: 3, name: '高级法务经理', desc: '负责核心案件处理、律所协作、风险评估和费用审批', icon: '⚖️', color: '#dbeafe', iconColor: '#2563eb', users: 5 },
-  { id: 4, name: '法务专员', desc: '处理日常案件、提交申请、管理证据和查看个人数据', icon: '📋', color: '#d1fae5', iconColor: '#10b981', users: 8 },
-  { id: 5, name: '流程专员', desc: '负责案件流程跟踪、期限管理、文件归档和数据统计', icon: '🔄', color: '#ede9fe', iconColor: '#8b5cf6', users: 4 },
-  { id: 6, name: '外部律所', desc: '仅可查看和处理被委托的案件，不可访问内部数据和费用', icon: '🤝', color: '#e0f2fe', iconColor: '#0ea5e9', users: 2 }
+  { id: 1, name: '系统管理员', desc: '拥有系统全部权限，可管理账号、配置权限、查看所有数据', icon: '👑', color: 'rgba(239,68,68,0.15)', iconColor: '#f87171', users: 2 },
+  { id: 2, name: '部门总监', desc: '管理部门内所有数据，可审批案件、费用和查看报表', icon: '💼', color: 'rgba(245,158,11,0.15)', iconColor: '#fbbf24', users: 3 },
+  { id: 3, name: '高级法务经理', desc: '负责核心案件处理、律所协作、风险评估和费用审批', icon: '⚖️', color: 'rgba(59,130,246,0.15)', iconColor: '#3b82f6', users: 5 },
+  { id: 4, name: '法务专员', desc: '处理日常案件、提交申请、管理证据和查看个人数据', icon: '📋', color: 'rgba(16,185,129,0.15)', iconColor: '#34d399', users: 8 },
+  { id: 5, name: '流程专员', desc: '负责案件流程跟踪、期限管理、文件归档和数据统计', icon: '🔄', color: 'rgba(139,92,246,0.15)', iconColor: '#a78bfa', users: 4 },
+  { id: 6, name: '外部律所', desc: '仅可查看和处理被委托的案件，不可访问内部数据和费用', icon: '🤝', color: 'rgba(6,182,212,0.15)', iconColor: '#38bdf8', users: 2 }
 ];
 
 const permTreeData = [
@@ -458,7 +458,7 @@ function renderUsers(list) {
     return;
   }
   list.forEach(u => {
-    const avatarBg = ['#2563eb','#0ea5e9','#10b981','#f59e0b','#8b5cf6','#ec4899','#14b8a6'][u.id % 7];
+    const avatarBg = ['#3b82f6','#38bdf8','#34d399','#fbbf24','#a78bfa','#f472b6','#2dd4bf'][u.id % 7];
     const statusTag = u.status === 'active'
       ? '<span class="tag tag-green">已启用</span>'
       : '<span class="tag tag-gray">已禁用</span>';

@@ -16,7 +16,7 @@
 }
 .case-header-img {
   width: 80px; height: 80px; border-radius: 16px;
-  object-fit: contain; background: #f8fafc;
+  object-fit: contain; background: rgba(255,255,255,0.03);
   border: 1px solid var(--border-color); flex-shrink: 0;
 }
 .case-header-main { flex: 1; }
@@ -55,13 +55,13 @@
 .timeline-v3 { position: relative; padding-left: 28px; }
 .timeline-v3::before {
   content: ""; position: absolute; left: 7px; top: 0; bottom: 0;
-  width: 2px; background: #e2e8f0; border-radius: 2px;
+  width: 2px; background: rgba(255,255,255,0.06); border-radius: 2px;
 }
 .timeline-v3-item { position: relative; padding-bottom: 24px; }
 .timeline-v3-item::before {
   content: ""; position: absolute; left: -24px; top: 2px;
   width: 14px; height: 14px; border-radius: 50%;
-  border: 2px solid #cbd5e1; background: #fff;
+  border: 2px solid #cbd5e1; background: rgba(30,41,59,0.6);
 }
 .timeline-v3-item.completed::before {
   background: #10b981; border-color: #10b981;
@@ -183,10 +183,10 @@
 .msg-bubble {
   max-width: 70%; padding: 10px 14px; border-radius: 12px; font-size: 13px;
 }
-.msg-bubble.left { background: #f1f5f9; border-radius: 12px 12px 12px 4px; color: var(--text-primary); }
+.msg-bubble.left { background: rgba(255,255,255,0.06); border-radius: 12px 12px 12px 4px; color: var(--text-primary); }
 .msg-bubble.right { background: var(--primary); color: #fff; border-radius: 12px 12px 4px 12px; }
 .msg-bubble-system {
-  max-width: 100%; padding: 10px 14px; background: #f8fafc;
+  max-width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.03);
   border-radius: var(--radius-md); font-size: 13px; color: var(--text-secondary);
   border: 1px dashed var(--border-color); text-align: center;
 }
@@ -273,13 +273,13 @@
 .workflow-timeline { position: relative; padding-left: 28px; }
 .workflow-timeline::before {
   content: ""; position: absolute; left: 7px; top: 0; bottom: 0;
-  width: 2px; background: #e2e8f0; border-radius: 2px;
+  width: 2px; background: rgba(255,255,255,0.06); border-radius: 2px;
 }
 .workflow-item { position: relative; padding-bottom: 18px; }
 .workflow-item::before {
   content: ""; position: absolute; left: -24px; top: 2px;
   width: 14px; height: 14px; border-radius: 50%;
-  border: 2px solid #cbd5e1; background: #fff;
+  border: 2px solid #cbd5e1; background: rgba(30,41,59,0.6);
 }
 .workflow-item.completed::before { background: #10b981; border-color: #10b981; }
 .workflow-item.pending::before { background: #f59e0b; border-color: #f59e0b; }
@@ -318,14 +318,14 @@
 @keyframes ocr-spin { to { transform: rotate(360deg); } }
 .ocr-highlight-value {
   animation: ocr-value-pulse 2s ease;
-  background: #fffbeb !important;
+  background: rgba(30,41,59,0.6)beb !important;
   border-radius: var(--radius-sm);
   padding: 2px 6px;
 }
 @keyframes ocr-value-pulse {
-  0% { background: #fffbeb; }
+  0% { background: rgba(30,41,59,0.6)beb; }
   50% { background: #fef3c7; }
-  100% { background: #fffbeb; }
+  100% { background: rgba(30,41,59,0.6)beb; }
 }
 </style>
 </head>
@@ -493,17 +493,17 @@ const MSG_PAGE_SIZE = 5;
 function renderStatusTag(statusCode) {
   const map = DataService.STATUS_MAP[statusCode] || { label: statusCode, color: 'gray' };
   const colorMap = {
-    blue: '#2563eb', green: '#10b981', orange: '#f59e0b', gray: '#64748b',
-    red: '#ef4444', success: '#10b981', danger: '#ef4444', purple: '#8b5cf6',
+    blue: '#3b82f6', green: '#34d399', orange: '#fbbf24', gray: '#94a3b8',
+    red: '#f87171', success: '#34d399', danger: '#f87171', purple: '#a78bfa',
     cyan: '#06b6d4', indigo: '#6366f1'
   };
   const bgMap = {
-    blue: '#dbeafe', green: '#d1fae5', orange: '#fef3c7', gray: '#f1f5f9',
-    red: '#fee2e2', success: '#d1fae5', danger: '#fee2e2', purple: '#f3e8ff',
+    blue: 'rgba(59,130,246,0.15)', green: 'rgba(16,185,129,0.15)', orange: 'rgba(245,158,11,0.15)', gray: 'rgba(255,255,255,0.06)',
+    red: 'rgba(239,68,68,0.15)', success: 'rgba(16,185,129,0.15)', danger: 'rgba(239,68,68,0.15)', purple: '#f3e8ff',
     cyan: '#cffafe', indigo: '#e0e7ff'
   };
-  const color = colorMap[map.color] || '#64748b';
-  const bg = bgMap[map.color] || '#f1f5f9';
+  const color = colorMap[map.color] || '#94a3b8';
+  const bg = bgMap[map.color] || 'rgba(255,255,255,0.06)';
   return `<span style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:600;color:${color};background:${bg};">${map.label}</span>`;
 }
 
@@ -511,8 +511,8 @@ function getDeadlineInfo(deadline) {
   const days = DataService.daysBetween(DataService.getToday(), deadline);
   let color = '#94a3b8', badgeClass = '';
   let text = days <= 0 ? '已逾期' : `剩余 ${days} 天`;
-  if (days <= 3 && days > 0) { color = '#ef4444'; badgeClass = 'urgent-pulse'; }
-  else if (days <= 7 && days > 0) color = '#f59e0b';
+  if (days <= 3 && days > 0) { color = '#f87171'; badgeClass = 'urgent-pulse'; }
+  else if (days <= 7 && days > 0) color = '#fbbf24';
   return { days, color, text, badgeClass };
 }
 
@@ -627,10 +627,10 @@ function renderInfoGrid() {
     const detail = (typeof AppData !== 'undefined' && AppData.caseDetail && AppData.caseDetail.id === c.id) ? AppData.caseDetail : {};
     const priorityTag = detail.priority === 'high' ? '<span class="info-tag-high">高</span>' : detail.priority === 'medium' ? '<span class="info-tag-medium">中</span>' : detail.priority === 'low' ? '<span class="info-tag-low">低</span>' : '-';
     const statusMap = DataService.STATUS_MAP[c.statusCode] || { label: c.status, color: 'gray' };
-    const statusColorMap = { blue: '#2563eb', green: '#10b981', orange: '#f59e0b', gray: '#64748b', red: '#ef4444', success: '#10b981', danger: '#ef4444', purple: '#8b5cf6', cyan: '#06b6d4', indigo: '#6366f1' };
-    const statusBgMap = { blue: '#dbeafe', green: '#d1fae5', orange: '#fef3c7', gray: '#f1f5f9', red: '#fee2e2', success: '#d1fae5', danger: '#fee2e2', purple: '#f3e8ff', cyan: '#cffafe', indigo: '#e0e7ff' };
-    const stColor = statusColorMap[statusMap.color] || '#64748b';
-    const stBg = statusBgMap[statusMap.color] || '#f1f5f9';
+    const statusColorMap = { blue: '#3b82f6', green: '#34d399', orange: '#fbbf24', gray: '#94a3b8', red: '#f87171', success: '#34d399', danger: '#f87171', purple: '#a78bfa', cyan: '#06b6d4', indigo: '#6366f1' };
+    const statusBgMap = { blue: 'rgba(59,130,246,0.15)', green: 'rgba(16,185,129,0.15)', orange: 'rgba(245,158,11,0.15)', gray: 'rgba(255,255,255,0.06)', red: 'rgba(239,68,68,0.15)', success: 'rgba(16,185,129,0.15)', danger: 'rgba(239,68,68,0.15)', purple: '#f3e8ff', cyan: '#cffafe', indigo: '#e0e7ff' };
+    const stColor = statusColorMap[statusMap.color] || '#94a3b8';
+    const stBg = statusBgMap[statusMap.color] || 'rgba(255,255,255,0.06)';
     const statusTag = '<span style="display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;color:' + stColor + ';background:' + stBg + ';">' + statusMap.label + '</span>';
 
     document.getElementById('infoGrid').innerHTML = `
@@ -735,7 +735,7 @@ function openCitedDrawer(detail) {
   
   document.getElementById('citedDrawerBody').innerHTML = `
     <div style="text-align:center;margin-bottom:20px;">
-      <div style="width:100px;height:100px;border-radius:16px;background:#f1f5f9;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:40px;">🏷️</div>
+      <div style="width:100px;height:100px;border-radius:16px;background:rgba(255,255,255,0.06);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:40px;">🏷️</div>
       <div style="font-weight:600;font-size:16px;margin-top:12px;">${name}</div>
       <div style="font-size:12px;color:var(--text-muted);">注册号：${regNo}</div>
     </div>
@@ -994,7 +994,7 @@ function renderRejection() {
       '<td>' + m.seq + '</td>' +
       '<td><span style="font-family:monospace;color:var(--primary);font-weight:500;">' + m.appNo + '</span></td>' +
       '<td>' + m.appDate + '</td>' +
-      '<td><img src="' + m.image + '" style="width:40px;height:40px;border-radius:6px;object-fit:contain;background:#f8fafc;border:1px solid var(--border-color);"></td>' +
+      '<td><img src="' + m.image + '" style="width:40px;height:40px;border-radius:6px;object-fit:contain;background:rgba(255,255,255,0.03);border:1px solid var(--border-color);"></td>' +
       '<td>' + m.applicant + '</td>' +
       '<td>' + m.niceClass + '</td>' +
       '<td>' + m.goods + '</td>' +
@@ -1013,7 +1013,7 @@ function renderRejection() {
       </div>
       <div class="rejection-card-body expanded" id="rejectionBody">
         <!-- OCR 智能识别 -->
-        <div style="margin-bottom:16px; padding:16px; background:#f8fafc; border-radius:var(--radius-md); border:1px dashed var(--border-color);">
+        <div style="margin-bottom:16px; padding:16px; background:rgba(255,255,255,0.03); border-radius:var(--radius-md); border:1px dashed var(--border-color);">
           <div class="ocr-upload-zone" id="ocrDetailZone" onclick="document.getElementById('ocrDetailInput').click()">
             <div class="ocr-icon">📷</div>
             <div class="ocr-title">上传驳回通知书，AI 自动识别并填充驳回信息</div>
@@ -1135,7 +1135,7 @@ function openEditModal() {
       </div>
       <div class="form-section">
         <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">当前状态</label>
-        <select class="form-select" id="editStatus" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;background:#fff;">${statusOptions}</select>
+        <select class="form-select" id="editStatus" style="width:100%;padding:9px 12px;border:1px solid var(--border-color);border-radius:var(--radius-md);font-size:13px;outline:none;background:rgba(30,41,59,0.6);">${statusOptions}</select>
       </div>
       <div class="form-section">
         <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">代理律所</label>

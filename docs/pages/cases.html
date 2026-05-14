@@ -50,7 +50,7 @@
 /* Dropdown */
 .action-dropdown .dropdown-menu {
   display: none; position: absolute; right: 0; top: 100%;
-  z-index: 100; background: #fff; border: 1px solid var(--border-color);
+  z-index: 100; background: rgba(30,41,59,0.6); border: 1px solid var(--border-color);
   border-radius: var(--radius-md); box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   min-width: 140px; padding: 4px 0; margin-top: 4px;
 }
@@ -59,7 +59,7 @@
   padding: 8px 14px; font-size: 13px; cursor: pointer; transition: background 0.15s;
   white-space: nowrap;
 }
-.dropdown-item:hover { background: #f1f5f9; }
+.dropdown-item:hover { background: rgba(255,255,255,0.06); }
 
 /* Column settings modal */
 .col-setting-item {
@@ -71,7 +71,7 @@
 .col-sort-btns { display: flex; gap: 4px; }
 .col-sort-btns button {
   width: 24px; height: 24px; border: 1px solid var(--border-color);
-  background: #fff; border-radius: 4px; cursor: pointer; font-size: 11px;
+  background: rgba(30,41,59,0.6); border-radius: 4px; cursor: pointer; font-size: 11px;
   display: flex; align-items: center; justify-content: center;
 }
 .col-sort-btns button:hover { background: var(--bg-body); }
@@ -268,17 +268,17 @@ let selectedCaseIds = new Set();
 function renderStatusTag(statusCode) {
   const map = DataService.STATUS_MAP[statusCode] || { label: statusCode, color: 'gray' };
   const colorMap = {
-    blue: '#2563eb', green: '#10b981', orange: '#f59e0b', gray: '#64748b',
-    red: '#ef4444', success: '#10b981', danger: '#ef4444', purple: '#8b5cf6',
+    blue: '#3b82f6', green: '#34d399', orange: '#fbbf24', gray: '#94a3b8',
+    red: '#f87171', success: '#34d399', danger: '#f87171', purple: '#a78bfa',
     cyan: '#06b6d4', indigo: '#6366f1'
   };
   const bgMap = {
-    blue: '#dbeafe', green: '#d1fae5', orange: '#fef3c7', gray: '#f1f5f9',
-    red: '#fee2e2', success: '#d1fae5', danger: '#fee2e2', purple: '#f3e8ff',
+    blue: 'rgba(59,130,246,0.15)', green: 'rgba(16,185,129,0.15)', orange: 'rgba(245,158,11,0.15)', gray: 'rgba(255,255,255,0.06)',
+    red: 'rgba(239,68,68,0.15)', success: 'rgba(16,185,129,0.15)', danger: 'rgba(239,68,68,0.15)', purple: '#f3e8ff',
     cyan: '#cffafe', indigo: '#e0e7ff'
   };
-  const color = colorMap[map.color] || '#64748b';
-  const bg = bgMap[map.color] || '#f1f5f9';
+  const color = colorMap[map.color] || '#94a3b8';
+  const bg = bgMap[map.color] || 'rgba(255,255,255,0.06)';
   return `<span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600;color:${color};background:${bg};">${map.label}</span>`;
 }
 
@@ -287,8 +287,8 @@ function getDeadlineInfo(deadline) {
   const days = DataService.daysBetween(DataService.getToday(), deadline);
   let color = '#94a3b8';
   let text = days <= 0 ? '已逾期' : `剩余 ${days} 天`;
-  if (days <= 3 && days > 0) color = '#ef4444';
-  else if (days <= 7 && days > 0) color = '#f59e0b';
+  if (days <= 3 && days > 0) color = '#f87171';
+  else if (days <= 7 && days > 0) color = '#fbbf24';
   return { days, color, text };
 }
 
@@ -418,7 +418,7 @@ function renderCell(key, c) {
     
     case 'trademarkImage':
       const img = c.trademarkImage || '../assets/tm-yunzhi.png';
-      return `<td><img src="${img}" alt="${c.brandName}" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:#f8fafc;border:1px solid var(--border-color);"></td>`;
+      return `<td><img src="${img}" alt="${c.brandName}" style="width:40px;height:40px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,0.03);border:1px solid var(--border-color);"></td>`;
     
     case 'registrationNumber':
       const regNum = c.registrationNumber || (c.applicationNumber ? c.applicationNumber : '-');

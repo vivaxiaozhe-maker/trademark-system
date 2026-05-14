@@ -131,7 +131,7 @@
                 <div style="font-weight:600; color:#047857; margin-bottom:4px;">📌 律所优化建议</div>
                 <div style="font-size:13px; color:#334155;">驳回复审类案件智联知识产权成功率(92%)显著高于元健(82%)，建议增加智联的复审类案件分配比例。</div>
               </div>
-              <div style="padding:14px; background:#fffbeb; border-radius:10px; border-left:4px solid #f59e0b;">
+              <div style="padding:14px; background:rgba(30,41,59,0.6)beb; border-radius:10px; border-left:4px solid #f59e0b;">
                 <div style="font-weight:600; color:#b45309; margin-bottom:4px;">📌 费用预警</div>
                 <div style="font-size:13px; color:#334155;">Q2海外申请费用预计超预算15%，建议调整部分非紧急申请的提交时间至Q3。</div>
               </div>
@@ -148,9 +148,9 @@
 <script>
 initApp('decision');
 
-drawPieChart('typeDist', [520,310,280,146], ['文字商标','图形商标','组合商标','立体商标'], ['#2563eb','#0ea5e9','#10b981','#f59e0b']);
-drawBarChart('budgetDev', [95,102,88,110,105,98], ['1月','2月','3月','4月','5月','6月'], ['#10b981','#10b981','#ef4444','#ef4444','#f59e0b','#10b981']);
-drawLineChart('feeForecast', [320000,340000,310000,360000,380000,400000,420000], ['1月','2月','3月','4月','5月','6月','7月'], '#2563eb');
+drawPieChart('typeDist', [520,310,280,146], ['文字商标','图形商标','组合商标','立体商标'], ['#3b82f6','#38bdf8','#34d399','#fbbf24']);
+drawBarChart('budgetDev', [95,102,88,110,105,98], ['1月','2月','3月','4月','5月','6月'], ['#34d399','#34d399','#f87171','#f87171','#fbbf24','#34d399']);
+drawLineChart('feeForecast', [320000,340000,310000,360000,380000,400000,420000], ['1月','2月','3月','4月','5月','6月','7月'], '#3b82f6');
 
 function switchTab(tab, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));

@@ -120,7 +120,7 @@ function renderCases(list) {
         <td><span style="font-size:12px;">${country}</span></td>
         <td><span class="tag tag-blue">${c.type}</span></td>
         <td>${getStatusTag(c.status)}</td>
-        <td style="color:${urgent?'#ef4444':''};font-weight:${urgent?'600':'400'};">${c.deadline || '-'}</td>
+        <td style="color:${urgent?'#f87171':''};font-weight:${urgent?'600':'400'};">${c.deadline || '-'}</td>
         <td>${intStr}</td>
         <td>
           <div style="display:flex; align-items:center; gap:6px;">
@@ -131,7 +131,7 @@ function renderCases(list) {
         <td style="text-align:right;">
           <div style="display:flex; align-items:center; gap:8px; justify-content:flex-end;">
             <div class="progress-bar" style="width:60px;">
-              <div class="progress-fill" style="width:${c.progress}%; background:${c.progress>80?'#10b981':c.progress>40?'#2563eb':'#f59e0b'};"></div>
+              <div class="progress-fill" style="width:${c.progress}%; background:${c.progress>80?'#34d399':c.progress>40?'#3b82f6':'#fbbf24'};"></div>
             </div>
             <span style="font-size:12px;font-weight:500;">${c.progress}%</span>
           </div>

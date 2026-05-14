@@ -18,7 +18,7 @@
 .report-type-card .desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
 .report-preview {
-  background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+  background: rgba(30,41,59,0.6); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
   padding: 32px; box-shadow: var(--shadow-sm);
   min-height: 400px;
 }
@@ -45,19 +45,19 @@
 .risk-matrix { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
 .risk-cell { padding: 10px 4px; text-align: center; border-radius: 4px; font-size: 11px; font-weight: 600; }
 .risk-high { background: #fee2e2; color: #991b1b; }
-.risk-medium { background: #fef3c7; color: #92400e; }
+.risk-medium { background: #fbbf24; color: #92400e; }
 .risk-low { background: #d1fae5; color: #065f46; }
-.risk-header { background: #f1f5f9; color: #475569; font-weight: 600; }
+.risk-header { background: rgba(255,255,255,0.06); color: #475569; font-weight: 600; }
 
 /* Score ring */
 .score-ring {
   width: 56px; height: 56px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; font-weight: 700; position: relative;
-  background: conic-gradient(var(--primary) 0% 85%, #e2e8f0 85% 100%);
+  background: conic-gradient(var(--primary) 0% 85%, rgba(255,255,255,0.08) 85% 100%);
 }
 .score-ring::after {
-  content: ""; position: absolute; inset: 4px; border-radius: 50%; background: #fff;
+  content: ""; position: absolute; inset: 4px; border-radius: 50%; background: rgba(30,41,59,0.6);
 }
 .score-ring span { position: relative; z-index: 1; }
 </style>
@@ -178,19 +178,19 @@ const reportTemplates = {
     <div class="report-preview-section">
       <div class="report-preview-section-title">一、核心指标概览</div>
       <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:16px;">
-        <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:14px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:24px; font-weight:700; color:var(--primary);">1,256</div>
           <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">商标总量</div>
         </div>
-        <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:14px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:24px; font-weight:700; color:var(--success);">986</div>
           <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">有效商标</div>
         </div>
-        <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:14px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:24px; font-weight:700; color:var(--warning);">210</div>
           <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">审理中</div>
         </div>
-        <div style="text-align:center; padding:14px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:14px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:24px; font-weight:700; color:var(--danger);">18</div>
           <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">本周到期</div>
         </div>
@@ -213,7 +213,7 @@ const reportTemplates = {
       <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
         <div style="flex:1;">
           <div class="flex-between" style="font-size:12px; margin-bottom:4px;"><span>年度预算</span><span style="font-weight:600;">¥2,800,000</span></div>
-          <div class="progress-bar"><div class="progress-fill" style="width:100%; background:#e2e8f0;"></div></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:100%; background:rgba(255,255,255,0.06);"></div></div>
         </div>
         <div style="flex:1;">
           <div class="flex-between" style="font-size:12px; margin-bottom:4px;"><span>已执行</span><span style="font-weight:600; color:var(--primary);">¥1,865,000 (67%)</span></div>
@@ -223,7 +223,7 @@ const reportTemplates = {
     </div>
     <div class="report-preview-section">
       <div class="report-preview-section-title">四、主要风险预警</div>
-      <div style="padding:12px; background:#fef3c7; border-radius:8px; border-left:3px solid var(--warning); margin-bottom:8px;">
+      <div style="padding:12px; background:#fbbf24; border-radius:8px; border-left:3px solid var(--warning); margin-bottom:8px;">
         <div style="font-weight:600; font-size:13px; color:#92400e;">⚠️ 续展逾期风险</div>
         <div style="font-size:12px; color:#78350f; margin-top:4px;">星联商标第45类将于2026-06-01到期，尚未提交续展申请</div>
       </div>
@@ -287,7 +287,7 @@ const reportTemplates = {
           <div style="font-size:22px; font-weight:700; color:var(--danger);">12</div>
           <div style="font-size:11px; color:#7f1d1d;">未注册类别缺口</div>
         </div>
-        <div style="padding:12px; background:#fef3c7; border-radius:8px; text-align:center;">
+        <div style="padding:12px; background:#fbbf24; border-radius:8px; text-align:center;">
           <div style="font-size:22px; font-weight:700; color:var(--warning);">5</div>
           <div style="font-size:11px; color:#92400e;">未布局国家/地区</div>
         </div>
@@ -329,7 +329,7 @@ const reportTemplates = {
           <div style="font-size:22px; font-weight:700; color:#065f46;">¥186.5万</div>
           <div style="font-size:12px; color:#475569; margin-top:4px;">已支出</div>
         </div>
-        <div style="text-align:center; padding:14px; background:linear-gradient(135deg,#fef3c7,#fffbeb); border-radius:8px;">
+        <div style="text-align:center; padding:14px; background:linear-gradient(135deg,#fbbf24,#fbbf24); border-radius:8px;">
           <div style="font-size:22px; font-weight:700; color:#92400e;">¥45万</div>
           <div style="font-size:12px; color:#475569; margin-top:4px;">待审批</div>
         </div>
@@ -338,7 +338,7 @@ const reportTemplates = {
           <div style="font-size:12px; color:#475569; margin-top:4px;">剩余可用</div>
         </div>
       </div>
-      <div style="padding:12px; background:#f8fafc; border-radius:8px;">
+      <div style="padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
         <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">预算执行进度</div>
         <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:67%; background:linear-gradient(90deg,#2563eb,#0ea5e9); border-radius:5px;"></div></div>
         <div class="flex-between" style="margin-top:6px; font-size:12px;"><span style="color:var(--text-muted);">已执行 67%</span><span style="color:var(--success); font-weight:600;">正常</span></div>
@@ -405,23 +405,23 @@ const reportTemplates = {
     <div class="report-preview-section">
       <div class="report-preview-section-title">二、业务能力雷达维度</div>
       <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:12px; margin-bottom:12px;">
-        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">新申请</div>
           <div style="font-size:18px; font-weight:700; color:var(--primary);">9.1</div>
         </div>
-        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">驳回复审</div>
           <div style="font-size:18px; font-weight:700; color:var(--primary);">9.4</div>
         </div>
-        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">异议/无效</div>
           <div style="font-size:18px; font-weight:700; color:var(--primary);">8.7</div>
         </div>
-        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">海外申请</div>
           <div style="font-size:18px; font-weight:700; color:var(--primary);">8.2</div>
         </div>
-        <div style="text-align:center; padding:12px; background:#f8fafc; border-radius:8px;">
+        <div style="text-align:center; padding:12px; background:rgba(255,255,255,0.03); border-radius:8px;">
           <div style="font-size:13px; color:var(--text-muted); margin-bottom:6px;">续展维护</div>
           <div style="font-size:18px; font-weight:700; color:var(--primary);">8.9</div>
         </div>
@@ -445,7 +445,7 @@ const reportTemplates = {
         <div style="font-weight:600; font-size:13px; color:#065f46;">✅ 优先合作推荐：智联知识产权</div>
         <div style="font-size:12px; color:#166534; margin-top:4px;">驳回复审成功率92%、响应速度2.3h、客户满意度9.4，建议增加复审类案件分配比例至70%</div>
       </div>
-      <div style="padding:12px; background:#fef3c7; border-radius:8px; border-left:3px solid var(--warning); margin-bottom:8px;">
+      <div style="padding:12px; background:#fbbf24; border-radius:8px; border-left:3px solid var(--warning); margin-bottom:8px;">
         <div style="font-weight:600; font-size:13px; color:#92400e;">⚠️ 改进关注：瑞思律师事务所</div>
         <div style="font-size:12px; color:#a16207; margin-top:4px;">平均响应12h偏慢，建议约定4h内响应的服务等级协议（SLA）</div>
       </div>
