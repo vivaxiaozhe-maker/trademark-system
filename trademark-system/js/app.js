@@ -634,13 +634,14 @@ function drawLineChart(containerId, data, labels, color) {
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
-  const padLeft = 14, padRight = 8, padTop = 10, padBottom = 18;
+  const padLeft = 10, padRight = 4, padTop = 10, padBottom = 12;
   const chartW = 100 - padLeft - padRight;
   const chartH = 100 - padTop - padBottom;
+  const plotH = chartH * 0.85;
 
   const points = data.map((v, i) => {
     const x = padLeft + (i / (data.length - 1)) * chartW;
-    const y = padTop + chartH - ((v - min) / range) * chartH * 0.85;
+    const y = padTop + plotH - ((v - min) / range) * plotH;
     return [x, y];
   });
   const pointsStr = points.map(p => p.join(',')).join(' ');
@@ -649,13 +650,13 @@ function drawLineChart(containerId, data, labels, color) {
   const yTicks = [max, min + range/2, min];
   let yAxis = '';
   yTicks.forEach((t, i) => {
-    const y = padTop + (i / 2) * chartH * 0.85;
+    const y = padTop + (i / 2) * plotH;
     yAxis += `<text x="${padLeft-2}" y="${y+1}" text-anchor="end" font-size="4.5" fill="#94a3b8" font-weight="500">${Math.round(t)}</text>`;
     yAxis += `<line x1="${padLeft}" y1="${y}" x2="${100-padRight}" y2="${y}" stroke="#e2e8f0" stroke-width="0.3" stroke-dasharray="1,1"/>`;
   });
 
   // Area fill path
-  const areaPath = `${pointsStr} ${padLeft+chartW},${padTop+chartH} ${padLeft},${padTop+chartH}`;
+  const areaPath = `${pointsStr} ${padLeft+chartW},${padTop+plotH} ${padLeft},${padTop+plotH}`;
 
   let svg = `<svg viewBox="0 0 100 100" style="width:100%; height:100%; overflow:visible;">`;
   svg += `<defs>
