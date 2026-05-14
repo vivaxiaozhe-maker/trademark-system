@@ -4,7 +4,450 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>小米商标管理系统 - 仪表盘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/common.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+/* ========== Hero Section ========== */
+.hero-section {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  min-height: 300px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+  animation: heroBgScale 8s ease-in-out infinite alternate;
+}
+
+@keyframes heroBgScale {
+  0% { transform: scale(1) rotate(0deg); }
+  100% { transform: scale(1.05) rotate(1deg); }
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: blobMove 8s ease-in-out infinite alternate;
+}
+
+.blob-1 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(99,102,241,0.4) 0%, transparent 70%);
+  top: -100px; right: -100px;
+}
+
+.blob-2 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(244,63,94,0.3) 0%, transparent 70%);
+  bottom: -50px; left: 10%;
+  animation-delay: -2s;
+}
+
+.blob-3 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(59,130,246,0.3) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  animation-delay: -4s;
+}
+
+@keyframes blobMove {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(30px, -20px) scale(1.1); }
+}
+
+.hero-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  animation: particleFloat 15s ease-in-out infinite;
+}
+
+.p1 { width: 8px; height: 8px; top: 20%; left: 15%; animation-delay: 0s; }
+.p2 { width: 12px; height: 12px; top: 60%; left: 70%; animation-delay: -4s; }
+.p3 { width: 6px; height: 6px; top: 40%; left: 85%; animation-delay: -8s; }
+.p4 { width: 10px; height: 10px; top: 80%; left: 30%; animation-delay: -12s; }
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  25% { transform: translateY(-30px) translateX(10px); opacity: 0.6; }
+  50% { transform: translateY(-15px) translateX(-10px); opacity: 0.4; }
+  75% { transform: translateY(-40px) translateX(5px); opacity: 0.7; }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hero-date {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 4px;
+}
+
+.hero-greeting {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.hero-urgent-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(239,68,68,0.15);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f87171;
+  backdrop-filter: blur(8px);
+}
+
+.urgent-dot {
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
+  50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+}
+
+.urgent-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.glass-card {
+  position: relative;
+  background: rgba(30,41,59,0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.glass-card:hover {
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.glass-card .deco-circle {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  opacity: 0.15;
+  transition: transform 0.4s ease;
+  pointer-events: none;
+}
+
+.glass-card:hover .deco-circle {
+  transform: scale(1.3);
+}
+
+.glass-card.official .deco-circle { background: #ef4444; }
+.glass-card.internal .deco-circle { background: #f59e0b; }
+.glass-card.client .deco-circle { background: #10b981; }
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.card-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.card-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.glass-card.official .card-tag {
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
+}
+.glass-card.official .card-tag-dot { background: #ef4444; }
+
+.glass-card.internal .card-tag {
+  background: rgba(245,158,11,0.15);
+  color: #fbbf24;
+}
+.glass-card.internal .card-tag-dot { background: #f59e0b; }
+
+.glass-card.client .card-tag {
+  background: rgba(16,185,129,0.15);
+  color: #34d399;
+}
+.glass-card.client .card-tag-dot { background: #10b981; }
+
+.card-days {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.glass-card.official .card-days { color: #f87171; }
+.glass-card.internal .card-days { color: #fbbf24; }
+.glass-card.client .card-days { color: #34d399; }
+
+.card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.card-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.card-progress {
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.card-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s ease;
+  width: 0%;
+}
+
+.glass-card.official .card-progress-fill { background: linear-gradient(90deg, #ef4444, #f87171); }
+.glass-card.internal .card-progress-fill { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.glass-card.client .card-progress-fill { background: linear-gradient(90deg, #10b981, #34d399); }
+
+@media (max-width: 900px) {
+  .urgent-cards { grid-template-columns: 1fr; }
+  .hero-greeting { font-size: 18px; }
+}
+
+/* ========== Stat Cards ========== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: rgba(30,41,59,0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.stat-card:hover {
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+}
+
+.stat-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stat-icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon-wrap svg {
+  width: 20px;
+  height: 20px;
+}
+
+.stat-icon-wrap.indigo { background: rgba(99,102,241,0.15); color: #818cf8; }
+.stat-icon-wrap.amber { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.stat-icon-wrap.emerald { background: rgba(16,185,129,0.15); color: #34d399; }
+.stat-icon-wrap.rose { background: rgba(244,63,94,0.15); color: #fb7185; }
+
+.stat-change {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.stat-change.up {
+  background: rgba(16,185,129,0.15);
+  color: #34d399;
+}
+
+.stat-change.down {
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ========== Donut Chart ========== */
+.donut-chart-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.donut-chart-svg {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.donut-chart-svg svg {
+  width: 100%;
+  height: 100%;
+}
+
+.donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-center-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.donut-center-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 260px;
+}
+
+.donut-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.donut-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.donut-legend-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.donut-legend-pct {
+  margin-left: auto;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
 </head>
 <body>
 <div class="app-layout">
@@ -12,84 +455,85 @@
   <div class="main-content">
     <header class="top-header"></header>
     <div class="page-container">
-      <div class="page-header">
-        <div>
-          <div class="page-title">仪表盘</div>
-          <div class="page-desc">欢迎回来，张法务。今日有 3 项紧急待办事项需要处理。</div>
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <div class="hero-bg">
+          <div class="hero-gradient"></div>
+          <div class="hero-blob blob-1"></div>
+          <div class="hero-blob blob-2"></div>
+          <div class="hero-blob blob-3"></div>
         </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-secondary btn-sm">📅 今日：2026年5月4日</button>
-          <button class="btn btn-primary btn-sm" onclick="showQuickCreate()">➕ 快速创建</button>
+        <div class="hero-particles">
+          <div class="particle p1"></div>
+          <div class="particle p2"></div>
+          <div class="particle p3"></div>
+          <div class="particle p4"></div>
         </div>
-      </div>
-      
-      <!-- KPI Cards -->
-      <div class="kpi-grid">
-        <div class="kpi-card fade-in" style="animation-delay:0s" onclick="navigateTo('pages/my-cases.html')">
-          <div class="kpi-header">
-            <span class="kpi-label">待处理案件</span>
-            <div class="kpi-icon blue">📋</div>
+        <div class="hero-content">
+          <div class="hero-top">
+            <div class="hero-welcome">
+              <div class="hero-date">2026年5月14日 星期三</div>
+              <div class="hero-greeting">欢迎回来，张法务 👋</div>
+            </div>
+            <div class="hero-urgent-badge">
+              <div class="urgent-dot"></div>
+              <span>3 项紧急待办</span>
+            </div>
           </div>
-          <div class="kpi-value">42</div>
-          <div class="kpi-footer">
-            <span class="kpi-trend up">↑ 5</span>
-            <span style="color:var(--text-muted);">较上周</span>
-          </div>
-        </div>
-        <div class="kpi-card fade-in" style="animation-delay:0.05s" onclick="navigateTo('pages/todo.html')">
-          <div class="kpi-header">
-            <span class="kpi-label">本周到期期限</span>
-            <div class="kpi-icon orange">⏰</div>
-          </div>
-          <div class="kpi-value">18</div>
-          <div class="kpi-footer">
-            <span class="kpi-trend down">↓ 2</span>
-            <span style="color:var(--text-muted);">较上周</span>
-          </div>
-        </div>
-        <div class="kpi-card fade-in" style="animation-delay:0.1s" onclick="navigateTo('pages/brand.html')">
-          <div class="kpi-header">
-            <span class="kpi-label">在册商标总量</span>
-            <div class="kpi-icon green">🏷️</div>
-          </div>
-          <div class="kpi-value">1,256</div>
-          <div class="kpi-footer">
-            <span class="kpi-trend up">↑ 12</span>
-            <span style="color:var(--text-muted);">本月新增</span>
-          </div>
-        </div>
-        <div class="kpi-card fade-in" style="animation-delay:0.15s" onclick="navigateTo('pages/cases.html?tab=domestic')">
-          <div class="kpi-header">
-            <span class="kpi-label">本月新申请</span>
-            <div class="kpi-icon purple">📝</div>
-          </div>
-          <div class="kpi-value">23</div>
-          <div class="kpi-footer">
-            <span class="kpi-trend up">↑ 8</span>
-            <span style="color:var(--text-muted);">较上月</span>
-          </div>
+          <div class="urgent-cards" id="urgentCards"></div>
         </div>
       </div>
       
-      <div class="row row-3">
-        <!-- 期限预警 -->
-        <div class="card fade-in" style="animation-delay:0.2s">
-          <div class="card-header">
-            <div class="card-title">⏰ 期限预警</div>
-            <a href="pages/todo.html" style="font-size:12px;color:var(--primary);font-weight:500;">查看全部 →</a>
+      <!-- Stat Cards -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon-wrap indigo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            </div>
+            <span class="stat-change up">+12%</span>
           </div>
-          <div class="card-body" style="padding:12px 0;">
-            <table class="data-table">
-              <tbody id="deadlineTable"></tbody>
-            </table>
-          </div>
+          <div class="stat-value" data-count="302418">0</div>
+          <div class="stat-label">商标总数</div>
         </div>
-        
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon-wrap amber">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="stat-change down">紧急</span>
+          </div>
+          <div class="stat-value" data-count="18">0</div>
+          <div class="stat-label">待处理</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon-wrap emerald">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <span class="stat-change up">+8%</span>
+          </div>
+          <div class="stat-value" data-count="22">0</div>
+          <div class="stat-label">本月完成</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-icon-wrap rose">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <span class="stat-change down">+5%</span>
+          </div>
+          <div class="stat-value" data-count="19">0</div>
+          <div class="stat-label">驳回/异议</div>
+        </div>
+      </div>
+      
+      <div class="row row-2">
         <!-- 案件趋势 -->
         <div class="card fade-in" style="animation-delay:0.25s">
           <div class="card-header">
             <div class="card-title">📈 案件趋势</div>
-            <select style="border:1px solid var(--border-color);border-radius:6px;padding:4px 8px;font-size:12px;outline:none;">
+            <select style="border:1px solid var(--border-color);border-radius:6px;padding:4px 8px;font-size:12px;outline:none;background:transparent;color:var(--text-primary);">
               <option>近6个月</option>
               <option>近12个月</option>
             </select>
@@ -243,22 +687,49 @@
 <script>
 initApp('dashboard');
 
-// Render deadline table
-const dlBody = document.getElementById('deadlineTable');
-AppData.deadlines.slice(0,4).forEach(d => {
-  const color = d.level==='urgent' ? '#ef4444' : d.level==='high' ? '#f59e0b' : '#64748b';
-  dlBody.innerHTML += `
-    <tr>
-      <td style="padding:10px 16px;">
-        <div style="font-weight:500;">${d.name}</div>
-        <div style="font-size:11px;color:var(--text-muted);">${d.type}</div>
-      </td>
-      <td style="padding:10px 16px; text-align:right;">
-        <div style="font-weight:600;color:${color};font-size:15px;">${d.days}天</div>
-        <div style="font-size:11px;color:var(--text-muted);">${d.date}</div>
-      </td>
-    </tr>
+// Render urgent cards
+const urgentData = [
+  { name: '云智-驳回复审', days: 2, deadline: '2026-05-16', type: '官方绝限', category: 'official', progress: 90 },
+  { name: '智联-异议答辩', days: 3, deadline: '2026-05-17', type: '内部期限', category: 'internal', progress: 70 },
+  { name: '星联-续展申请', days: 6, deadline: '2026-05-20', type: '客户期限', category: 'client', progress: 40 }
+];
+
+const urgentContainer = document.getElementById('urgentCards');
+urgentData.forEach(item => {
+  urgentContainer.innerHTML += `
+    <div class="glass-card ${item.category}" onclick="navigateTo('pages/todo.html')">
+      <div class="deco-circle"></div>
+      <div class="card-top">
+        <div class="card-tag">
+          <span class="card-tag-dot"></span>
+          ${item.type}
+        </div>
+        <div class="card-days">${item.days}<span style="font-size:14px;font-weight:500;margin-left:2px;">天</span></div>
+      </div>
+      <div class="card-name">${item.name}</div>
+      <div class="card-date">截止 ${item.deadline}</div>
+      <div class="card-progress">
+        <div class="card-progress-fill" style="width:0%" data-width="${item.progress}"></div>
+      </div>
+    </div>
   `;
+});
+
+// 3D Tilt effect on glass cards
+document.querySelectorAll('.glass-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 12;
+    const rotateY = (centerX - x) / 12;
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+  });
 });
 
 // Render todo table
@@ -274,15 +745,179 @@ AppData.todos.slice(0,5).forEach(t => {
   `;
 });
 
-// Charts
-drawLineChart('trendChart', [18, 22, 19, 25, 30, 28], ['12月','1月','2月','3月','4月','5月'], '#2563eb');
-drawPieChart('pieChart', [35, 28, 18, 12, 7], ['新申请','驳回复审','异议/无效','续展','其他'], ['#2563eb','#0ea5e9','#10b981','#f59e0b','#94a3b8']);
+// Donut Chart
+drawDonutChart('pieChart', [35, 28, 18, 12, 7], ['新申请','驳回复审','异议/无效','续展','其他'], ['#6366f1','#f59e0b','#10b981','#f43f5e','#64748b']);
+
+function drawDonutChart(containerId, data, labels, colors) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const total = data.reduce((a, b) => a + b, 0);
+  const radius = 76;
+  const circumference = 2 * Math.PI * radius;
+  const center = 100;
+
+  let svg = `<svg viewBox="0 0 200 200" style="width:200px;height:200px;transform:rotate(-90deg);">`;
+
+  let accumulated = 0;
+  data.forEach((value, i) => {
+    const pct = value / total;
+    const dashArray = pct * circumference;
+    const dashOffset = -accumulated * circumference;
+    const color = colors[i];
+
+    svg += `<circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${color}" stroke-width="24" stroke-linecap="round"
+      stroke-dasharray="${circumference} 0"
+      stroke-dashoffset="0"
+      opacity="0.9"
+      style="transition: stroke-dasharray 1.5s ease-out, stroke-dashoffset 1.5s ease-out;"
+      class="donut-segment"
+      data-target-array="${dashArray} ${circumference - dashArray}"
+      data-target-offset="${dashOffset}"
+    />`;
+
+    accumulated += pct;
+  });
+
+  svg += `</svg>`;
+
+  const centerHtml = `
+    <div class="donut-center">
+      <div class="donut-center-value">302</div>
+      <div class="donut-center-label">本月案件</div>
+    </div>
+  `;
+
+  let legendHtml = '<div class="donut-legend">';
+  data.forEach((value, i) => {
+    const pct = Math.round((value / total) * 100);
+    legendHtml += `
+      <div class="donut-legend-item" style="opacity:0;">
+        <span class="donut-legend-dot" style="background:${colors[i]};box-shadow:0 2px 6px ${colors[i]}60;"></span>
+        <span class="donut-legend-label">${labels[i]}</span>
+        <span class="donut-legend-pct" style="color:${colors[i]};">${pct}%</span>
+      </div>
+    `;
+  });
+  legendHtml += '</div>';
+
+  container.innerHTML = `
+    <div class="donut-chart-wrap">
+      <div class="donut-chart-svg">${svg}${centerHtml}</div>
+      ${legendHtml}
+    </div>
+  `;
+
+  // Animate: start from full circle, then shrink to target with stagger
+  setTimeout(() => {
+    const segments = container.querySelectorAll('.donut-segment');
+    segments.forEach((seg, i) => {
+      setTimeout(() => {
+        seg.style.strokeDasharray = seg.dataset.targetArray;
+        seg.style.strokeDashoffset = seg.dataset.targetOffset;
+      }, i * 200);
+    });
+
+    // Animate legend items
+    const legendItems = container.querySelectorAll('.donut-legend-item');
+    legendItems.forEach((item, i) => {
+      setTimeout(() => {
+        item.style.transition = 'opacity 0.5s ease';
+        item.style.opacity = '1';
+      }, 400 + i * 150);
+    });
+  }, 100);
+}
+
+// Line Chart
+drawLineChart('trendChart', [18, 22, 19, 25, 30, 28], ['12月','1月','2月','3月','4月','5月'], '#3b82f6');
 
 function showQuickCreate() {
   document.getElementById('quickCreateModal').classList.add('active');
 }
 function closeModal() {
   document.getElementById('quickCreateModal').classList.remove('active');
+}
+
+// GSAP Page Load Animations
+if (typeof gsap !== 'undefined') {
+  // Stat cards stagger entrance
+  gsap.from('.stat-card', {
+    y: 30,
+    opacity: 0,
+    duration: 0.6,
+    stagger: 0.08,
+    ease: 'power2.out',
+    delay: 0.2
+  });
+
+  // Counter animation for stat values
+  document.querySelectorAll('.stat-value[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count, 10);
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: target,
+      duration: 2,
+      ease: 'power2.out',
+      delay: 0.4,
+      onUpdate: () => {
+        el.textContent = Math.round(obj.val).toLocaleString();
+      }
+    });
+  });
+
+  // Cards stagger entrance
+  gsap.from('.card', {
+    y: 20,
+    opacity: 0,
+    duration: 0.5,
+    stagger: 0.1,
+    ease: 'power2.out',
+    delay: 0.5
+  });
+
+  // Page header entrance
+  // Hero section entrance
+  gsap.from('.hero-section', {
+    scale: 0.98,
+    opacity: 0,
+    duration: 0.8,
+    ease: 'power2.out',
+    delay: 0.1
+  });
+
+  gsap.from('.hero-welcome', {
+    y: 20,
+    opacity: 0,
+    duration: 0.5,
+    ease: 'power2.out',
+    delay: 0.3
+  });
+
+  gsap.from('.hero-urgent-badge', {
+    y: 20,
+    opacity: 0,
+    duration: 0.5,
+    ease: 'power2.out',
+    delay: 0.4
+  });
+
+  // Urgent cards stagger entrance
+  gsap.from('.glass-card', {
+    y: 30,
+    opacity: 0,
+    duration: 0.6,
+    stagger: 0.1,
+    ease: 'power2.out',
+    delay: 0.5,
+    onComplete: () => {
+      // Animate progress bars after cards appear
+      document.querySelectorAll('.card-progress-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+    }
+  });
+
 }
 </script>
 <script src="./js/data-service.js"></script>
