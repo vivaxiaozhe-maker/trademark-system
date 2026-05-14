@@ -691,21 +691,15 @@ function drawLineChart(containerId, data, labels, color) {
     </text>`;
   });
   svg += `</g>`;
+
+  // X axis labels (inside SVG for perfect alignment with data points)
+  labels.forEach((l, i) => {
+    const x = padLeft + (i / (data.length - 1)) * chartW;
+    svg += `<text x="${x}" y="97" text-anchor="middle" font-size="4.5" fill="#94a3b8" font-weight="500">${l}</text>`;
+  });
   svg += `</svg>`;
 
-  // X axis labels
-  let xLabels = '<div style="display:flex; justify-content:space-between; padding-left:14px; padding-right:8px; margin-top:2px;">';
-  labels.forEach((l, i) => {
-    xLabels += `<span style="font-size:10px; color:#94a3b8; font-weight:500; text-align:center; flex:1;">${l}</span>`;
-  });
-  xLabels += '</div>';
-
-  el.innerHTML = `
-    <div style="display:flex; flex-direction:column; width:100%; height:100%; padding:6px 0;">
-      <div style="flex:1; position:relative; min-height:0;">${svg}</div>
-      ${xLabels}
-    </div>
-  `;
+  el.innerHTML = `<div style="width:100%; height:100%; padding:6px 0;">${svg}</div>`;
 }
 
 
