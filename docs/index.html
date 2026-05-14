@@ -6,7 +6,21 @@
 <title>小米商标管理系统 - 仪表盘</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  corePlugins: { preflight: false },
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['"Inter"', '"Noto Sans SC"', 'system-ui', 'sans-serif'],
+      }
+    }
+  }
+}
+</script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <link rel="stylesheet" href="css/common.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
@@ -667,6 +681,106 @@
   transition: width 1s ease;
 }
 
+/* ========== Timeline V2 ========== */
+.timeline-v2 {
+  position: relative;
+  padding-left: 8px;
+}
+
+.timeline-v2-line {
+  position: absolute;
+  left: 31px;
+  top: 28px;
+  bottom: 28px;
+  width: 2px;
+  background: linear-gradient(180deg, #6366f1, rgba(99,102,241,0.15));
+}
+
+.timeline-v2-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.timeline-v2-item:hover {
+  transform: translateX(4px);
+}
+
+.timeline-v2-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.timeline-v2-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.timeline-v2-icon.red { background: rgba(239,68,68,0.15); color: #f87171; }
+.timeline-v2-icon.indigo { background: rgba(99,102,241,0.15); color: #818cf8; }
+.timeline-v2-icon.amber { background: rgba(245,158,11,0.15); color: #fbbf24; }
+
+.timeline-v2-content {
+  flex: 1;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.timeline-v2-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.timeline-v2-tag {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-muted);
+}
+
+.timeline-v2-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.timeline-v2-time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ========== Keyboard Hint ========== */
+.kb-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-muted);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
 @media (max-width: 900px) {
   .kanban-columns { grid-template-columns: 1fr; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -833,28 +947,56 @@
           </div>
         </div>
         
-        <!-- 近期动态 -->
+        <!-- 动态时间轴 -->
         <div class="card fade-in" style="animation-delay:0.45s">
           <div class="card-header">
-            <div class="card-title">📰 近期动态</div>
+            <div class="card-title">📰 动态时间轴</div>
+            <a href="pages/todo.html" style="font-size:12px;color:var(--primary);font-weight:500;">查看全部 →</a>
           </div>
           <div class="card-body">
-            <div class="timeline">
-              <div class="timeline-item done">
-                <div class="timeline-title">商标"云智"收到驳回通知书</div>
-                <div class="timeline-time">2026-05-03 14:30 · 案件 TM-2026-0042</div>
+            <div class="timeline-v2">
+              <div class="timeline-v2-line"></div>
+              
+              <div class="timeline-v2-item">
+                <div class="timeline-v2-icon red">
+                  <i data-lucide="file-x"></i>
+                </div>
+                <div class="timeline-v2-content">
+                  <div class="timeline-v2-title">
+                    商标"云智"收到驳回通知书
+                    <span class="timeline-v2-tag">驳回</span>
+                  </div>
+                  <div class="timeline-v2-desc">案件 TM-2026-0042 · 需准备驳回复审材料</div>
+                  <div class="timeline-v2-time">2026-05-03 14:30</div>
+                </div>
               </div>
-              <div class="timeline-item done">
-                <div class="timeline-title">马德里申请"海翼"进入WIPO审查阶段</div>
-                <div class="timeline-time">2026-05-02 09:15 · 案件 TM-2025-0189</div>
+              
+              <div class="timeline-v2-item">
+                <div class="timeline-v2-icon indigo">
+                  <i data-lucide="globe"></i>
+                </div>
+                <div class="timeline-v2-content">
+                  <div class="timeline-v2-title">
+                    马德里申请"海翼"进入WIPO审查阶段
+                    <span class="timeline-v2-tag">WIPO</span>
+                  </div>
+                  <div class="timeline-v2-desc">案件 TM-2025-0189 · 等待审查意见</div>
+                  <div class="timeline-v2-time">2026-05-02 09:15</div>
+                </div>
               </div>
-              <div class="timeline-item">
-                <div class="timeline-title">智联知识产权提交异议答辩书（智联）</div>
-                <div class="timeline-time">2026-05-01 16:45 · 案件 TM-2026-0031</div>
-              </div>
-              <div class="timeline-item">
-                <div class="timeline-title">星联商标续展官费已缴纳</div>
-                <div class="timeline-time">2026-04-30 11:20 · 案件 TM-2025-0098</div>
+              
+              <div class="timeline-v2-item">
+                <div class="timeline-v2-icon amber">
+                  <i data-lucide="message-square"></i>
+                </div>
+                <div class="timeline-v2-content">
+                  <div class="timeline-v2-title">
+                    智联知识产权提交异议答辩书
+                    <span class="timeline-v2-tag">异议</span>
+                  </div>
+                  <div class="timeline-v2-desc">案件 TM-2026-0031 · 已送达对方代理人</div>
+                  <div class="timeline-v2-time">2026-05-01 16:45</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1213,7 +1355,32 @@ if (typeof gsap !== 'undefined') {
     }
   });
 
+  // Timeline entrance
+  gsap.from('.timeline-v2-item', {
+    x: -20,
+    opacity: 0,
+    duration: 0.5,
+    stagger: 0.12,
+    ease: 'power2.out',
+    delay: 0.6
+  });
+
 }
+
+// Initialize Lucide icons
+lucide.createIcons();
+
+// ⌘K shortcut to focus search
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    const searchInput = document.getElementById('globalSearch');
+    if (searchInput) {
+      searchInput.focus();
+      showSearchDropdown();
+    }
+  }
+});
 </script>
 <script src="./js/data-service.js"></script>
 </body>
