@@ -219,7 +219,9 @@
 <script src="../js/data.js?v=2.5"></script>
 <script src="../js/app.js?v=2.5"></script>
 <script>
-initApp('brand');
+var brandParams = new URLSearchParams(location.search);
+var brandTabPageMap = { 'internal': 'brand-internal', 'external': 'brand-external' };
+initApp(brandTabPageMap[brandParams.get('tab')] || 'brand');
 
 let selectedCats = [];
 

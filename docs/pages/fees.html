@@ -587,7 +587,9 @@
 <script src="../js/data.js?v=2.5"></script>
 <script src="../js/app.js?v=2.5"></script>
 <script>
-initApp('fees');
+var feeParams = new URLSearchParams(location.search);
+var feeTabPageMap = { 'overview': 'fees-overview', 'query': 'fees-query', 'approval': 'fees-approval', 'analysis': 'fees-analysis', 'apply': 'fee-apply' };
+initApp(feeTabPageMap[feeParams.get('tab')] || 'fees');
 
 // ==================== Overview: Budget Progress Animation ====================
 setTimeout(function() {
