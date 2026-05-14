@@ -447,6 +447,225 @@
 @media (max-width: 900px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ========== Kanban Board ========== */
+.kanban-board {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.kanban-filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.kanban-filter-tag {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(30,41,59,0.4);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.kanban-filter-tag:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.kanban-filter-tag.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.kanban-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kanban-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  margin-bottom: 4px;
+}
+
+.kanban-col-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.kanban-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.kanban-dot.gray { background: #64748b; }
+.kanban-dot.indigo { background: #6366f1; box-shadow: 0 0 8px rgba(99,102,241,0.5); animation: pulseDot 2s ease-in-out infinite; }
+.kanban-dot.emerald { background: #10b981; }
+
+.kanban-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.08);
+  color: var(--text-muted);
+}
+
+.kanban-col-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 60px;
+}
+
+.kanban-card {
+  position: relative;
+  background: rgba(30,41,59,0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+}
+
+.kanban-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.kanban-card.done {
+  opacity: 0.6;
+}
+
+.kanban-card-border {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+.kanban-card-border.urgent { background: linear-gradient(180deg, #ef4444, #f87171); }
+.kanban-card-border.high { background: linear-gradient(180deg, #f59e0b, #fbbf24); }
+.kanban-card-border.medium { background: linear-gradient(180deg, #06b6d4, #22d3ee); }
+
+.kanban-card-inner {
+  padding: 14px 14px 14px 18px;
+}
+
+.kanban-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.kanban-priority {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.kanban-priority.urgent { background: rgba(239,68,68,0.15); color: #f87171; }
+.kanban-priority.high { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.kanban-priority.medium { background: rgba(6,182,212,0.15); color: #22d3ee; }
+
+.kanban-deadline {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.kanban-card-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.kanban-card.done .kanban-card-name {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.kanban-card-id {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-family: monospace;
+}
+
+.kanban-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kanban-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.kanban-type {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.kanban-progress {
+  margin-top: 10px;
+}
+
+.kanban-progress-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.kanban-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+  transition: width 1s ease;
+}
+
+@media (max-width: 900px) {
+  .kanban-columns { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
@@ -554,23 +773,18 @@
         </div>
       </div>
       
-      <div class="row row-2">
-        <!-- 待办事项 -->
-        <div class="card fade-in" style="animation-delay:0.35s">
-          <div class="card-header">
-            <div class="card-title">📌 待办事项（前5项）</div>
-            <a href="pages/todo.html" style="font-size:12px;color:var(--primary);font-weight:500;">查看全部 →</a>
-          </div>
-          <div class="card-body" style="padding:12px 0;">
-            <table class="data-table">
-              <thead>
-                <tr><th>任务</th><th>类型</th><th>优先级</th><th>截止日</th></tr>
-              </thead>
-              <tbody id="todoTable"></tbody>
-            </table>
-          </div>
+      <!-- Kanban Board -->
+      <div class="card fade-in" style="animation-delay:0.35s">
+        <div class="card-header">
+          <div class="card-title">📋 任务看板</div>
+          <a href="pages/todo.html" style="font-size:12px;color:var(--primary);font-weight:500;">查看全部 →</a>
         </div>
-        
+        <div class="card-body">
+          <div class="kanban-board" id="kanbanBoard"></div>
+        </div>
+      </div>
+      
+      <div class="row row-2">
         <!-- 快捷操作 -->
         <div class="card fade-in" style="animation-delay:0.4s">
           <div class="card-header">
@@ -613,30 +827,30 @@
             </div>
           </div>
         </div>
-      </div>
-      
-      <!-- 近期动态 -->
-      <div class="card fade-in" style="animation-delay:0.45s">
-        <div class="card-header">
-          <div class="card-title">📰 近期动态</div>
-        </div>
-        <div class="card-body">
-          <div class="timeline">
-            <div class="timeline-item done">
-              <div class="timeline-title">商标"云智"收到驳回通知书</div>
-              <div class="timeline-time">2026-05-03 14:30 · 案件 TM-2026-0042</div>
-            </div>
-            <div class="timeline-item done">
-              <div class="timeline-title">马德里申请"海翼"进入WIPO审查阶段</div>
-              <div class="timeline-time">2026-05-02 09:15 · 案件 TM-2025-0189</div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-title">智联知识产权提交异议答辩书（智联）</div>
-              <div class="timeline-time">2026-05-01 16:45 · 案件 TM-2026-0031</div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-title">星联商标续展官费已缴纳</div>
-              <div class="timeline-time">2026-04-30 11:20 · 案件 TM-2025-0098</div>
+        
+        <!-- 近期动态 -->
+        <div class="card fade-in" style="animation-delay:0.45s">
+          <div class="card-header">
+            <div class="card-title">📰 近期动态</div>
+          </div>
+          <div class="card-body">
+            <div class="timeline">
+              <div class="timeline-item done">
+                <div class="timeline-title">商标"云智"收到驳回通知书</div>
+                <div class="timeline-time">2026-05-03 14:30 · 案件 TM-2026-0042</div>
+              </div>
+              <div class="timeline-item done">
+                <div class="timeline-title">马德里申请"海翼"进入WIPO审查阶段</div>
+                <div class="timeline-time">2026-05-02 09:15 · 案件 TM-2025-0189</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-title">智联知识产权提交异议答辩书（智联）</div>
+                <div class="timeline-time">2026-05-01 16:45 · 案件 TM-2026-0031</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-title">星联商标续展官费已缴纳</div>
+                <div class="timeline-time">2026-04-30 11:20 · 案件 TM-2025-0098</div>
+              </div>
             </div>
           </div>
         </div>
@@ -732,18 +946,94 @@ document.querySelectorAll('.glass-card').forEach(card => {
   });
 });
 
-// Render todo table
-const todoBody = document.getElementById('todoTable');
-AppData.todos.slice(0,5).forEach(t => {
-  todoBody.innerHTML += `
-    <tr>
-      <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${t.title}</td>
-      <td><span class="tag tag-gray">${t.type}</span></td>
-      <td>${getPriorityTag(t.priority)}</td>
-      <td style="color:${t.priority==='urgent'?'#ef4444':''};font-weight:500;">${t.deadline}</td>
-    </tr>
-  `;
-});
+// Render Kanban Board
+const kanbanData = {
+  todo: [
+    { name: '云智驳回复审', id: 'TM-2026-0042', priority: 'urgent', priorityLabel: '紧急', deadline: '5.16', assignee: '张', type: '商标申请' },
+    { name: '马德里费用确认', id: 'TM-2025-0189', priority: 'high', priorityLabel: '高优', deadline: '5.17', assignee: '李', type: '费用确认' }
+  ],
+  doing: [
+    { name: '异议答辩书审核', id: 'TM-2026-0031', priority: 'high', priorityLabel: '高优', deadline: '5.18', assignee: '王', type: '异议答辩', progress: 60 }
+  ],
+  done: [
+    { name: '星联续展缴费', id: 'TM-2025-0098', priority: 'medium', priorityLabel: '中', deadline: '4.30完成', assignee: '赵', type: '续展缴费' }
+  ]
+};
+
+function renderKanban(filter = 'all') {
+  const board = document.getElementById('kanbanBoard');
+  if (!board) return;
+
+  const columns = [
+    { key: 'todo', title: '待处理', dot: 'gray', dotClass: 'gray' },
+    { key: 'doing', title: '进行中', dot: 'indigo', dotClass: 'indigo' },
+    { key: 'done', title: '已完成', dot: 'emerald', dotClass: 'emerald' }
+  ];
+
+  let html = '<div class="kanban-filter">';
+  const filters = [
+    { key: 'all', label: '全部' },
+    { key: 'urgent', label: '紧急' },
+    { key: 'high', label: '高优' }
+  ];
+  filters.forEach(f => {
+    html += `<div class="kanban-filter-tag ${f.key === filter ? 'active' : ''}" onclick="renderKanban('${f.key}')">${f.label}</div>`;
+  });
+  html += '</div>';
+
+  html += '<div class="kanban-columns">';
+  columns.forEach(col => {
+    let cards = kanbanData[col.key];
+    if (filter !== 'all') {
+      cards = cards.filter(c => c.priority === filter);
+    }
+
+    html += `
+      <div class="kanban-column">
+        <div class="kanban-col-header">
+          <div class="kanban-col-title">
+            <span class="kanban-dot ${col.dotClass}"></span>
+            ${col.title}
+          </div>
+          <span class="kanban-badge">${cards.length}</span>
+        </div>
+        <div class="kanban-col-body">
+    `;
+
+    cards.forEach(card => {
+      const isDone = col.key === 'done';
+      const progressHtml = col.key === 'doing' && card.progress
+        ? `<div class="kanban-progress"><div class="kanban-progress-bar"><div class="kanban-progress-fill" style="width:${card.progress}%"></div></div></div>`
+        : '';
+
+      html += `
+        <div class="kanban-card ${card.priority} ${isDone ? 'done' : ''}" onclick="navigateTo('pages/todo.html')">
+          <div class="kanban-card-border ${card.priority}"></div>
+          <div class="kanban-card-inner">
+            <div class="kanban-card-top">
+              <span class="kanban-priority ${card.priority}">${card.priorityLabel}</span>
+              <span class="kanban-deadline">${card.deadline}</span>
+            </div>
+            <div class="kanban-card-name">${card.name}</div>
+            <div class="kanban-card-id">${card.id}</div>
+            <div class="kanban-card-footer">
+              <div class="kanban-avatar">${card.assignee}</div>
+              <span class="kanban-type">${card.type}</span>
+            </div>
+            ${progressHtml}
+          </div>
+        </div>
+      `;
+    });
+
+    html += '</div></div>';
+  });
+  html += '</div>';
+
+  board.innerHTML = html;
+}
+
+renderKanban();
 
 // Donut Chart
 drawDonutChart('pieChart', [35, 28, 18, 12, 7], ['新申请','驳回复审','异议/无效','续展','其他'], ['#6366f1','#f59e0b','#10b981','#f43f5e','#64748b']);
