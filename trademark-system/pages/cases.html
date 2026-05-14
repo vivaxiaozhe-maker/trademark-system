@@ -29,10 +29,16 @@
 /* Breadcrumb */
 /* Bulk action bar */
 .bulk-bar {
-  display: none; align-items: center; gap: 12px;
-  padding: 10px 16px; background: var(--primary-light); border-radius: var(--radius-md);
-  margin-bottom: 12px; border: 1px solid #bfdbfe;
+  display: none; align-items: center; gap: 8px;
+  padding: 10px 16px; background: rgba(59,130,246,0.1); border-radius: var(--radius-md);
+  margin-bottom: 12px; border: 1px solid rgba(59,130,246,0.2);
+  white-space: nowrap; overflow-x: auto;
 }
+.bulk-bar::-webkit-scrollbar { height: 0; }
+.table-scroll { overflow-x: auto; }
+.table-scroll .data-table { white-space: nowrap; }
+.table-scroll .data-table th,
+.table-scroll .data-table td { white-space: nowrap; }
 .bulk-bar.active { display: flex; }
 .bulk-bar-text { font-size: 13px; color: var(--primary); font-weight: 600; }
 
@@ -150,27 +156,27 @@
       
       <div class="kpi-grid" style="grid-template-columns: repeat(6, 1fr); margin-bottom:16px;">
         <div class="kpi-card" style="padding:14px;" onclick="filterByStat('all')" data-stat="all">
-          <div class="kpi-label">案件总数</div>
+          <div class="kpi-label" style="white-space:nowrap;">案件总数</div>
           <div class="kpi-value" style="font-size:22px;">-</div>
         </div>
         <div class="kpi-card" style="padding:14px;" onclick="filterByStat('examining')" data-stat="examining">
-          <div class="kpi-label">审查中</div>
+          <div class="kpi-label" style="white-space:nowrap;">审查中</div>
           <div class="kpi-value" style="font-size:22px; color:var(--primary);">-</div>
         </div>
         <div class="kpi-card" style="padding:14px;" onclick="filterByStat('defense_period')" data-stat="defense_period">
-          <div class="kpi-label">答辩期</div>
+          <div class="kpi-label" style="white-space:nowrap;">答辩期</div>
           <div class="kpi-value" style="font-size:22px; color:var(--warning);">-</div>
         </div>
         <div class="kpi-card" style="padding:14px;" onclick="filterByStat('registered')" data-stat="registered">
-          <div class="kpi-label">已注册</div>
+          <div class="kpi-label" style="white-space:nowrap;">已注册</div>
           <div class="kpi-value" style="font-size:22px; color:var(--success);">-</div>
         </div>
         <div class="kpi-card" style="padding:14px;" onclick="filterByStat('rejected')" data-stat="rejected">
-          <div class="kpi-label">已驳回</div>
+          <div class="kpi-label" style="white-space:nowrap;">已驳回</div>
           <div class="kpi-value" style="font-size:22px; color:var(--danger);">-</div>
         </div>
         <div class="kpi-card" style="padding:14px;" onclick="filterByStat('deadline_this_week')" data-stat="deadline_this_week">
-          <div class="kpi-label">本周到期</div>
+          <div class="kpi-label" style="white-space:nowrap;">本周到期</div>
           <div class="kpi-value" style="font-size:22px; color:var(--warning);">-</div>
         </div>
       </div>
@@ -179,10 +185,10 @@
         <div class="bulk-bar-text">已选择 <span id="bulkCount">0</span> 项</div>
         <button class="btn btn-sm btn-secondary" onclick="bulkExport()">📥 批量导出</button>
         <button class="btn btn-sm btn-secondary" onclick="bulkChangeOwner()">👤 修改责任人</button>
-        <button class="btn btn-sm btn-success" style="background:#d1fae5;color:#047857;border:none;" onclick="bulkEnable()">✅ 批量启用</button>
-        <button class="btn btn-sm btn-warning" style="background:#fef3c7;color:#92400e;border:none;" onclick="bulkDisable()">🚫 批量禁用</button>
-        <button class="btn btn-sm btn-warning" style="background:#fef3c7;color:#92400e;border:none;" onclick="bulkRemind()">⏰ 催办</button>
-        <button class="btn btn-sm btn-danger" style="background:#fee2e2;color:#b91c1c;border:none;" onclick="bulkDelete()">🗑️ 删除</button>
+        <button class="btn btn-sm btn-success" style="background:rgba(16,185,129,0.15);color:#34d399;border:none;white-space:nowrap;" onclick="bulkEnable()">✅ 批量启用</button>
+        <button class="btn btn-sm btn-warning" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:none;white-space:nowrap;" onclick="bulkDisable()">🚫 批量禁用</button>
+        <button class="btn btn-sm btn-warning" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:none;white-space:nowrap;" onclick="bulkRemind()">⏰ 催办</button>
+        <button class="btn btn-sm btn-danger" style="background:rgba(239,68,68,0.15);color:#f87171;border:none;white-space:nowrap;" onclick="bulkDelete()">🗑️ 删除</button>
         <button class="btn btn-sm btn-secondary" onclick="clearSelection()" style="margin-left:auto;">取消</button>
       </div>
       
@@ -191,7 +197,7 @@
           <div class="card-title" style="border:none;padding:0;">案件列表</div>
           <button class="btn btn-sm btn-secondary" onclick="openColumnModal()">⚙️ 列设置</button>
         </div>
-        <div class="card-body" style="padding:0;">
+        <div class="card-body table-scroll" style="padding:0;">
           <table class="data-table">
             <thead id="caseTableHead"></thead>
             <tbody id="caseTable"></tbody>
