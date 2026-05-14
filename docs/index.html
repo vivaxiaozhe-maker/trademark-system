@@ -446,6 +446,70 @@ tailwind.config = {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ========== Quick Actions ========== */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.quick-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  background: rgba(30,41,59,0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.quick-action-card:hover {
+  background: rgba(30,41,59,0.8);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.quick-action-card:hover .quick-action-icon {
+  background: rgba(99,102,241,0.1);
+}
+
+.quick-action-card:hover .quick-action-label {
+  color: #fff;
+}
+
+.quick-action-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  color: #818cf8;
+}
+
+.quick-action-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.5;
+}
+
+.quick-action-label {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
 /* ========== Kanban Board ========== */
 .kanban-board {
   display: flex;
@@ -918,41 +982,41 @@ tailwind.config = {
         <!-- 快捷操作 -->
         <div class="card fade-in" style="animation-delay:0.4s">
           <div class="card-header">
-            <div class="card-title">🚀 快捷操作</div>
+            <div class="card-title"><i data-lucide="zap" style="width:18px;height:18px;vertical-align:-3px;margin-right:4px;"></i>快捷操作</div>
           </div>
           <div class="card-body">
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px;">
-              <div class="quick-btn" onclick="navigateTo('pages/case-new.html')">
-                <div style="width:48px;height:48px;border-radius:12px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">➕</div>
-                <div style="text-align:center;font-size:12px;font-weight:500;">新建案件</div>
+            <div class="quick-actions-grid">
+              <div class="quick-action-card" onclick="navigateTo('pages/case-new.html')">
+                <div class="quick-action-icon"><i data-lucide="plus-circle"></i></div>
+                <div class="quick-action-label">新建案件</div>
               </div>
-              <div class="quick-btn" onclick="navigateTo('pages/brand-map.html')">
-                <div style="width:48px;height:48px;border-radius:12px;background:#d1fae5;color:var(--success);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">🏷️</div>
-                <div style="text-align:center;font-size:12px;font-weight:500;">品牌图谱</div>
+              <div class="quick-action-card" onclick="navigateTo('pages/brand-map.html')">
+                <div class="quick-action-icon"><i data-lucide="map"></i></div>
+                <div class="quick-action-label">品牌图谱</div>
               </div>
-              <div class="quick-btn" onclick="navigateTo('pages/fees.html')">
-                <div style="width:48px;height:48px;border-radius:12px;background:#fef3c7;color:var(--warning);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">💰</div>
-                <div style="text-align:center;font-size:12px;font-weight:500;">费用录入</div>
+              <div class="quick-action-card" onclick="navigateTo('pages/fees.html')">
+                <div class="quick-action-icon"><i data-lucide="receipt"></i></div>
+                <div class="quick-action-label">费用录入</div>
               </div>
-              <div class="quick-btn" onclick="navigateTo('pages/monitor.html')">
-                <div style="width:48px;height:48px;border-radius:12px;background:#ede9fe;color:var(--info);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">🔍</div>
-                <div style="text-align:center;font-size:12px;font-weight:500;">商标监测</div>
+              <div class="quick-action-card" onclick="navigateTo('pages/monitor.html')">
+                <div class="quick-action-icon"><i data-lucide="radar"></i></div>
+                <div class="quick-action-label">商标监测</div>
               </div>
-              <div class="quick-btn" onclick="navigateTo('pages/collab.html')">
-                <div style="width:48px;height:48px;border-radius:12px;background:#fce7f3;color:#db2777;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">🤝</div>
-                <div style="text-align:center;font-size:12px;font-weight:500;">律所沟通</div>
+              <div class="quick-action-card" onclick="navigateTo('pages/collab.html')">
+                <div class="quick-action-icon"><i data-lucide="message-circle"></i></div>
+                <div class="quick-action-label">律所沟通</div>
               </div>
-              <div class="quick-btn" onclick="navigateTo('pages/decision.html')">
-                <div style="width:48px;height:48px;border-radius:12px;background:#e0f2fe;color:#0284c7;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">📊</div>
-                <div style="text-align:center;font-size:12px;font-weight:500;">决策报表</div>
+              <div class="quick-action-card" onclick="navigateTo('pages/decision.html')">
+                <div class="quick-action-icon"><i data-lucide="bar-chart-2"></i></div>
+                <div class="quick-action-label">决策报表</div>
               </div>
-              <div class="quick-btn">
-                <div style="width:48px;height:48px;border-radius:12px;background:#f3f4f6;color:#6b7280;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">📤</div>
-                <div style="text-align:center;font-size:12px;font-weight:500;">数据导出</div>
+              <div class="quick-action-card">
+                <div class="quick-action-icon"><i data-lucide="download"></i></div>
+                <div class="quick-action-label">数据导出</div>
               </div>
-              <div class="quick-btn">
-                <div style="width:48px;height:48px;border-radius:12px;background:#f3f4f6;color:#6b7280;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px;">⚙️</div>
-                <div style="text-align:center;font-size:12px;font-weight:500;">系统设置</div>
+              <div class="quick-action-card">
+                <div class="quick-action-icon"><i data-lucide="settings"></i></div>
+                <div class="quick-action-label">系统设置</div>
               </div>
             </div>
           </div>
