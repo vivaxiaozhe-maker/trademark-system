@@ -700,7 +700,12 @@ function drawLineChart(containerId, data, labels, color) {
   });
   xLabels += '</div>';
 
-  el.innerHTML = `<div style="height:calc(100% - 18px); position:relative;">${svg}</div>${xLabels}`;
+  el.innerHTML = `
+    <div style="display:flex; flex-direction:column; width:100%; height:100%; padding:6px 0;">
+      <div style="flex:1; position:relative; min-height:0;">${svg}</div>
+      ${xLabels}
+    </div>
+  `;
 }
 
 

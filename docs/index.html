@@ -373,15 +373,19 @@
 /* ========== Donut Chart ========== */
 .donut-chart-wrap {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  gap: 24px;
+  height: 100%;
+  width: 100%;
 }
 
 .donut-chart-svg {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
 }
 
 .donut-chart-svg svg {
@@ -415,9 +419,10 @@
 .donut-legend {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  max-width: 260px;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  max-width: 200px;
 }
 
 .donut-legend-item {
