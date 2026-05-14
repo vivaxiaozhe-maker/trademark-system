@@ -596,8 +596,21 @@ tailwind.config = {
 
 .kanban-deadline {
   font-size: 11px;
-  color: var(--text-muted);
+  font-weight: 500;
 }
+.kanban-deadline.red { color: #f87171; }
+.kanban-deadline.amber { color: #fbbf24; }
+.kanban-deadline.green { color: #34d399; }
+
+.kanban-due {
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+.kanban-due.red { color: #f87171; }
+.kanban-due.amber { color: #fbbf24; }
+.kanban-due.green { color: #34d399; }
 
 .kanban-card-name {
   font-size: 14px;
@@ -614,7 +627,7 @@ tailwind.config = {
 .kanban-card-id {
   font-size: 11px;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 2px;
   font-family: monospace;
 }
 
@@ -643,7 +656,19 @@ tailwind.config = {
 }
 
 .kanban-progress {
-  margin-top: 10px;
+  margin-top: 8px;
+}
+
+.kanban-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.kanban-progress-pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
 }
 
 .kanban-progress-bar {
@@ -1082,14 +1107,14 @@ document.querySelectorAll('.glass-card').forEach(card => {
 // Render Kanban Board
 const kanbanData = {
   todo: [
-    { name: '云智驳回复审', id: 'TM-2026-0042', priority: 'urgent', priorityLabel: '紧急', deadline: '5.16', assignee: '张', type: '商标申请' },
-    { name: '马德里费用确认', id: 'TM-2025-0189', priority: 'high', priorityLabel: '高优', deadline: '5.17', assignee: '李', type: '费用确认' }
+    { name: '云智驳回复审', id: 'TM-2026-0042', priority: 'urgent', priorityLabel: '紧急', due: '截止 5.16', dueColor: 'red', assignee: '张', type: '商标申请' },
+    { name: '马德里费用确认', id: 'TM-2025-0189', priority: 'high', priorityLabel: '高优', due: '截止 5.17', dueColor: 'amber', assignee: '李', type: '费用确认' }
   ],
   doing: [
-    { name: '异议答辩书审核', id: 'TM-2026-0031', priority: 'high', priorityLabel: '高优', deadline: '5.18', assignee: '王', type: '异议答辩', progress: 60 }
+    { name: '异议答辩书审核', id: 'TM-2026-0031', priority: 'high', priorityLabel: '高优', due: '截止 5.18', dueColor: 'amber', assignee: '王', type: '异议答辩', progress: 60 }
   ],
   done: [
-    { name: '星联续展缴费', id: 'TM-2025-0098', priority: 'medium', priorityLabel: '中', deadline: '4.30完成', assignee: '赵', type: '续展缴费' }
+    { name: '星联续展缴费', id: 'TM-2025-0098', priority: 'medium', priorityLabel: '中', due: '4.30 完成', dueColor: 'green', assignee: '赵', type: '续展缴费' }
   ]
 };
 
@@ -1136,7 +1161,12 @@ function renderKanban(filter = 'all') {
     cards.forEach(card => {
       const isDone = col.key === 'done';
       const progressHtml = col.key === 'doing' && card.progress
-        ? `<div class="kanban-progress"><div class="kanban-progress-bar"><div class="kanban-progress-fill" style="width:${card.progress}%"></div></div></div>`
+        ? `<div class="kanban-progress">
+             <div class="kanban-progress-header">
+               <span class="kanban-progress-pct">${card.progress}%</span>
+             </div>
+             <div class="kanban-progress-bar"><div class="kanban-progress-fill" style="width:${card.progress}%"></div></div>
+           </div>`
         : '';
 
       html += `
@@ -1145,10 +1175,11 @@ function renderKanban(filter = 'all') {
           <div class="kanban-card-inner">
             <div class="kanban-card-top">
               <span class="kanban-priority ${card.priority}">${card.priorityLabel}</span>
-              <span class="kanban-deadline">${card.deadline}</span>
+              <span class="kanban-deadline ${card.dueColor}">${card.due}</span>
             </div>
             <div class="kanban-card-name">${card.name}</div>
             <div class="kanban-card-id">${card.id}</div>
+            <div class="kanban-due ${card.dueColor}">${card.due}</div>
             <div class="kanban-card-footer">
               <div class="kanban-avatar">${card.assignee}</div>
               <span class="kanban-type">${card.type}</span>
