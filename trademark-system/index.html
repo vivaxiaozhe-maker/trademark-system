@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com" async></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
   corePlugins: { preflight: false },
@@ -20,9 +20,9 @@ tailwind.config = {
   }
 }
 </script>
-<script src="https://unpkg.com/lucide@latest" defer></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <link rel="stylesheet" href="css/common.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
 /* ========== Hero Section ========== */
 .hero-section {
@@ -1138,7 +1138,6 @@ tailwind.config = {
 </div>
 
 <script src="js/data.js"></script>
-<script src="./js/data-service.js"></script>
 <script src="js/app.js"></script>
 <script>
 initApp('dashboard');
@@ -1283,9 +1282,8 @@ function renderKanban(filter = 'all') {
 
 renderKanban();
 
-// Defer chart rendering to next frame for faster initial paint
-requestAnimationFrame(() => {
-  drawDonutChart('pieChart', [35, 28, 18, 12, 7], ['新申请','驳回复审','异议/无效','续展','其他'], ['#6366f1','#f59e0b','#10b981','#f43f5e','#94a3b8']);
+// Donut Chart
+drawDonutChart('pieChart', [35, 28, 18, 12, 7], ['新申请','驳回复审','异议/无效','续展','其他'], ['#6366f1','#f59e0b','#10b981','#f43f5e','#94a3b8']);
 
 function drawDonutChart(containerId, data, labels, colors) {
   const container = document.getElementById(containerId);
@@ -1364,8 +1362,8 @@ function drawDonutChart(containerId, data, labels, colors) {
   }, 100);
 }
 
-  drawLineChart('trendChart', [18, 22, 19, 25, 30, 28], ['12月','1月','2月','3月','4月','5月'], '#3b82f6');
-});
+// Line Chart
+drawLineChart('trendChart', [18, 22, 19, 25, 30, 28], ['12月','1月','2月','3月','4月','5月'], '#3b82f6');
 
 function showQuickCreate() {
   document.getElementById('quickCreateModal').classList.add('active');
@@ -1374,100 +1372,99 @@ function closeModal() {
   document.getElementById('quickCreateModal').classList.remove('active');
 }
 
-// GSAP Page Load Animations — wait for DOMContentLoaded so deferred GSAP is loaded
-window.addEventListener('DOMContentLoaded', () => {
-  // Initialize Lucide icons after deferred lucide script is ready
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
+// GSAP Page Load Animations
+if (typeof gsap !== 'undefined') {
+  // Stat cards stagger entrance
+  gsap.from('.stat-card', {
+    y: 30,
+    opacity: 0,
+    duration: 0.6,
+    stagger: 0.08,
+    ease: 'power2.out',
+    delay: 0.2
+  });
 
-  if (typeof gsap !== 'undefined') {
-    // Stat cards stagger entrance
-    gsap.from('.stat-card', {
-      y: 30,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.08,
+  // Counter animation for stat values
+  document.querySelectorAll('.stat-value[data-count]').forEach(el => {
+    const target = parseInt(el.dataset.count, 10);
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: target,
+      duration: 2,
       ease: 'power2.out',
-      delay: 0.2
-    });
-
-    // Counter animation for stat values
-    document.querySelectorAll('.stat-value[data-count]').forEach(el => {
-      const target = parseInt(el.dataset.count, 10);
-      const obj = { val: 0 };
-      gsap.to(obj, {
-        val: target,
-        duration: 2,
-        ease: 'power2.out',
-        delay: 0.4,
-        onUpdate: () => {
-          el.textContent = Math.round(obj.val).toLocaleString();
-        }
-      });
-    });
-
-    // Cards stagger entrance
-    gsap.from('.card', {
-      y: 20,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: 'power2.out',
-      delay: 0.5
-    });
-
-    // Hero section entrance
-    gsap.from('.hero-section', {
-      scale: 0.98,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'power2.out',
-      delay: 0.1
-    });
-
-    gsap.from('.hero-welcome', {
-      y: 20,
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-      delay: 0.3
-    });
-
-    gsap.from('.hero-urgent-badge', {
-      y: 20,
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-      delay: 0.4
-    });
-
-    // Urgent cards stagger entrance
-    gsap.from('.glass-card', {
-      y: 30,
-      opacity: 0,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: 'power2.out',
-      delay: 0.5,
-      onComplete: () => {
-        document.querySelectorAll('.card-progress-fill').forEach(bar => {
-          bar.style.width = bar.dataset.width + '%';
-        });
+      delay: 0.4,
+      onUpdate: () => {
+        el.textContent = Math.round(obj.val).toLocaleString();
       }
     });
+  });
 
-    // Timeline entrance
-    gsap.from('.timeline-v2-item', {
-      x: -20,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.12,
-      ease: 'power2.out',
-      delay: 0.6
-    });
-  }
-});
+  // Cards stagger entrance
+  gsap.from('.card', {
+    y: 20,
+    opacity: 0,
+    duration: 0.5,
+    stagger: 0.1,
+    ease: 'power2.out',
+    delay: 0.5
+  });
+
+  // Page header entrance
+  // Hero section entrance
+  gsap.from('.hero-section', {
+    scale: 0.98,
+    opacity: 0,
+    duration: 0.8,
+    ease: 'power2.out',
+    delay: 0.1
+  });
+
+  gsap.from('.hero-welcome', {
+    y: 20,
+    opacity: 0,
+    duration: 0.5,
+    ease: 'power2.out',
+    delay: 0.3
+  });
+
+  gsap.from('.hero-urgent-badge', {
+    y: 20,
+    opacity: 0,
+    duration: 0.5,
+    ease: 'power2.out',
+    delay: 0.4
+  });
+
+  // Urgent cards stagger entrance
+  gsap.from('.glass-card', {
+    y: 30,
+    opacity: 0,
+    duration: 0.6,
+    stagger: 0.1,
+    ease: 'power2.out',
+    delay: 0.5,
+    onComplete: () => {
+      // Animate progress bars after cards appear
+      document.querySelectorAll('.card-progress-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+    }
+  });
+
+  // Timeline entrance
+  gsap.from('.timeline-v2-item', {
+    x: -20,
+    opacity: 0,
+    duration: 0.5,
+    stagger: 0.12,
+    ease: 'power2.out',
+    delay: 0.6
+  });
+
+}
+
+// Initialize Lucide icons
+lucide.createIcons();
 
 // ⌘K shortcut to focus search
 document.addEventListener('keydown', e => {
@@ -1481,5 +1478,6 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
+<script src="./js/data-service.js"></script>
 </body>
 </html>

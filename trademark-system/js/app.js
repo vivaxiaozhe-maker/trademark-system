@@ -214,13 +214,6 @@ function toggleSubNav(el) {
 
 function navigateTo(href) {
   closeMobileSidebar();
-  // Skip reload if already on the target page
-  const target = resolveHref(href);
-  const current = location.pathname;
-  const isSame = target === 'index.html'
-    ? (current.endsWith('/index.html') || current.endsWith('/trademark-system/') || current.endsWith('/'))
-    : current.endsWith(target);
-  if (isSame) return;
   window.location.href = href;
 }
 
