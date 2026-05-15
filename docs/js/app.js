@@ -155,18 +155,18 @@ function renderHeader() {
         ☰
       </div>
       <div class="header-search" style="position:relative;">
-        <span style="color:var(--text-muted);font-size:14px;">🔍</span>
-        <input type="text" placeholder="搜索案件、商标、律所、文档..." id="globalSearch"
+        <i data-lucide="search" style="width:16px;height:16px;color:var(--text-muted);flex-shrink:0;"></i>
+        <input type="text" placeholder="⌘K 搜索" id="globalSearch"
           onfocus="showSearchDropdown()" onblur="hideSearchDropdownDelayed()" oninput="handleSearchInput(this.value)">
         <div class="search-dropdown" id="searchDropdown"></div>
       </div>
     </div>
     <div class="header-actions">
       <div class="btn-icon" title="消息通知" onclick="toggleNotifDrawer()">
-        🔔
-        ${unreadCount > 0 ? `<span class="badge">${unreadCount}</span>` : ''}
+        <i data-lucide="bell" style="width:18px;height:18px;"></i>
+        ${unreadCount > 0 ? `<span class="badge" style="width:20px;height:20px;min-width:20px;top:2px;right:2px;border-radius:50%;background:#ef4444;font-size:10px;font-weight:700;">${unreadCount}</span>` : ''}
       </div>
-      <div class="btn-icon" title="帮助">❓</div>
+      <div class="btn-icon" title="帮助"><i data-lucide="help-circle" style="width:18px;height:18px;"></i></div>
       <div class="user-menu">
         <div class="avatar">${AppData.user.avatar}</div>
         <div style="line-height:1.2;">
