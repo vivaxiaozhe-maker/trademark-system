@@ -758,10 +758,10 @@ tailwind.config = {
 .timeline-v2-line {
   position: absolute;
   left: 31px;
-  top: 28px;
-  bottom: 28px;
+  top: 0;
+  bottom: 0;
   width: 2px;
-  background: linear-gradient(180deg, #6366f1, rgba(99,102,241,0.15));
+  background: linear-gradient(to bottom, rgba(99,102,241,0.5), rgba(99,102,241,0.1));
 }
 
 .timeline-v2-item {
@@ -794,9 +794,18 @@ tailwind.config = {
   height: 22px;
 }
 
-.timeline-v2-icon.red { background: rgba(239,68,68,0.15); color: #f87171; }
-.timeline-v2-icon.indigo { background: rgba(99,102,241,0.15); color: #818cf8; }
-.timeline-v2-icon.amber { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.timeline-v2-icon.red { background: rgba(239,68,68,0.1); color: #fff; }
+.timeline-v2-icon.indigo { background: rgba(99,102,241,0.1); color: #fff; }
+.timeline-v2-icon.amber { background: rgba(245,158,11,0.1); color: #fff; }
+
+@keyframes pulseRing {
+  0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
+  100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+.timeline-v2-icon.pulse {
+  animation: pulseRing 2s ease-in-out infinite;
+}
 
 .timeline-v2-content {
   flex: 1;
@@ -807,7 +816,7 @@ tailwind.config = {
 .timeline-v2-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #fff;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -826,13 +835,23 @@ tailwind.config = {
 
 .timeline-v2-desc {
   font-size: 12px;
-  color: var(--text-secondary);
+  color: #94a3b8;
   margin-bottom: 6px;
 }
 
 .timeline-v2-time {
-  font-size: 11px;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: #64748b;
+}
+
+.timeline-view-all {
+  font-size: 12px;
+  color: #818cf8;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.timeline-view-all:hover {
+  color: #a5b4fc;
 }
 
 /* ========== Keyboard Hint ========== */
@@ -1026,14 +1045,14 @@ tailwind.config = {
         <div class="card fade-in" style="animation-delay:0.45s">
           <div class="card-header">
             <div class="card-title">📰 动态时间轴</div>
-            <a href="pages/todo.html" style="font-size:12px;color:var(--primary);font-weight:500;">查看全部 →</a>
+            <a href="pages/todo.html" class="timeline-view-all">查看全部 →</a>
           </div>
           <div class="card-body">
             <div class="timeline-v2">
               <div class="timeline-v2-line"></div>
               
               <div class="timeline-v2-item">
-                <div class="timeline-v2-icon red">
+                <div class="timeline-v2-icon red pulse">
                   <i data-lucide="file-x"></i>
                 </div>
                 <div class="timeline-v2-content">
