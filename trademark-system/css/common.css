@@ -145,8 +145,6 @@ ul { list-style:none; }
   cursor: pointer; transition: var(--transition);
   position: relative; gap: 12px;
   white-space: nowrap;
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item:hover { background: var(--sidebar-hover); color:#e2e8f0; }
