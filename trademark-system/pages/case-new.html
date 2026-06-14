@@ -686,7 +686,7 @@ function removeTag(type, tag) {
 }
 
 // ==================== Suggest Dropdown ====================
-var ownerList = ['张法务', '李流程', '王流程', '赵法务', '刘助理', '陈律师'];
+var ownerList = ['Missy', '李流程', '王流程', '赵法务', '刘助理', '陈律师'];
 var partyList = ['中国', '美国', '欧盟', '日本', '韩国', '新加坡', '澳大利亚', '加拿大'];
 
 function filterSuggest(input, dropdownId) {
@@ -846,7 +846,7 @@ function submitCase() {
     currentProgress: 5,
     lawFirmId: '',
     lawFirmName: document.getElementById('agent').value || '-',
-    responsibleUser: document.getElementById('tmOwner').value || '张法务',
+    responsibleUser: document.getElementById('tmOwner').value || 'Missy',
     responsibleUserId: 'zhang',
     feeTotal: 0,
     feePaid: 0,

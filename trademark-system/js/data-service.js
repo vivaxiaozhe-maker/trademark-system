@@ -235,7 +235,7 @@ const DataService = (function() {
         status: 'active', contact: '陈律师',
         expertise: { '驳回复审': 92, '诉讼': 85, '新申请': 78, '异议': 88, '续展': 95 },
         reviews: [
-          { rating: 5, text: '响应迅速，驳回复审材料质量高', author: '张法务', date: '2026-04-15' }
+          { rating: 5, text: '响应迅速，驳回复审材料质量高', author: 'Missy', date: '2026-04-15' }
         ]
       },
       {
@@ -294,19 +294,19 @@ const DataService = (function() {
         internalDeadline: dateOffset(-1),
         currentProgress: 65,
         lawFirmId: 'jincheng', lawFirmName: '金诚律师事务所',
-        responsibleUser: '张法务', responsibleUserId: 'zhang',
+        responsibleUser: 'Missy', responsibleUserId: 'zhang',
         feeTotal: 101500, feePaid: 4500, feePending: 97000,
         timeline: [
-          { id: 'tl-1', title: '案件创建', date: '2026-01-15', actor: '张法务', actorType: 'internal', status: 'completed', detail: '知识产权部发起"云智"商标第35类新申请，指定金诚律所为代理机构' },
+          { id: 'tl-1', title: '案件创建', date: '2026-01-15', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '知识产权部发起"云智"商标第35类新申请，指定金诚律所为代理机构' },
           { id: 'tl-2', title: '委托代理确认', date: '2026-01-18', actor: '金诚律师事务所', actorType: 'lawfirm', status: 'completed', detail: '陈律师确认接受委托，代理费报价¥85,000（一审），官费预估¥1,500' },
           { id: 'tl-3', title: '申请材料准备', date: '2026-01-20', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '完成商标图样优化、商品/服务分类细化（35类：广告、商业管理、零售服务等）' },
           { id: 'tl-4', title: '提交新申请', date: '2026-01-22', actor: '商标局受理处', actorType: 'system', status: 'completed', detail: '申请号：TM-2026-0042，申请类别：第35类，规费已缴纳' },
           { id: 'tl-5', title: '形式审查通过', date: '2026-02-01', actor: '商标局审查一部', actorType: 'system', status: 'completed', detail: '申请文件齐全、图样清晰、类别划分符合要求，进入实质审查阶段' },
           { id: 'tl-6', title: '实质审查驳回', date: '2026-03-15', actor: '商标局审查二部', actorType: 'system', status: 'rejected', detail: '驳回理由：与在先注册商标"云智科技"（注册号78954321，第9类）构成近似商标，违反《商标法》第三十条' },
-          { id: 'tl-7', title: '案件分析会议', date: '2026-03-20', actor: '张法务 / 陈律师', actorType: 'lawfirm', status: 'completed', detail: '会议结论：第9类与第35类商品/服务关联度较低，可尝试通过"商品/服务不类似"+"商标不近似"双路径论证' },
+          { id: 'tl-7', title: '案件分析会议', date: '2026-03-20', actor: 'Missy / 陈律师', actorType: 'lawfirm', status: 'completed', detail: '会议结论：第9类与第35类商品/服务关联度较低，可尝试通过"商品/服务不类似"+"商标不近似"双路径论证' },
           { id: 'tl-8', title: '类似案例检索', date: '2026-03-25', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '检索到3件支持性判例：（2024）京73行终1234号、（2023）京73行终5678号、（2023）商标异字第9012号' },
           { id: 'tl-9', title: '驳回复审理由书 v1', date: '2026-04-10', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '完成初稿，重点论证：① 第9类与第35类商品/服务不构成类似；② "云智"与"云智科技"在呼叫、含义上存在差异' },
-          { id: 'tl-10', title: '法务批注反馈', date: '2026-04-15', actor: '张法务', actorType: 'internal', status: 'completed', detail: '反馈意见：整体逻辑通顺，但需补充第35类近三年实际使用证据（合同、发票、宣传材料），增强"实际使用+知名度"论证' },
+          { id: 'tl-10', title: '法务批注反馈', date: '2026-04-15', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '反馈意见：整体逻辑通顺，但需补充第35类近三年实际使用证据（合同、发票、宣传材料），增强"实际使用+知名度"论证' },
           { id: 'tl-11', title: '驳回复审材料准备', date: '2026-04-20', actor: '金诚律所', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-05-06 | 正在进行：补充使用证据、市场调研报告、理由书v2修订' },
           { id: 'tl-12', title: '复审提交', date: '', actor: '', actorType: '', status: 'pending', detail: '待进行：理由书v2批注通过后，向商评委提交复审申请' }
         ],
@@ -325,16 +325,16 @@ const DataService = (function() {
         messages: [
           { id: 'msg-1', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '商标新申请已提交，申请号：TM-2026-0042，申请类别：第35类，当前状态：受理中', date: '2026-01-22 09:00', type: 'message' },
           { id: 'msg-2', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '已确认接受委托，开始准备申请材料。预计1月20日前完成材料准备，请确认商品/服务清单。', date: '2026-01-18 14:30', type: 'message' },
-          { id: 'msg-3', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '商品/服务清单已确认，第35类包含：广告、商业管理辅助、替他人推销、零售服务等。请按此清单准备。', date: '2026-01-19 10:15', type: 'message' },
+          { id: 'msg-3', sender: 'Missy', senderAvatar: 'M', senderType: 'internal', content: '商品/服务清单已确认，第35类包含：广告、商业管理辅助、替他人推销、零售服务等。请按此清单准备。', date: '2026-01-19 10:15', type: 'message' },
           { id: 'msg-4', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '形式审查已通过，申请文件齐全，图样清晰，进入实质审查阶段。预计审查周期：3-4个月。', date: '2026-02-01 11:00', type: 'message' },
           { id: 'msg-5', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '⚠️ 收到驳回通知书！商标局认定与在先商标"云智科技"（78954321，第9类）近似，违反《商标法》第三十条。官方绝限：2026-05-06。', date: '2026-04-03 16:20', type: 'message' },
           { id: 'msg-6', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '建议尽快召开案件分析会议。初步判断：第9类（科学仪器）与第35类（广告销售）关联度较低，可尝试双路径论证。', date: '2026-04-03 17:00', type: 'message' },
-          { id: 'msg-7', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '同意召开分析会议。请提前准备：① 类似案例检索；② 商品/服务类似性判断依据；③ 复审成功率评估。会议时间：3月20日14:00。', date: '2026-04-03 18:30', type: 'message' },
+          { id: 'msg-7', sender: 'Missy', senderAvatar: 'M', senderType: 'internal', content: '同意召开分析会议。请提前准备：① 类似案例检索；② 商品/服务类似性判断依据；③ 复审成功率评估。会议时间：3月20日14:00。', date: '2026-04-03 18:30', type: 'message' },
           { id: 'msg-8', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '驳回复审理由书v1已提交，请审核。核心论点：第9类与第35类不构成类似商品/服务，且两商标在呼叫、含义上存在显著差异。', date: '2026-04-10 11:00', type: 'message' },
-          { id: 'msg-9', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '理由书v1已审核。整体逻辑通顺，论证结构清晰，但存在以下不足：1）第35类实际使用证据不足；2）知名度论证缺少销售数据支撑；3）建议在"商标不近似"部分补充消费者认知调查。请修订后提交v2。', date: '2026-04-12 16:45', type: 'message' },
+          { id: 'msg-9', sender: 'Missy', senderAvatar: 'M', senderType: 'internal', content: '理由书v1已审核。整体逻辑通顺，论证结构清晰，但存在以下不足：1）第35类实际使用证据不足；2）知名度论证缺少销售数据支撑；3）建议在"商标不近似"部分补充消费者认知调查。请修订后提交v2。', date: '2026-04-12 16:45', type: 'message' },
           { id: 'msg-10', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '收到批注意见。已安排调研团队补充：① 近三年第35类使用合同及发票（预计15份）；② 品牌知名度市场调研（覆盖北上广深）；③ 消费者认知度问卷（样本量N=500）。预计4月25日前完成。', date: '2026-04-13 09:20', type: 'message' },
           { id: 'msg-11', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '驳回复审理由书v2已提交，请法务审核。本次重点补充了：第35类使用证据（合同、发票、宣传材料）、品牌市场调研报告、消费者认知度调查数据。', date: '2026-05-03 10:30', type: 'message' },
-          { id: 'msg-12', sender: '张法务', senderAvatar: '张', senderType: 'internal', content: '收到v2，我将在今日内完成审核。关于证据链的完整性请再确认一下：① 合同金额是否覆盖近三年；② 发票与合同是否一一对应；③ 调研样本是否具有代表性。', date: '2026-05-03 11:00', type: 'message' }
+          { id: 'msg-12', sender: 'Missy', senderAvatar: 'M', senderType: 'internal', content: '收到v2，我将在今日内完成审核。关于证据链的完整性请再确认一下：① 合同金额是否覆盖近三年；② 发票与合同是否一一对应；③ 调研样本是否具有代表性。', date: '2026-05-03 11:00', type: 'message' }
         ],
         tags: ['紧急', '复审', '近似驳回', '绝限临近'],
         createdAt: '2026-01-15', updatedAt: '2026-05-03'
@@ -351,10 +351,10 @@ const DataService = (function() {
         internalDeadline: dateOffset(1),
         currentProgress: 45,
         lawFirmId: 'zhongyu', lawFirmName: '中誉知识产权',
-        responsibleUser: '张法务', responsibleUserId: 'zhang',
+        responsibleUser: 'Missy', responsibleUserId: 'zhang',
         feeTotal: 62000, feePaid: 2000, feePending: 60000,
         timeline: [
-          { id: 'tl-1', title: '案件创建', date: '2025-11-10', actor: '张法务', actorType: 'internal', status: 'completed', detail: '' },
+          { id: 'tl-1', title: '案件创建', date: '2025-11-10', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '' },
           { id: 'tl-2', title: '收到异议申请', date: '2026-02-20', actor: '中誉知识产权', actorType: 'lawfirm', status: 'completed', detail: '第三方提出异议' },
           { id: 'tl-3', title: '异议答辩准备', date: '2026-03-01', actor: '中誉知识产权', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-05-07' }
         ],
@@ -402,10 +402,10 @@ const DataService = (function() {
         internalDeadline: dateOffset(14),
         currentProgress: 35,
         lawFirmId: 'jincheng', lawFirmName: '金诚律师事务所',
-        responsibleUser: '张法务', responsibleUserId: 'zhang',
+        responsibleUser: 'Missy', responsibleUserId: 'zhang',
         feeTotal: 72000, feePaid: 5000, feePending: 67000,
         timeline: [
-          { id: 'tl-1', title: '案件创建', date: '2026-02-01', actor: '张法务', actorType: 'internal', status: 'completed', detail: '' },
+          { id: 'tl-1', title: '案件创建', date: '2026-02-01', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '' },
           { id: 'tl-2', title: '收到不予注册决定', date: '2026-04-01', actor: '商标局', actorType: 'system', status: 'completed', detail: '引证商标：明达照明' },
           { id: 'tl-3', title: '复审材料准备', date: '2026-04-05', actor: '金诚律所', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-05-22' }
         ],
@@ -426,10 +426,10 @@ const DataService = (function() {
         internalDeadline: dateOffset(3),
         currentProgress: 80,
         lawFirmId: 'jincheng', lawFirmName: '金诚律师事务所',
-        responsibleUser: '张法务', responsibleUserId: 'zhang',
+        responsibleUser: 'Missy', responsibleUserId: 'zhang',
         feeTotal: 18000, feePaid: 0, feePending: 18000,
         timeline: [
-          { id: 'tl-1', title: '案件创建', date: '2026-01-10', actor: '张法务', actorType: 'internal', status: 'completed', detail: '续展期届满前6个月' },
+          { id: 'tl-1', title: '案件创建', date: '2026-01-10', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '续展期届满前6个月' },
           { id: 'tl-2', title: '续展材料准备', date: '2026-01-15', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '' },
           { id: 'tl-3', title: '缴纳官费', date: '', actor: '', actorType: '', status: 'current', detail: '待缴费 绝限 2026-05-10' }
         ],
@@ -450,7 +450,7 @@ const DataService = (function() {
         internalDeadline: dateOffset(30),
         currentProgress: 40,
         lawFirmId: 'zhongyu', lawFirmName: '中誉知识产权',
-        responsibleUser: '张法务', responsibleUserId: 'zhang',
+        responsibleUser: 'Missy', responsibleUserId: 'zhang',
         feeTotal: 55000, feePaid: 10000, feePending: 45000,
         timeline: [
           { id: 'tl-1', title: '收到撤三通知', date: '2026-03-15', actor: '商标局', actorType: 'system', status: 'completed', detail: '被申请撤销第38类注册' },
@@ -496,7 +496,7 @@ const DataService = (function() {
         internalDeadline: dateOffset(50),
         currentProgress: 50,
         lawFirmId: 'baker', lawFirmName: '美国Baker律所',
-        responsibleUser: '张法务', responsibleUserId: 'zhang',
+        responsibleUser: 'Missy', responsibleUserId: 'zhang',
         feeTotal: 320000, feePaid: 160000, feePending: 160000,
         timeline: [
           { id: 'tl-1', title: '美国商标驳回', date: '2025-12-01', actor: 'USPTO', actorType: 'system', status: 'completed', detail: '驳回理由：描述性' },
@@ -511,14 +511,14 @@ const DataService = (function() {
 
     // --- 待办数据 ---
     const todos = [
-      { id: 'todo-1', title: "商标'云智'驳回复审材料准备", caseId: 'TM-2026-0042', caseName: '云智-驳回复审', type: '案件处理', typeLabel: '案件处理', priority: 'urgent', priorityLabel: '紧急', deadline: dateOffset(2), status: 'pending', statusLabel: '待处理', createdAt: '2026-04-20', assignee: '张法务' },
-      { id: 'todo-2', title: '马德里国际申请WIPO费用支付确认', caseId: 'TM-2025-0189', caseName: '海翼-马德里申请', type: '费用审批', typeLabel: '费用审批', priority: 'high', priorityLabel: '高', deadline: dateOffset(3), status: 'pending', statusLabel: '待审批', createdAt: '2026-04-25', assignee: '张法务' },
-      { id: 'todo-3', title: '律所提交的异议答辩书审核', caseId: 'TM-2026-0031', caseName: '智联-异议答辩', type: '文件批注', typeLabel: '文件批注', priority: 'high', priorityLabel: '高', deadline: dateOffset(4), status: 'pending', statusLabel: '待批注', createdAt: '2026-04-28', assignee: '张法务' },
-      { id: 'todo-4', title: '品牌A 第35类补充注册评估', caseId: null, caseName: null, type: '风险评估', typeLabel: '风险评估', priority: 'medium', priorityLabel: '中', deadline: dateOffset(8), status: 'pending', statusLabel: '待评估', createdAt: '2026-04-15', assignee: '张法务' },
-      { id: 'todo-5', title: '年度商标续展预算编制', caseId: null, caseName: null, type: '预算编制', typeLabel: '预算编制', priority: 'medium', priorityLabel: '中', deadline: dateOffset(11), status: 'pending', statusLabel: '待编制', createdAt: '2026-04-01', assignee: '张法务' },
-      { id: 'todo-6', title: "'星联'商标使用证据收集", caseId: 'TM-2025-0098', caseName: '星联-续展', type: '证据管理', typeLabel: '证据管理', priority: 'normal', priorityLabel: '普通', deadline: dateOffset(16), status: 'pending', statusLabel: '待收集', createdAt: '2026-04-10', assignee: '张法务' },
-      { id: 'todo-7', title: '金诚律所Q2服务评价', caseId: null, caseName: null, type: '服务评价', typeLabel: '服务评价', priority: 'normal', priorityLabel: '普通', deadline: dateOffset(21), status: 'pending', statusLabel: '待评价', createdAt: '2026-04-05', assignee: '张法务' },
-      { id: 'todo-8', title: '商标监测周报确认', caseId: null, caseName: null, type: '监测报告', typeLabel: '监测报告', priority: 'low', priorityLabel: '低', deadline: dateOffset(26), status: 'pending', statusLabel: '待确认', createdAt: '2026-04-20', assignee: '张法务' }
+      { id: 'todo-1', title: "商标'云智'驳回复审材料准备", caseId: 'TM-2026-0042', caseName: '云智-驳回复审', type: '案件处理', typeLabel: '案件处理', priority: 'urgent', priorityLabel: '紧急', deadline: dateOffset(2), status: 'pending', statusLabel: '待处理', createdAt: '2026-04-20', assignee: 'Missy' },
+      { id: 'todo-2', title: '马德里国际申请WIPO费用支付确认', caseId: 'TM-2025-0189', caseName: '海翼-马德里申请', type: '费用审批', typeLabel: '费用审批', priority: 'high', priorityLabel: '高', deadline: dateOffset(3), status: 'pending', statusLabel: '待审批', createdAt: '2026-04-25', assignee: 'Missy' },
+      { id: 'todo-3', title: '律所提交的异议答辩书审核', caseId: 'TM-2026-0031', caseName: '智联-异议答辩', type: '文件批注', typeLabel: '文件批注', priority: 'high', priorityLabel: '高', deadline: dateOffset(4), status: 'pending', statusLabel: '待批注', createdAt: '2026-04-28', assignee: 'Missy' },
+      { id: 'todo-4', title: '品牌A 第35类补充注册评估', caseId: null, caseName: null, type: '风险评估', typeLabel: '风险评估', priority: 'medium', priorityLabel: '中', deadline: dateOffset(8), status: 'pending', statusLabel: '待评估', createdAt: '2026-04-15', assignee: 'Missy' },
+      { id: 'todo-5', title: '年度商标续展预算编制', caseId: null, caseName: null, type: '预算编制', typeLabel: '预算编制', priority: 'medium', priorityLabel: '中', deadline: dateOffset(11), status: 'pending', statusLabel: '待编制', createdAt: '2026-04-01', assignee: 'Missy' },
+      { id: 'todo-6', title: "'星联'商标使用证据收集", caseId: 'TM-2025-0098', caseName: '星联-续展', type: '证据管理', typeLabel: '证据管理', priority: 'normal', priorityLabel: '普通', deadline: dateOffset(16), status: 'pending', statusLabel: '待收集', createdAt: '2026-04-10', assignee: 'Missy' },
+      { id: 'todo-7', title: '金诚律所Q2服务评价', caseId: null, caseName: null, type: '服务评价', typeLabel: '服务评价', priority: 'normal', priorityLabel: '普通', deadline: dateOffset(21), status: 'pending', statusLabel: '待评价', createdAt: '2026-04-05', assignee: 'Missy' },
+      { id: 'todo-8', title: '商标监测周报确认', caseId: null, caseName: null, type: '监测报告', typeLabel: '监测报告', priority: 'low', priorityLabel: '低', deadline: dateOffset(26), status: 'pending', statusLabel: '待确认', createdAt: '2026-04-20', assignee: 'Missy' }
     ];
 
     // --- 费用数据 ---
@@ -537,7 +537,7 @@ const DataService = (function() {
       {
         id: 'FA-2026-0089', title: '马德里国际申请WIPO费用支付',
         caseId: 'TM-2025-0189', caseName: '海翼-马德里申请',
-        applicant: '张法务', applicantDept: '知识产权部',
+        applicant: 'Missy', applicantDept: '知识产权部',
         amount: 156000, currency: 'CNY',
         items: [
           { type: '官费', typeLabel: '官费', amount: 56000, note: 'WIPO基础费+指定国费' },
@@ -545,7 +545,7 @@ const DataService = (function() {
         ],
         status: 'pending', statusLabel: '待审批',
         flow: [
-          { level: 1, role: '申请人', name: '张法务', dept: '知识产权部', status: 'completed', actionAt: '2026-05-01 10:00' },
+          { level: 1, role: '申请人', name: 'Missy', dept: '知识产权部', status: 'completed', actionAt: '2026-05-01 10:00' },
           { level: 2, role: '部门审批', name: '李总监', dept: '知识产权部', status: 'current', actionAt: null },
           { level: 3, role: '财务审批', name: '王财务', dept: '财务部', status: 'pending', actionAt: null }
         ],
@@ -576,7 +576,7 @@ const DataService = (function() {
       { id: 'notif-1', type: 'deadline', typeLabel: '期限预警', title: '云智驳回复审官方绝限将至', content: '案件TM-2026-0042官方绝限为' + dateOffset(2) + '，剩余2天', relatedCaseId: 'TM-2026-0042', isRead: false, createdAt: dateOffset(0) + ' 09:00', actionUrl: 'case-detail.html?id=TM-2026-0042', actionText: '立即处理' },
       { id: 'notif-2', type: 'deadline', typeLabel: '期限预警', title: '智联异议答辩内部期限提醒', content: '案件TM-2026-0031内部期限为' + dateOffset(1) + '，剩余1天', relatedCaseId: 'TM-2026-0031', isRead: false, createdAt: dateOffset(0) + ' 09:30', actionUrl: 'case-detail.html?id=TM-2026-0031', actionText: '立即处理' },
       { id: 'notif-3', type: 'collaboration', typeLabel: '协作消息', title: '金诚律所提交新文件', content: '驳回复审理由书_v2已提交，请尽快审核', relatedCaseId: 'TM-2026-0042', isRead: false, createdAt: '2026-05-03 10:30', actionUrl: 'case-detail.html?id=TM-2026-0042&tab=docs', actionText: '查看文档' },
-      { id: 'notif-4', type: 'approval', typeLabel: '审批提醒', title: '费用申请待审批', content: '张法务提交的马德里费用申请¥156,000等待您的审批', relatedCaseId: 'FA-2026-0089', isRead: false, createdAt: '2026-05-01 10:05', actionUrl: 'fees.html?tab=approval', actionText: '去审批' },
+      { id: 'notif-4', type: 'approval', typeLabel: '审批提醒', title: '费用申请待审批', content: 'Missy提交的马德里费用申请¥156,000等待您的审批', relatedCaseId: 'FA-2026-0089', isRead: false, createdAt: '2026-05-01 10:05', actionUrl: 'fees.html?tab=approval', actionText: '去审批' },
       { id: 'notif-5', type: 'deadline', typeLabel: '期限预警', title: '星联续展官费待缴纳', content: '案件TM-2025-0098续展官费待缴纳，绝限' + dateOffset(6), relatedCaseId: 'TM-2025-0098', isRead: true, createdAt: '2026-04-28 14:00', actionUrl: 'case-detail.html?id=TM-2025-0098', actionText: '查看案件' }
     ];
 
@@ -956,7 +956,7 @@ const DataService = (function() {
       const firm = lawFirmsCRUD.getById(id);
       if (!firm) return null;
       const reviews = firm.reviews || [];
-      reviews.push({ rating: score, text: comment, author: '张法务', date: getToday() });
+      reviews.push({ rating: score, text: comment, author: 'Missy', date: getToday() });
       const newRating = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1);
       return lawFirmsCRUD.update(id, { rating: parseFloat(newRating), reviews });
     },
