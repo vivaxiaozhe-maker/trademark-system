@@ -37,19 +37,19 @@ const breadcrumbMap = {
 
 const menuConfig = [
   { group: "个人中心", items: [
-    { label: "仪表盘", icon: "📊", page: "dashboard", href: "index.html" },
-    { label: "待办事项", icon: "📌", page: "todo", href: "pages/todo.html" },
-    { label: "已办事项", icon: "✅", page: "done", href: "pages/done.html" },
-    { label: "我的案件", icon: "📁", page: "my-cases", href: "pages/my-cases.html" },
-    { label: "抄送案件", icon: "📨", page: "cc", href: "pages/cc.html" },
-    { label: "我的草稿", icon: "📝", page: "drafts", href: "pages/drafts.html" }
+    { label: "仪表盘", icon: "layout-dashboard", page: "dashboard", href: "index.html" },
+    { label: "待办事项", icon: "list-todo", page: "todo", href: "pages/todo.html" },
+    { label: "已办事项", icon: "check-circle", page: "done", href: "pages/done.html" },
+    { label: "我的案件", icon: "folder", page: "my-cases", href: "pages/my-cases.html" },
+    { label: "抄送案件", icon: "mail", page: "cc", href: "pages/cc.html" },
+    { label: "我的草稿", icon: "file-text", page: "drafts", href: "pages/drafts.html" }
   ]},
   { group: "管理中心", items: [
-    { label: "案件管理中心", icon: "⚖️", page: "cases", href: "pages/cases.html", children: [
+    { label: "案件管理中心", icon: "scale", page: "cases", href: "pages/cases.html", children: [
       { label: "国内案件", page: "cases-domestic", href: "pages/cases.html?tab=domestic" },
       { label: "海外案件", page: "cases-overseas", href: "pages/cases.html?tab=overseas" }
     ]},
-    { label: "品牌管理", icon: "🏷️", page: "brand", href: "pages/brand.html", children: [
+    { label: "品牌管理", icon: "tag", page: "brand", href: "pages/brand.html", children: [
       { label: "内部品牌", page: "brand-internal", href: "pages/brand.html?tab=internal" },
       { label: "外部合作", page: "brand-external", href: "pages/brand.html?tab=external" },
       { label: "品牌图谱", page: "brand-map", href: "pages/brand-map.html" },
@@ -58,13 +58,13 @@ const menuConfig = [
     ]}
   ]},
   { group: "检索中心", items: [
-    { label: "检索案卷", icon: "🔍", page: "search-case", href: "pages/search-case.html" }
+    { label: "检索案卷", icon: "search", page: "search-case", href: "pages/search-case.html" }
   ]},
   { group: "协作与费用", items: [
-    { label: "律所协作中心", icon: "🤝", page: "collab", href: "pages/collab.html", children: [
+    { label: "律所协作中心", icon: "handshake", page: "collab", href: "pages/collab.html", children: [
       { label: "用印流程", page: "seal-process", href: "pages/seal-process.html" }
     ] },
-    { label: "费用中心", icon: "💰", page: "fees", href: "pages/fees.html", children: [
+    { label: "费用中心", icon: "wallet", page: "fees", href: "pages/fees.html", children: [
       { label: "费用总览", page: "fees-overview", href: "pages/fees.html?tab=overview" },
       { label: "账单查询", page: "fees-query", href: "pages/fees.html?tab=query" },
       { label: "付款审批", page: "fees-approval", href: "pages/fees.html?tab=approval" },
@@ -73,14 +73,14 @@ const menuConfig = [
     ]}
   ]},
   { group: "决策与监测", items: [
-    { label: "管理决策中心", icon: "📈", page: "decision", href: "pages/decision.html" },
-    { label: "律所管理", icon: "🏢", page: "law-firm-management", href: "pages/law-firm-management.html" },
-    { label: "员工管理", icon: "👥", page: "staff-management", href: "pages/staff-management.html" },
-    { label: "监测中心", icon: "🔍", page: "monitor", href: "pages/monitor.html" },
-    { label: "商标工具Link", icon: "🔗", page: "tools", href: "pages/tools.html" }
+    { label: "管理决策中心", icon: "trending-up", page: "decision", href: "pages/decision.html" },
+    { label: "律所管理", icon: "building-2", page: "law-firm-management", href: "pages/law-firm-management.html" },
+    { label: "员工管理", icon: "users", page: "staff-management", href: "pages/staff-management.html" },
+    { label: "监测中心", icon: "radar", page: "monitor", href: "pages/monitor.html" },
+    { label: "商标工具Link", icon: "link", page: "tools", href: "pages/tools.html" }
   ]},
   { group: "系统管理", items: [
-    { label: "账号与权限", icon: "🔐", page: "admin-users", href: "pages/admin-users.html" }
+    { label: "账号与权限", icon: "shield", page: "admin-users", href: "pages/admin-users.html" }
   ]}
 ];
 
@@ -93,6 +93,22 @@ function resolveHref(href) {
   return href;
 }
 
+// ==================== Icons (Lucide) ====================
+function refreshIcons() {
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+    return;
+  }
+  let s = document.getElementById('lucide-cdn');
+  if (!s) {
+    s = document.createElement('script');
+    s.id = 'lucide-cdn';
+    s.src = 'https://unpkg.com/lucide@latest';
+    document.head.appendChild(s);
+  }
+  s.addEventListener('load', () => window.lucide.createIcons(), { once: true });
+}
+
 function renderSidebar(activePage) {
   const sidebar = document.querySelector('.sidebar');
   if (!sidebar) return;
@@ -102,7 +118,7 @@ function renderSidebar(activePage) {
       <div class="logo-icon" style="background:#FF6900; font-family:-apple-system,BlinkMacSystemFont,sans-serif; font-weight:700; font-size:14px; letter-spacing:0.5px;">mi</div>
       <div class="logo-text">小米商标管理系统</div>
     </div>
-    <div class="toggle-btn" onclick="toggleSidebar()" title="收起/展开">◀</div>
+    <div class="toggle-btn" onclick="toggleSidebar()" title="收起/展开"><i data-lucide="chevron-left"></i></div>
     <div class="sidebar-nav">
   `;
   
@@ -117,9 +133,9 @@ function renderSidebar(activePage) {
       html += `
         <div class="nav-item ${isActive ? 'active' : ''} ${openClass} ${hasChildren ? 'has-children' : ''}" 
              onclick="${hasChildren ? `toggleSubNav(this)` : `closeMobileSidebar();navigateTo(resolveHref('${item.href}'))`}">
-          <span class="icon">${item.icon}</span>
+          <span class="icon"><i data-lucide="${item.icon}"></i></span>
           <span class="label">${item.label}</span>
-          ${hasChildren ? '<span class="arrow">▶</span>' : ''}
+          ${hasChildren ? '<span class="arrow"><i data-lucide="chevron-right"></i></span>' : ''}
         </div>
       `;
       
@@ -141,6 +157,7 @@ function renderSidebar(activePage) {
   
   html += `</div>`;
   sidebar.innerHTML = html;
+  refreshIcons();
 }
 
 function renderHeader() {
@@ -152,7 +169,7 @@ function renderHeader() {
   header.innerHTML = `
     <div style="display:flex;align-items:center;flex:1;position:relative;">
       <div class="mobile-menu-btn" onclick="openMobileSidebar()">
-        ☰
+        <i data-lucide="menu"></i>
       </div>
       <div class="header-search" style="position:relative;">
         <i data-lucide="search" style="width:16px;height:16px;color:var(--text-muted);flex-shrink:0;"></i>
@@ -176,6 +193,7 @@ function renderHeader() {
       </div>
     </div>
   `;
+  refreshIcons();
 }
 
 function openMobileSidebar() {
@@ -199,9 +217,12 @@ function closeMobileSidebar() {
 }
 
 function toggleSidebar() {
-  document.querySelector('.sidebar').classList.toggle('collapsed');
+  const sidebar = document.querySelector('.sidebar');
+  sidebar.classList.toggle('collapsed');
+  const collapsed = sidebar.classList.contains('collapsed');
   const btn = document.querySelector('.toggle-btn');
-  btn.innerHTML = btn.innerHTML === '◀' ? '▶' : '◀';
+  btn.innerHTML = `<i data-lucide="${collapsed ? 'chevron-right' : 'chevron-left'}"></i>`;
+  refreshIcons();
 }
 
 function toggleSubNav(el) {
@@ -244,7 +265,7 @@ function openNotifDrawer() {
     overlay.innerHTML = `
       <div class="notif-drawer" onclick="event.stopPropagation()">
         <div class="notif-drawer-header">
-          <div style="font-weight:600;">🔔 通知中心</div>
+          <div style="font-weight:600;display:flex;align-items:center;gap:8px;"><i data-lucide="bell" style="width:16px;height:16px;"></i>通知中心</div>
           <div style="cursor:pointer;font-size:20px;color:var(--text-muted);" onclick="closeNotifDrawer()">×</div>
         </div>
         <div class="notif-tabs">
@@ -266,6 +287,7 @@ function openNotifDrawer() {
   }
   overlay.classList.add('active');
   renderNotifList();
+  refreshIcons();
 }
 
 function closeNotifDrawer() {
@@ -294,7 +316,8 @@ function renderNotifList() {
   }
   
   if (notifs.length === 0) {
-    body.innerHTML = '<div class="notif-empty">📭 暂无通知</div>';
+    body.innerHTML = '<div class="notif-empty"><i data-lucide="inbox" style="width:28px;height:28px;display:block;margin:0 auto 8px;opacity:0.5;"></i>暂无通知</div>';
+    refreshIcons();
     return;
   }
   
@@ -400,7 +423,7 @@ function showSearchDropdown() {
       <div class="search-section-title">最近搜索</div>
       ${recentSearches.slice(0, 5).map(s => `
         <div class="search-item" onclick="performSearch('${s}')">
-          <div class="search-item-icon">🕐</div>
+          <div class="search-item-icon"><i data-lucide="clock"></i></div>
           <span>${s}</span>
         </div>
       `).join('')}
@@ -411,21 +434,22 @@ function showSearchDropdown() {
   html += `<div class="search-section">
     <div class="search-section-title">快捷搜索</div>
     <div class="search-item" onclick="performSearch('案件')">
-      <div class="search-item-icon">⚖️</div>
+      <div class="search-item-icon"><i data-lucide="scale"></i></div>
       <span>搜索案件</span>
     </div>
     <div class="search-item" onclick="performSearch('品牌')">
-      <div class="search-item-icon">🏷️</div>
+      <div class="search-item-icon"><i data-lucide="tag"></i></div>
       <span>搜索品牌</span>
     </div>
     <div class="search-item" onclick="performSearch('律所')">
-      <div class="search-item-icon">🏢</div>
+      <div class="search-item-icon"><i data-lucide="building-2"></i></div>
       <span>搜索律所</span>
     </div>
   </div>`;
   
   dropdown.innerHTML = html;
   dropdown.classList.add('show');
+  refreshIcons();
 }
 
 function hideSearchDropdownDelayed() {
@@ -447,25 +471,26 @@ function handleSearchInput(value) {
   if (typeof AppData !== 'undefined') {
     (AppData.cases || []).forEach(c => {
       if ((c.name && c.name.includes(keywords)) || (c.id && c.id.toLowerCase().includes(keywords))) {
-        suggestions.push({ type: '案件', text: c.id + ' ' + c.name, icon: '⚖️' });
+        suggestions.push({ type: '案件', text: c.id + ' ' + c.name, icon: 'scale' });
       }
     });
     (AppData.brands || []).forEach(b => {
       if (b.name && b.name.includes(keywords)) {
-        suggestions.push({ type: '品牌', text: b.name, icon: '🏷️' });
+        suggestions.push({ type: '品牌', text: b.name, icon: 'tag' });
       }
     });
   }
   
   const unique = suggestions.slice(0, 6);
   if (unique.length === 0) {
-    dropdown.innerHTML = '<div class="search-section"><div class="search-item" style="color:var(--text-muted);cursor:default;"><div class="search-item-icon">🔍</div><span>无匹配结果，按回车全局搜索</span></div></div>';
+    dropdown.innerHTML = '<div class="search-section"><div class="search-item" style="color:var(--text-muted);cursor:default;"><div class="search-item-icon"><i data-lucide="search"></i></div><span>无匹配结果，按回车全局搜索</span></div></div>';
   } else {
     dropdown.innerHTML = '<div class="search-section"><div class="search-section-title">搜索结果</div>' +
-      unique.map(s => `<div class="search-item" onclick="performSearch('${s.text}')"><div class="search-item-icon">${s.icon}</div><span>${s.text}</span><span style="margin-left:auto;font-size:11px;color:var(--text-muted);">${s.type}</span></div>`).join('') +
+      unique.map(s => `<div class="search-item" onclick="performSearch('${s.text}')"><div class="search-item-icon"><i data-lucide="${s.icon}"></i></div><span>${s.text}</span><span style="margin-left:auto;font-size:11px;color:var(--text-muted);">${s.type}</span></div>`).join('') +
       '</div>';
   }
   dropdown.classList.add('show');
+  refreshIcons();
 }
 
 function performSearch(keyword) {
@@ -501,9 +526,10 @@ function showToast(message, type) {
   
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
-  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️';
-  toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+  const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'alert-triangle';
+  toast.innerHTML = `<i data-lucide="${icon}"></i><span>${message}</span>`;
   container.appendChild(toast);
+  refreshIcons();
   
   setTimeout(() => {
     toast.remove();
@@ -549,6 +575,7 @@ function initApp(activePage) {
   renderSidebar(activePage);
   renderHeader();
   renderBreadcrumb(activePage);
+  refreshIcons();
 }
 
 // ===== Enhanced Chart Drawing Helpers =====

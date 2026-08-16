@@ -20,8 +20,8 @@
   background: none;
   white-space: nowrap;
 }
-.fee-tab:hover { color: #3b82f6; }
-.fee-tab.active { color: #3b82f6; font-weight: 600; }
+.fee-tab:hover { color: var(--primary); }
+.fee-tab.active { color: var(--primary); font-weight: 600; }
 .fee-tab.active::after {
   content: '';
   position: absolute;
@@ -29,22 +29,22 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: #3b82f6;
+  background: var(--primary);
   border-radius: 2px 2px 0 0;
   transition: all 0.3s ease;
 }
 
 /* Card */
 .fee-card {
-  background: rgba(30,41,59,0.6);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 .fee-card-header {
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--border-subtle);
   font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
@@ -54,14 +54,14 @@
 /* Progress bar animation */
 .progress-track {
   height: 12px;
-  background: rgba(255,255,255,0.08);
+  background: var(--surface-2);
   border-radius: 6px;
   overflow: hidden;
 }
 .progress-bar-animate {
   height: 100%;
   border-radius: 6px;
-  background: #3b82f6;
+  background: var(--primary);
   width: 0%;
   transition: width 0.8s ease-out;
 }
@@ -91,7 +91,7 @@
   position: relative;
 }
 .mini-bar-rect:hover { opacity: 0.85; transform: scaleY(1.03); transform-origin: bottom; }
-.mini-bar-label { font-size: 11px; color: #64748b; font-weight: 500; }
+.mini-bar-label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
 .mini-bar-tip {
   position: absolute;
   bottom: calc(100% + 6px);
@@ -112,7 +112,7 @@
 /* Horizontal progress rows */
 .hprog-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
 .hprog-label { width: 70px; font-size: 13px; color: var(--text-primary); font-weight: 500; flex-shrink: 0; }
-.hprog-track { flex: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+.hprog-track { flex: 1; height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
 .hprog-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease-out; }
 .hprog-value { width: 120px; text-align: right; font-size: 13px; color: var(--text-primary); flex-shrink: 0; }
 .hprog-pct { width: 45px; text-align: right; font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
@@ -127,7 +127,7 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.alert-item:hover { background: rgba(255,255,255,0.03); }
+.alert-item:hover { background: var(--surface-2); }
 .alert-icon { font-size: 16px; line-height: 1; margin-top: 1px; flex-shrink: 0; }
 .alert-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
 .alert-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
@@ -142,17 +142,17 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-2);
 }
 .fee-table tbody td {
   padding: 12px 14px;
   font-size: 13px;
   color: var(--text-primary);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--border-subtle);
 }
-.fee-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.03); }
-.fee-table tbody tr:hover { background: rgba(255,255,255,0.05); }
+.fee-table tbody tr:nth-child(even) { background: var(--surface-2); }
+.fee-table tbody tr:hover { background: var(--surface-2); }
 
 .status-tag {
   display: inline-block;
@@ -161,16 +161,16 @@
   font-size: 11px;
   font-weight: 600;
 }
-.status-paid { background: rgba(16,185,129,0.15); color: #34d399; }
-.status-pending { background: rgba(245,158,11,0.15); color: #fbbf24; }
-.status-rejected { background: rgba(239,68,68,0.15); color: #f87171; }
+.status-paid { background: rgba(16,185,129,0.15); color: #0ea47a; }
+.status-pending { background: rgba(245,158,11,0.15); color: #d98a06; }
+.status-rejected { background: rgba(239,68,68,0.15); color: #f04438; }
 
 .amount { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 600; }
 
 /* ========== Query Panel Styles ========== */
 .filter-card {
-  background: rgba(30,41,59,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 16px;
+  background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: 8px;
+  box-shadow: var(--shadow-sm); padding: 20px; margin-bottom: 16px;
 }
 .filter-card-title {
   font-size: 14px; font-weight: 600; margin-bottom: 16px;
@@ -180,44 +180,44 @@
 .filter-section { margin-bottom: 0; }
 .filter-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
 .filter-input, .filter-select {
-  width: 100%; padding: 7px 10px; border: 1px solid rgba(255,255,255,0.08);
+  width: 100%; padding: 7px 10px; border: 1px solid var(--border-subtle);
   border-radius: 6px; font-size: 13px; color: var(--text-primary);
-  background: rgba(30,41,59,0.6); outline: none;
+  background: var(--surface-2); outline: none;
 }
-.filter-input:focus, .filter-select:focus { border-color: #3b82f6; }
+.filter-input:focus, .filter-select:focus { border-color: var(--primary); }
 .date-quick-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; }
 .date-quick-tag {
   padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
-  border: 1px solid rgba(255,255,255,0.08); background: rgba(30,41,59,0.6); cursor: pointer;
+  border: 1px solid var(--border-subtle); background: var(--surface-2); cursor: pointer;
   transition: all 0.15s; color: var(--text-muted);
 }
-.date-quick-tag:hover, .date-quick-tag.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+.date-quick-tag:hover, .date-quick-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 .date-range-row { display: flex; gap: 8px; align-items: center; }
 .date-range-row input { flex: 1; }
-.date-range-row span { font-size: 12px; color: #64748b; }
+.date-range-row span { font-size: 12px; color: var(--text-muted); }
 .action-bar-left { display: flex; gap: 8px; }
 
 /* ========== Dropdown ========== */
 .dropdown { position: relative; }
 .dropdown-menu {
   position: absolute; top: 100%; right: 0;
-  background: rgba(30,41,59,0.6); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  background: var(--surface-1); border: 1px solid var(--border-subtle);
+  border-radius: 6px; box-shadow: var(--shadow-md);
   min-width: 140px; z-index: 100; display: none; padding: 4px 0;
 }
 .dropdown-menu.active { display: block; }
 .dropdown-item { padding: 8px 14px; font-size: 13px; cursor: pointer; }
-.dropdown-item:hover { background: rgba(59,130,246,0.1); color: #3b82f6; }
+.dropdown-item:hover { background: var(--primary-light); color: var(--primary); }
 
 /* ========== Pagination ========== */
 .pagination { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 16px; padding-bottom: 16px; }
 .page-btn {
   padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
-  border: 1px solid rgba(255,255,255,0.08); background: rgba(30,41,59,0.6); cursor: pointer;
+  border: 1px solid var(--border-subtle); background: var(--surface-2); cursor: pointer;
   color: var(--text-muted); transition: all 0.15s;
 }
-.page-btn:hover { border-color: #3b82f6; color: #3b82f6; }
-.page-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+.page-btn:hover { border-color: var(--primary); color: var(--primary); }
+.page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ========== Fee Apply Form Styles ========== */
@@ -225,43 +225,43 @@
 .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
 .form-label .required { color: #ef4444; margin-left: 2px; }
 .form-select, .form-textarea {
-  width: 100%; padding: 10px 14px; border: 1px solid rgba(255,255,255,0.08);
+  width: 100%; padding: 10px 14px; border: 1px solid var(--border-subtle);
   border-radius: 8px; font-size: 13px; color: var(--text-primary);
-  background: rgba(30,41,59,0.6); outline: none; transition: all 0.15s;
+  background: var(--surface-2); outline: none; transition: all 0.15s;
 }
-.form-select:focus, .form-textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+.form-select:focus, .form-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(47,111,237,0.15); }
 .form-textarea { min-height: 80px; resize: vertical; }
 .form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
 .radio-card {
-  flex: 1; min-width: 100px; padding: 14px; border: 2px solid rgba(255,255,255,0.08);
+  flex: 1; min-width: 100px; padding: 14px; border: 2px solid var(--border-subtle);
   border-radius: 8px; cursor: pointer; text-align: center;
-  transition: all 0.15s; background: rgba(30,41,59,0.6);
+  transition: all 0.15s; background: var(--surface-2);
 }
-.radio-card:hover { border-color: rgba(59,130,246,0.15); }
-.radio-card.active { border-color: #3b82f6; background: rgba(59,130,246,0.1); }
+.radio-card:hover { border-color: rgba(47,111,237,0.15); }
+.radio-card.active { border-color: var(--primary); background: var(--primary-light); }
 .radio-card .icon { font-size: 22px; margin-bottom: 6px; }
 .radio-card .label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
 .fee-line {
   display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr 40px;
-  gap: 10px; align-items: center; padding: 12px; background: rgba(255,255,255,0.03);
+  gap: 10px; align-items: center; padding: 12px; background: var(--surface-2);
   border-radius: 8px; margin-bottom: 8px;
 }
 .upload-zone {
-  border: 2px dashed rgba(255,255,255,0.08); border-radius: 12px;
+  border: 2px dashed var(--border-subtle); border-radius: 12px;
   padding: 32px; text-align: center; cursor: pointer; transition: all 0.15s;
-  background: rgba(255,255,255,0.03);
+  background: var(--surface-2);
 }
-.upload-zone:hover { border-color: #3b82f6; background: rgba(59,130,246,0.1); }
+.upload-zone:hover { border-color: var(--primary); background: var(--primary-light); }
 
 /* ========== Legacy Card Styles for Query/Approval/Analysis ========== */
 .card {
-  background: rgba(30,41,59,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 16px;
+  background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: 8px;
+  box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 16px;
 }
 .card-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 14px 20px; border-bottom: 1px solid var(--border-subtle);
 }
 .card-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
 .card-body { padding: 0; }
@@ -274,22 +274,22 @@
 .data-table { width: 100%; border-collapse: collapse; }
 .data-table thead th {
   text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600;
-  color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+  color: var(--text-muted); border-bottom: 1px solid var(--border-subtle); background: var(--surface-2);
 }
 .data-table tbody td {
-  padding: 10px 14px; font-size: 13px; color: var(--text-primary); border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 10px 14px; font-size: 13px; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle);
 }
-.data-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+.data-table tbody tr:hover { background: var(--surface-2); }
 
 /* ========== Tag Utilities ========== */
 .tag {
   display: inline-block; padding: 2px 10px; border-radius: 999px;
   font-size: 11px; font-weight: 600;
 }
-.tag-gray { background: rgba(255,255,255,0.05); color: #4b5563; }
-.tag-green { background: rgba(16,185,129,0.15); color: #34d399; }
-.tag-blue { background: rgba(59,130,246,0.15); color: #60a5fa; }
-.tag-orange { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.tag-gray { background: var(--surface-2); color: #4b5563; }
+.tag-green { background: rgba(16,185,129,0.15); color: #0ea47a; }
+.tag-blue { background: rgba(47,111,237,0.15); color: #2f6fed; }
+.tag-orange { background: rgba(245,158,11,0.15); color: #d98a06; }
 
 /* ========== Responsive ========== */
 @media (max-width: 1200px) {
@@ -314,18 +314,18 @@
   <aside class="sidebar"></aside>
   <div class="main-content">
     <header class="top-header"></header>
-    <div class="page-container" style="background:rgba(255,255,255,0.03);">
+    <div class="page-container" style="background:var(--surface-2);">
 
       <!-- Page Header -->
-      <div class="page-header" style="background:rgba(30,41,59,0.6); border-bottom:1px solid rgba(255,255,255,0.08); margin:0 -24px 0 -24px; padding:16px 24px;">
+      <div class="page-header" style="background:var(--surface-1); border-bottom:1px solid var(--border-subtle); margin:0 -24px 0 -24px; padding:16px 24px;">
         <div>
           <div class="page-title" style="font-size:20px; font-weight:700; color:var(--text-primary);">费用中心</div>
         </div>
-        <button class="btn btn-sm" style="border:1px solid rgba(255,255,255,0.08); background:rgba(30,41,59,0.6); color:var(--text-primary); font-size:13px;" onclick="alert('演示模式：导出PDF')">📄 导出PDF</button>
+        <button class="btn btn-sm" style="border:1px solid var(--border-subtle); background:var(--surface-1); color:var(--text-primary); font-size:13px;" onclick="alert('演示模式：导出PDF')">📄 导出PDF</button>
       </div>
 
       <!-- Tabs -->
-      <div style="display:flex; gap:4px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(30,41,59,0.6); margin:0 -24px 16px -24px; padding:0 24px;">
+      <div style="display:flex; gap:4px; border-bottom:1px solid var(--border-subtle); background:var(--surface-1); margin:0 -24px 16px -24px; padding:0 24px;">
         <button class="fee-tab active" data-tab="overview" onclick="switchTab('overview',this)">💰 费用总览</button>
         <button class="fee-tab" data-tab="query" onclick="switchTab('query',this)">📑 账单查询</button>
         <button class="fee-tab" data-tab="approval" onclick="switchTab('approval',this)">✅ 付款审批</button>
@@ -344,23 +344,23 @@
               <div class="fee-card-body">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                   <span style="font-size:13px; color:var(--text-muted);">预算 <span class="amount" style="color:var(--text-primary);">¥2,800,000</span></span>
-                  <span style="font-size:13px; color:var(--text-muted);">执行率 <span style="color:#3b82f6; font-weight:700;">67%</span></span>
+                  <span style="font-size:13px; color:var(--text-muted);">执行率 <span style="color:var(--primary); font-weight:700;">67%</span></span>
                 </div>
                 <div class="progress-track">
                   <div class="progress-bar-animate" id="budgetProgress"></div>
                 </div>
                 <div style="display:flex; margin-top:16px; text-align:center;">
-                  <div style="flex:1; border-right:1px solid rgba(255,255,255,0.06);">
+                  <div style="flex:1; border-right:1px solid var(--border-subtle);">
                     <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">已支出</div>
-                    <div class="amount" style="font-size:18px; color:#3b82f6; font-weight:700;">¥1,865,000</div>
+                    <div class="amount" style="font-size:18px; color:var(--primary); font-weight:700;">¥1,865,000</div>
                   </div>
-                  <div style="flex:1; border-right:1px solid rgba(255,255,255,0.06); cursor:pointer;" onmouseenter="this.style.background='rgba(245,158,11,0.1)'" onmouseleave="this.style.background='transparent'" onclick="alert('查看待审批明细')">
+                  <div style="flex:1; border-right:1px solid var(--border-subtle); cursor:pointer;" onmouseenter="this.style.background='rgba(245,158,11,0.1)'" onmouseleave="this.style.background='transparent'" onclick="alert('查看待审批明细')">
                     <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">待审批</div>
-                    <div class="amount" style="font-size:18px; color:#fbbf24; font-weight:700;">¥450,000</div>
+                    <div class="amount" style="font-size:18px; color:#d98a06; font-weight:700;">¥450,000</div>
                   </div>
                   <div style="flex:1;">
                     <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">剩余</div>
-                    <div class="amount" style="font-size:18px; color:#34d399; font-weight:700;">¥935,000</div>
+                    <div class="amount" style="font-size:18px; color:#0ea47a; font-weight:700;">¥935,000</div>
                   </div>
                 </div>
               </div>
@@ -384,13 +384,13 @@
               <div class="fee-card-body" style="padding-top:8px;">
                 <div class="hprog-row">
                   <div class="hprog-label">代理费</div>
-                  <div class="hprog-track"><div class="hprog-fill" style="background:#3b82f6; width:0%;" data-width="60%"></div></div>
+                  <div class="hprog-track"><div class="hprog-fill" style="background:var(--primary); width:0%;" data-width="60%"></div></div>
                   <div class="hprog-value amount">¥1,119,000</div>
                   <div class="hprog-pct">60%</div>
                 </div>
                 <div class="hprog-row">
                   <div class="hprog-label">官费</div>
-                  <div class="hprog-track"><div class="hprog-fill" style="background:#3b82f6; width:0%;" data-width="28%"></div></div>
+                  <div class="hprog-track"><div class="hprog-fill" style="background:var(--primary); width:0%;" data-width="28%"></div></div>
                   <div class="hprog-value amount">¥522,200</div>
                   <div class="hprog-pct">28%</div>
                 </div>
@@ -402,7 +402,7 @@
                 </div>
                 <div class="hprog-row">
                   <div class="hprog-label">其他</div>
-                  <div class="hprog-track"><div class="hprog-fill" style="background:#64748b; width:0%;" data-width="5%"></div></div>
+                  <div class="hprog-track"><div class="hprog-fill" style="background:var(--text-muted); width:0%;" data-width="5%"></div></div>
                   <div class="hprog-value amount">¥93,250</div>
                   <div class="hprog-pct">5%</div>
                 </div>
@@ -455,16 +455,16 @@
                 </tr>
               </thead>
               <tbody id="recentFeeTable">
-                <tr><td>2026-05-04</td><td><strong>云智</strong></td><td>驳回复审代理费</td><td class="amount" style="text-align:right;">¥85,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-05-03</td><td><strong>智联</strong></td><td>异议答辩官费</td><td class="amount" style="text-align:right;">¥1,500</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-05-02</td><td><strong>海翼</strong></td><td>马德里申请代理费</td><td class="amount" style="text-align:right;">¥45,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-05-01</td><td><strong>星联</strong></td><td>续展官费</td><td class="amount" style="text-align:right;">¥2,000</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-04-28</td><td><strong>明达</strong></td><td>不予注册复审代理费</td><td class="amount" style="text-align:right;">¥38,000</td><td><span class="status-tag status-rejected">已驳回</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-04-25</td><td><strong>悦动</strong></td><td>新申请官费</td><td class="amount" style="text-align:right;">¥300</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-04-22</td><td><strong>睿思</strong></td><td>撤三答辩代理费</td><td class="amount" style="text-align:right;">¥25,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-04-20</td><td><strong>启航</strong></td><td>单一国家申请代理费</td><td class="amount" style="text-align:right;">¥52,000</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-04-18</td><td><strong>云智</strong></td><td>翻译费</td><td class="amount" style="text-align:right;">¥4,500</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
-                <tr><td>2026-04-15</td><td><strong>智联</strong></td><td>公证认证费</td><td class="amount" style="text-align:right;">¥1,200</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:#3b82f6; font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-05-04</td><td><strong>云智</strong></td><td>驳回复审代理费</td><td class="amount" style="text-align:right;">¥85,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-05-03</td><td><strong>智联</strong></td><td>异议答辩官费</td><td class="amount" style="text-align:right;">¥1,500</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-05-02</td><td><strong>海翼</strong></td><td>马德里申请代理费</td><td class="amount" style="text-align:right;">¥45,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-05-01</td><td><strong>星联</strong></td><td>续展官费</td><td class="amount" style="text-align:right;">¥2,000</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-28</td><td><strong>明达</strong></td><td>不予注册复审代理费</td><td class="amount" style="text-align:right;">¥38,000</td><td><span class="status-tag status-rejected">已驳回</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-25</td><td><strong>悦动</strong></td><td>新申请官费</td><td class="amount" style="text-align:right;">¥300</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-22</td><td><strong>睿思</strong></td><td>撤三答辩代理费</td><td class="amount" style="text-align:right;">¥25,000</td><td><span class="status-tag status-pending">待审批</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-20</td><td><strong>启航</strong></td><td>单一国家申请代理费</td><td class="amount" style="text-align:right;">¥52,000</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-18</td><td><strong>云智</strong></td><td>翻译费</td><td class="amount" style="text-align:right;">¥4,500</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
+                <tr><td>2026-04-15</td><td><strong>智联</strong></td><td>公证认证费</td><td class="amount" style="text-align:right;">¥1,200</td><td><span class="status-tag status-paid">已支付</span></td><td><a href="#" style="color:var(--primary); font-size:13px; font-weight:500;" onclick="alert('查看详情')">查看</a></td></tr>
               </tbody>
             </table>
           </div>
@@ -568,7 +568,7 @@
             </div></div>
           </div>
           <div>
-            <div class="card" style="margin-bottom:16px;"><div class="card-header"><div class="card-title">📊 预算概览</div></div><div class="card-body"><div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">2026年度 · 知识产权部</div><div style="font-size:24px; font-weight:700; margin-bottom:4px;">¥935,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">剩余预算</div><div class="progress-bar" style="height:8px; border-radius:4px; background:rgba(255,255,255,0.06); overflow:hidden;"><div class="progress-fill" style="width:67%; height:100%; border-radius:4px; background:linear-gradient(90deg, #2563eb, #0ea5e9);"></div></div><div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px; color:var(--text-muted);"><span>已用 67%</span><span>总额 ¥2,800,000</span></div></div></div>
+            <div class="card" style="margin-bottom:16px;"><div class="card-header"><div class="card-title">📊 预算概览</div></div><div class="card-body"><div style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">2026年度 · 知识产权部</div><div style="font-size:24px; font-weight:700; margin-bottom:4px;">¥935,000</div><div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">剩余预算</div><div class="progress-bar" style="height:8px; border-radius:4px; background:var(--surface-2); overflow:hidden;"><div class="progress-fill" style="width:67%; height:100%; border-radius:4px; background:linear-gradient(90deg, #2563eb, #0ea5e9);"></div></div><div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px; color:var(--text-muted);"><span>已用 67%</span><span>总额 ¥2,800,000</span></div></div></div>
             <div class="card"><div class="card-header"><div class="card-title">👤 审批流程</div></div><div class="card-body">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;"><div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, var(--primary), var(--secondary)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:13px;">M</div><div><div style="font-size:13px; font-weight:600;">Missy</div><div style="font-size:11px; color:var(--text-muted);">申请人 · 知识产权部</div></div></div>
               <div style="width:2px; height:20px; background:var(--border-color); margin-left:17px;"></div>
@@ -636,9 +636,9 @@ setTimeout(function() {
       '</linearGradient>' +
     '</defs>' +
     // Horizontal grid lines
-    '<line x1="' + padL + '" y1="' + padT + '" x2="' + (W-padR) + '" y2="' + padT + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>' +
-    '<line x1="' + padL + '" y1="' + (padT+ch*0.5) + '" x2="' + (W-padR) + '" y2="' + (padT+ch*0.5) + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>' +
-    '<line x1="' + padL + '" y1="' + (padT+ch) + '" x2="' + (W-padR) + '" y2="' + (padT+ch) + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>' +
+    '<line x1="' + padL + '" y1="' + padT + '" x2="' + (W-padR) + '" y2="' + padT + '" stroke="#eceef2" stroke-width="1"/>' +
+    '<line x1="' + padL + '" y1="' + (padT+ch*0.5) + '" x2="' + (W-padR) + '" y2="' + (padT+ch*0.5) + '" stroke="#eceef2" stroke-width="1"/>' +
+    '<line x1="' + padL + '" y1="' + (padT+ch) + '" x2="' + (W-padR) + '" y2="' + (padT+ch) + '" stroke="#eceef2" stroke-width="1"/>' +
     // Area
     '<polygon points="' + areaPath.replace(/[MLZ]/g, ' ').trim().split(/\s+/).join(',') + '" fill="url(#areaGrad)" opacity="0">' +
       '<animate attributeName="opacity" from="0" to="1" dur="0.6s" fill="freeze"/>' +
@@ -662,7 +662,7 @@ setTimeout(function() {
         '¥28万</text>';
     }
     // X axis labels
-    svg += '<text x="' + p[0] + '" y="' + (H - 4) + '" text-anchor="middle" font-size="11" fill="#64748b" font-weight="500">' + data[i].month + '</text>';
+    svg += '<text x="' + p[0] + '" y="' + (H - 4) + '" text-anchor="middle" font-size="11" fill="#667085" font-weight="500">' + data[i].month + '</text>';
   });
 
   svg += '</svg>';
@@ -701,10 +701,10 @@ var analysisChartsRendered = false;
 function renderAnalysisCharts() {
   if (analysisChartsRendered) return;
   analysisChartsRendered = true;
-  drawBarChart('firmCompare', [420000,380000,180000,120000,95000], ['智联','元健','Horizon','瑞思','云智科技'], ['#3b82f6','#38bdf8','#34d399','#fbbf24','#94a3b8']);
-  drawPieChart('typeFee', [35,28,18,12,7], ['新申请','复审','异议','续展','其他'], ['#3b82f6','#38bdf8','#34d399','#fbbf24','#94a3b8']);
+  drawBarChart('firmCompare', [420000,380000,180000,120000,95000], ['智联','元健','Horizon','瑞思','云智科技'], ['#3b82f6','#38bdf8','#34d399','#fbbf24','#98a2b3']);
+  drawPieChart('typeFee', [35,28,18,12,7], ['新申请','复审','异议','续展','其他'], ['#3b82f6','#38bdf8','#34d399','#fbbf24','#98a2b3']);
 }
-drawPieChart('feePie', [520000,1120000,125000,100000], ['官费','代理费','翻译费','其他'], ['#3b82f6','#38bdf8','#34d399','#94a3b8']);
+drawPieChart('feePie', [520000,1120000,125000,100000], ['官费','代理费','翻译费','其他'], ['#3b82f6','#38bdf8','#34d399','#98a2b3']);
 
 // ==================== Tab Switch ====================
 function switchTab(tab, el) {

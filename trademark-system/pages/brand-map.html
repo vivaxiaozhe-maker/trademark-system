@@ -53,13 +53,13 @@
 }
 .matrix-brand {
   display: flex; align-items: center; padding: 0 12px; font-weight: 600; font-size: 13px;
-  background: rgba(255,255,255,0.03); border-radius: 4px;
+  background: var(--surface-2); border-radius: 4px;
 }
 .matrix-cell {
   height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
   font-size: 10px; font-weight: 600; cursor: pointer; transition: all 0.15s; position: relative;
 }
-.matrix-cell:hover { transform: scale(1.15); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.matrix-cell:hover { transform: scale(1.15); z-index: 10; box-shadow: var(--shadow-md); }
 
 /* Four cell states */
 .cell-registered { background: #dbeafe; }
@@ -69,21 +69,21 @@
 .cell-pending { background: #e0f2fe; }
 .cell-pending::after {
   content: ""; width: 12px; height: 12px; border-radius: 50%;
-  background: conic-gradient(#3b82f6 0deg 180deg, rgba(30,41,59,0.6) 180deg 360deg);
+  background: conic-gradient(#3b82f6 0deg 180deg, var(--surface-2) 180deg 360deg);
   border: 1px solid #2563eb;
 }
-.cell-expired { background: rgba(255,255,255,0.06); }
+.cell-expired { background: var(--surface-2); }
 .cell-expired::after {
   content: ""; width: 12px; height: 12px; border-radius: 50%;
-  border: 2px solid #94a3b8; background: transparent;
-  background-image: linear-gradient(135deg, transparent 45%, #94a3b8 45%, #94a3b8 55%, transparent 55%);
+  border: 2px solid var(--text-secondary); background: transparent;
+  background-image: linear-gradient(135deg, transparent 45%, var(--text-secondary) 45%, var(--text-secondary) 55%, transparent 55%);
 }
-.cell-gap { background: rgba(30,41,59,0.6); border: 1.5px dashed #cbd5e1; }
-.cell-gap::after { content: "+"; color: #94a3b8; font-size: 12px; }
+.cell-gap { background: var(--surface-2); border: 1.5px dashed var(--text-muted); }
+.cell-gap::after { content: "+"; color: var(--text-secondary); font-size: 12px; }
 
 .matrix-cell .tooltip {
   position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-  background: #1e293b; color: #fff; padding: 6px 10px; border-radius: 6px;
+  background: var(--navy); color: #fff; padding: 6px 10px; border-radius: 6px;
   font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none;
   transition: opacity 0.2s; margin-bottom: 6px; z-index: 20;
 }
@@ -544,12 +544,12 @@ function renderRegions() {
           zoom: 1.2,
           center: [20, 20],
           itemStyle: {
-            areaColor: 'rgba(255,255,255,0.08)',
-            borderColor: '#94a3b8',
+            areaColor: '#f2f4f7',
+            borderColor: '#98a2b3',
             borderWidth: 0.5
           },
           emphasis: {
-            itemStyle: { areaColor: '#64748b' }
+            itemStyle: { areaColor: '#e9edf2' }
           }
         },
         series: [{
@@ -559,9 +559,9 @@ function renderRegions() {
           symbol: 'path://M16 0C10.5 0 6 4.5 6 10c0 7.5 10 22 10 22s10-14.5 10-22C26 4.5 21.5 0 16 0zm0 14c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z',
           symbolSize: 28,
           itemStyle: {
-            color: '#f87171',
+            color: '#f04438',
             shadowBlur: 10,
-            shadowColor: 'rgba(239, 68, 68, 0.5)'
+            shadowColor: 'rgba(240, 68, 56, 0.5)'
           },
           label: {
             show: true,
@@ -571,7 +571,7 @@ function renderRegions() {
             position: 'top',
             fontSize: 11,
             fontWeight: 600,
-            color: 'var(--text-primary)',
+            color: '#101828',
             backgroundColor: 'rgba(255,255,255,0.9)',
             padding: [3, 6],
             borderRadius: 4,
@@ -598,7 +598,7 @@ function renderRegions() {
     listHtml = '<div style="display:flex;flex-direction:column;gap:10px;">';
     highRiskCases.forEach(function(c) {
       const typeLabel = c.type === 'domestic' ? '国内' : '海外';
-      listHtml += '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.03);border-radius:var(--radius-md);border-left:4px solid #ef4444;">' +
+      listHtml += '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface-2);border-radius:var(--radius-md);border-left:4px solid #ef4444;">' +
         '<span style="font-size:20px;">🚩</span>' +
         '<div style="flex:1;">' +
           '<div style="font-weight:600;">' + c.brandName + '（' + c.id + '）</div>' +
