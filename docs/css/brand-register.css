@@ -1,0 +1,64 @@
+/* Shared by the portfolio matrix and the two authorization registers. */
+.wb-brand-nav { display: flex; flex-wrap: wrap; gap: 0 8px; margin-bottom: 12px; padding: 0; background: transparent; border-bottom: 1px solid #ccd7e3; border-radius: 0; }
+.wb-brand-nav a { min-height: 39px; padding-inline: 8px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
+.wb-brand-nav a[aria-current] { background: transparent; border-color: var(--accent); }
+.wb-asset-grid { gap: 16px; }
+.wb-brand-detail > .wb-panel-head { background: #edf2f7; border-radius: 8px 8px 0 0; }
+.wb-panel-head:has(.wb-result) { justify-content: flex-start; }
+#license-count, #map-count { margin-inline-end: auto; padding: 1px 6px; background: #edf2f7; border-radius: 4px; color: #425771; }
+.wb-brand-stack { gap: 8px; }
+.wb-brand-stack .wb-steps { width: fit-content; }
+.wb-matrix-table th, .wb-matrix-table td { padding-block: 4px; }
+.wb-matrix-table thead th { background: #eaf0f6; color: #435973; min-width: 61px; }
+.wb-matrix-table thead th:first-child { background: #eaf0f6; }
+.wb-matrix-name { display: block; font-weight: 500; color: #50637a; font-size: 11px; }
+.wb-matrix-table tbody tr.is-active > * { background: #eef3f8; }
+.wb-matrix-legend { gap: 6px 12px; padding-block: 7px; }
+.wb-coverage { gap: 0; padding-block: 7px; border: 1px solid var(--register-rule); border-radius: 6px; background: #f5f8fb; }
+.wb-coverage > div { padding-inline: 12px; }
+.wb-coverage > div + div { border-inline-start: 1px solid var(--register-rule); }
+.wb-coverage dd { color: #263f59; font-variant-numeric: tabular-nums; }
+#license-list { --license-cols: 32px minmax(0,1fr) 94px 66px 14px; }
+.wb-license-columns, .wb-license-row { display: grid; grid-template-columns: var(--license-cols); align-items: center; gap: 8px; padding-inline: 12px; }
+.wb-license-columns { padding-block: 6px; background: #eaf0f6; color: #465b72; font-size: 12px; font-weight: 620; }
+.wb-license-columns > :first-child { grid-column: span 2; }
+.wb-license-row { min-height: 55px; padding-block: 7px; }
+.wb-license-row .wb-thumb { width: 32px; height: 32px; background-color: white; }
+.wb-license-row[aria-pressed="true"] { background: #eef3f8; box-shadow: inset 2px 0 #5a7898; }
+.wb-license-end { white-space: nowrap; font-size: 13px; color: #3d546d; }
+.wb-license-row .wb-chip { justify-self: start; white-space: nowrap; }
+.wb-term-summary { display: grid; gap: 3px; padding: 9px 12px; background: #f1f5f9; border-radius: 6px; color: #3d546d; font-size: 12px; }
+.wb-term-summary strong { font-size: 15px; color: #263f59; font-variant-numeric: tabular-nums; }
+.wb-license-fields { border: 0; min-width: 0; padding: 0; }
+.wb-license-fields legend { padding: 0; margin-bottom: 7px; color: #29445f; font-weight: 680; }
+.wb-license-fields + .wb-license-fields { border-top: 1px solid var(--register-rule); margin-top: 6px; }
+.wb-back-to-list { display: none; }
+.wb-asset-detail-body { animation: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .wb-record-change .wb-asset-detail-body { animation: register-task-reveal 150ms ease-out; }
+  .wb-license-row { transition: background-color 140ms ease, box-shadow 140ms ease; }
+}
+@media (max-width: 850px) { .wb-shell { grid-template-rows: auto 1fr; } }
+@media (max-width: 820px) {
+  .wb-back-to-list { display: inline-flex; justify-self: start; min-height: 44px; }
+}
+@media (max-width: 640px) {
+  .wb-brand-nav { gap: 0; }
+  .wb-brand-nav a { min-height: 44px; padding-inline: 5px; font-size: 12px; }
+  .wb-main #license-metrics { grid-template-columns: repeat(5,minmax(0,1fr)); }
+  #license-metrics .wb-metric { border-left: 0; flex-direction: column; gap: 2px; }
+  #license-metrics .wb-metric-label { white-space: nowrap; }
+  .wb-brand-toolbar:has(select[name=brand]):not(:has(#map-category)) { display: grid; grid-template-columns: minmax(0,1fr) auto; }
+  .wb-brand-toolbar select[name=brand] { max-width: 8rem; }
+  #license-list { --license-cols: minmax(0,1fr) 76px 55px 10px; }
+  .wb-license-columns, .wb-license-row { gap: 5px; padding-inline: 8px; }
+  .wb-license-columns > :first-child { grid-column: auto; }
+  .wb-license-row .wb-thumb { display: none; }
+  .wb-license-row .wb-chip { padding-inline: 4px; font-size: 11px; }
+  .wb-license-end { font-size: 12px; }
+  .wb-matrix-table :is(th,td):first-child { min-width: 76px; }
+  .wb-matrix-table thead th { min-width: 51px; }
+  .wb-matrix-brand { min-height: 40px; }
+  .wb-matrix-table th, .wb-matrix-table td { padding-inline: 3px; }
+  .wb-matrix-legend { gap: 5px 8px; padding-inline: 8px; }
+}

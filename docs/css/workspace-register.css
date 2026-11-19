@@ -1,0 +1,104 @@
+/* Shared register styling. Navigation uses the common workspace shell. */
+.wb-main {
+  --accent: #345477;
+  --accent-hover: #203c5d;
+  --accent-soft: #eaf0f6;
+  --register-rule: #d8e1eb;
+  --radius: 9px;
+}
+.wb-head { align-items: center; margin-bottom: 12px; }
+.wb-head h1 { font-size: 24px; }
+.wb-main .wb-metrics {
+  display: flex; flex-wrap: wrap; gap: 2px 8px; margin-bottom: 16px;
+  background: transparent; border: 0; border-radius: 0; border-bottom: 1px solid #cdd7e3;
+}
+.wb-metrics .wb-metric {
+  display: inline-flex; justify-content: center; min-height: 44px; padding: 4px 10px;
+  gap: 9px; border: 0; border-bottom: 2px solid transparent; border-radius: 0;
+}
+.wb-metric-label { gap: 5px; }
+.wb-metric .wb-dot { display: none; }
+.wb-metrics .wb-metric[aria-pressed="true"] { border-bottom-color: var(--accent); background: transparent; }
+.wb-metric-value { min-width: 22px; padding: 3px 6px; border-radius: 4px; background: #e6ebf1; color: #49596c; text-align: center; font-size: 13px; }
+.wb-metric[aria-pressed="true"] .wb-metric-value { color: white; background: var(--accent); }
+.wb-metric-danger:not([aria-pressed="true"]) .wb-metric-value { color: var(--danger); background: #f8e9e5; }
+.wb-main section.wb-panel { border-color: #d0dae5; box-shadow: 0 2px 5px rgb(31 48 70 / .045); }
+.wb-filter { padding: 12px 15px; background: #f9fbfd; border-radius: 9px 9px 0 0; }
+.wb-filter .wb-search { min-width: 0; }
+.wb-result { margin-right: 0; }
+#case-count, #task-count { margin-right: auto; background: #edf2f7; color: #425771; border-radius: 4px; padding: 1px 6px; }
+.wb-panel-head:has(.wb-result) { padding-block: 9px; }
+.wb-cases-table thead th, .wb-queue-columns { background: #eaf0f6; color: #485c73; }
+.wb-cases-table tbody :is(td,th) { padding-block: 6px; }
+.wb-cases-table .wb-id { width: fit-content; text-decoration: none; font-weight: 500; }
+.wb-cases-table .wb-id:hover { text-decoration: underline; }
+.wb-cases-table td:has(.wb-date-state.danger) .wb-date { color: var(--danger); }
+.wb-cases-table .wb-chip { background: #f1f4f7; color: #526177; font-weight: 550; }
+.wb-cases-table .wb-case-cell { min-height: 38px; }
+.wb-cases-table .wb-case-cell .wb-thumb { background: white; border-radius: 7px; }
+.wb-compact-case-meta, .wb-back-to-queue { display: none; }
+.wb-task-grid { grid-template-columns: minmax(0, 1.75fr) minmax(290px,1fr); gap: 18px; }
+#task-results { container-type: inline-size; }
+.wb-queue-columns, .wb-task-row {
+  display: grid; grid-template-columns: minmax(0,1fr) minmax(60px,.24fr) 95px 52px;
+  align-items: center; column-gap: 10px; padding-inline: 14px;
+}
+.wb-queue-columns { padding-block: 7px; font-size: 12px; font-weight: 600; }
+.wb-task-row { position: relative; min-height: 62px; }
+.wb-task-row.is-selected { background: #f0f5fa; box-shadow: inset 2px 0 #597999; }
+.wb-task-row .wb-task-row-meta { gap: 3px 6px; }
+.wb-task-row .wb-chip { background: #eff2f5; color: #4c5e74; font-size: 11px; padding: 1px 5px; }
+.wb-task-row .wb-queue-deadline:has(.danger) .wb-date { color: var(--danger); }
+.wb-queue-assignee { color: #46596e; font-size: 13px; }
+.wb-assignee-label { position: absolute; clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; }
+.wb-task-row button { color: var(--accent); border-color: #ccd7e3; background: white; }
+.wb-task-row button:hover { border-color: #8aa4bf; background: #eff4fa; }
+.wb-task-panel { background: #fbfcfe; }
+.wb-task-panel > .wb-panel-head { background: #eaf0f6; border-radius: 8px 8px 0 0; }
+.wb-processing-label { display: inline-flex; align-items: center; gap: 5px; color: #405c79; font-size: 13px; font-weight: 650; }
+.wb-task-panel-title { gap: 9px; }
+.wb-processing-owner { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px 9px; color: var(--muted); font-size: 12px; }
+.wb-processing-owner strong { font-size: 14px; color: var(--ink); overflow-wrap: anywhere; }
+.wb-task-dates { background: #fff; }
+.wb-task-dates .wb-deadline-block:first-child { background: #eef3f8; border-radius: 7px 0 0 7px; }
+.wb-task-dates .wb-deadline-block { padding: 10px; }
+.wb-task-note { border-top: 1px solid var(--register-rule); padding-top: 12px; }
+.wb-task-flow .wb-btn { min-height: 44px; }
+@container (max-width: 530px) {
+  .wb-queue-columns { display: none; }
+  .wb-task-row {
+    grid-template-columns: minmax(0,1fr) auto; grid-template-areas: "title due" "owner action";
+    align-items: start; padding: 9px 12px; gap: 3px 9px;
+  }
+  .wb-task-row > div:first-child { grid-area: title; }
+  .wb-queue-assignee { grid-area: owner; align-self: center; font-size: 12px; }
+  .wb-assignee-label { position: static; clip-path: none; width: auto; height: auto; }
+  .wb-queue-deadline { grid-area: due; text-align: end; }
+  .wb-queue-deadline .wb-date-state { margin-inline-start: auto; }
+  .wb-task-row button { grid-area: action; justify-self: end; }
+}
+@media (max-width: 960px) {
+  .wb-task-grid { grid-template-columns: minmax(0,1fr); }
+  .wb-back-to-queue { display: inline-flex; margin-top: 8px; min-height: 44px; }
+}
+@media (max-width: 640px) {
+  .wb-main .wb-metrics { gap: 0; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); margin-bottom: 10px; }
+  .wb-metrics .wb-metric { padding: 3px 1px; gap: 4px; font-size: 12px; }
+  .wb-metric-value { min-width: 17px; padding: 2px 3px; font-size: 12px; }
+  .wb-head { margin-bottom: 5px; }
+  .wb-compact-case-meta { display: block; margin-top: 2px; font-size: 11px; color: var(--muted); font-weight: 480; }
+  #case-results .wb-btn, #task-results .wb-btn { min-height: 44px; min-width: 44px; }
+  .wb-toolbar:has(#case-query) { display: grid; grid-template-columns: minmax(0,1fr) auto; }
+  .wb-toolbar:has(#case-query) .wb-steps { grid-column: 1 / -1; justify-self: start; }
+  .wb-filter { padding: 9px 11px; }
+  .wb-task-grid { gap: 12px; }
+  #case-results .wb-table th, #case-results .wb-table td { padding-inline: 5px; }
+  .wb-check-cell { width: 26px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wb-task-panel:focus .wb-task-panel-title { animation: register-task-reveal 150ms ease-out; }
+  @keyframes register-task-reveal { from { opacity: .75; transform: translateY(2px); } }
+}
+@media (max-width: 850px) {
+  :is([data-view="mine"], [data-view="drafts"], [data-view="done"]) .wb-shell { grid-template-rows: auto 1fr; }
+}

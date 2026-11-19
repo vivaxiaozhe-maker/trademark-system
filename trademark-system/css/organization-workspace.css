@@ -1,0 +1,105 @@
+.wb-org-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); margin-bottom: 14px; }
+.wb-org-metrics > div { display: grid; gap: 4px; padding: 12px 16px; min-width: 0; }
+.wb-org-metrics > div + div { border-left: 1px solid var(--stroke); }
+.wb-org-metrics dt { color: var(--muted); font-size: 12px; font-weight: 640; }
+.wb-org-metrics dd { font: 750 22px/1.2 system-ui,sans-serif; font-variant-numeric: tabular-nums; color: var(--ink); }
+.wb-org-control { display: grid; gap: 10px; }
+.wb-asset-tools.wb-org-control { display: flex; }
+.wb-org-control .wb-inline-select select { max-width: 190px; }
+.wb-org-row { min-height: 58px; grid-template-columns: auto minmax(0,1fr) auto auto; }
+.wb-org-monogram {
+  display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0;
+  border: 1px solid #d6e1f3; border-radius: 8px; background: #eff4fc; color: var(--accent-hover); font-weight: 720;
+}
+.wb-org-monogram[data-kind="external"] { color: #66511d; border-color: #e8ddbd; background: #f9f4e7; }
+.wb-org-detail > .wb-panel-head { align-items: flex-start; }
+.wb-org-detail > .wb-panel-head .wb-case-cell { align-items: flex-start; }
+.wb-org-detail h2 { scroll-margin-top: 18px; }
+.wb-org-section { display: grid; gap: 7px; }
+.wb-org-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.wb-org-note { padding: 9px 11px; border: 1px solid var(--stroke); border-radius: 8px; background: #f7f9fc; color: var(--muted); font-size: 12px; }
+.wb-org-roles { list-style: none; display: grid; }
+.wb-org-roles > div { border-top: 1px solid var(--stroke); min-width: 0; }
+.wb-org-roles > div:first-child { border-top: 0; }
+.wb-org-module { display: grid; grid-template-columns: minmax(92px,.7fr) minmax(0,1fr); gap: 10px; padding: 7px 0; font-size: 13px; }
+.wb-org-module dt { color: var(--muted); }
+.wb-org-module dd { overflow-wrap: anywhere; }
+.wb-org-cases { list-style: none; }
+.wb-org-cases li + li { border-top: 1px solid var(--stroke); }
+.wb-org-cases a { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; color: var(--ink); text-decoration: none; }
+.wb-org-cases a:hover { color: var(--accent-hover); }
+.wb-org-cases a > svg { color: var(--accent); }
+.wb-org-dialog form { display: grid; gap: 12px; }
+.wb-org-dialog form .wb-status, .wb-org-dialog .wb-form-actions { margin: 0; }
+.wb-org-dialog .wb-form-actions { padding-top: 4px; }
+.wb-org-view-links { margin-bottom: 14px; }
+.wb-org-view-links a {
+  padding: 5px 12px; min-height: 34px; display: inline-flex; align-items: center; text-decoration: none;
+  border: 1px solid transparent; border-radius: 6px; font-size: 13px; font-weight: 650; color: var(--muted);
+}
+.wb-org-view-links a[aria-current] { color: var(--accent-hover); background: var(--paper); border-color: #d3ddec; }
+.wb-org-view-links a:hover { color: var(--accent-hover); }
+@media (prefers-reduced-motion: no-preference) {
+  .wb-org-row { transition: background-color var(--interaction-time) ease; }
+}
+@media (max-width: 640px) {
+  .wb-org-metrics dd { font-size: 19px; }
+  .wb-org-metrics > div { padding-inline: 10px; }
+  .wb-org-control .wb-inline-select { flex: 1 1 auto; }
+  .wb-org-control .wb-inline-select select { max-width: 100%; }
+  .wb-org-detail .wb-asset-foot > * { flex-shrink: 1; }
+}
+
+.wb-asset-grid { gap: 16px; }
+.wb-org-metrics { background: #f8fafc; border-color: #cdd8e3; }
+.wb-org-metrics > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; }
+.wb-org-metrics dd { font-size: 19px; font-weight: 680; color: #29445f; }
+.wb-org-view-links { display: flex; gap: 8px; padding: 0; background: none; border-bottom: 1px solid #cdd8e3; border-radius: 0; }
+.wb-org-view-links a { min-height: 38px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
+.wb-org-view-links a[aria-current] { background: transparent; border-color: var(--accent); }
+.wb-panel-head:has(.wb-result) { justify-content: start; }
+#firm-count, #org-count { margin-right: auto; padding: 1px 6px; background: #edf2f7; color: #425771; border-radius: 4px; }
+#firm-list, #org-list { --org-value: minmax(64px,.4fr); --org-state: 66px; }
+#firm-list .wb-org-row, #org-list .wb-org-row, .wb-org-columns {
+  display: grid; grid-template-columns: 32px minmax(0,1fr) var(--org-value) var(--org-state) 14px; gap: 8px; align-items: center; padding-inline: 12px;
+}
+.wb-org-columns { padding-block: 6px; background: #eaf0f6; color: #465c74; font-size: 12px; font-weight: 620; }
+.wb-org-columns > :first-child { grid-column: span 2; }
+.wb-org-row { min-height: 53px; padding-block: 6px; }
+.wb-org-row .wb-chip { justify-self: start; white-space: nowrap; }
+.wb-org-column { font-size: 12px; color: #425973; overflow-wrap: anywhere; }
+.wb-org-column b { font-size: 14px; color: #263f59; }
+.wb-org-row[aria-pressed="true"] { background: #eef3f8; box-shadow: inset 2px 0 #5a7898; }
+.wb-org-monogram { width: 32px; height: 32px; border-radius: 7px; color: #385778; background: #f0f4f8; border-color: #d4dfe8; }
+.wb-org-detail > .wb-panel-head { background: #edf2f7; border-radius: 8px 8px 0 0; }
+.wb-org-detail .wb-key-values { padding-block: 7px; gap: 8px 14px; }
+#org-detail .wb-key-values > div:last-child { grid-column: 1 / -1; }
+#org-detail .wb-actions { padding: 0; border: 0; }
+.wb-org-cases a { min-height: 35px; padding-inline: 7px; }
+.wb-org-cases { border: 1px solid var(--stroke); border-radius: 5px; }
+.wb-org-cases a:hover { background: #f3f7fa; }
+.wb-org-roles { background: #f8fafc; padding-inline: 10px; border-radius: 6px; }
+.wb-org-section.wb-org-note { border-color: #c9d9e5; background: #f1f5f9; color: #364f68; }
+.wb-org-back, .wb-org-filter-toggle, #org-filter-summary { display: none; }
+.wb-asset-detail-body { animation: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .wb-org-selected .wb-asset-detail-body { animation: register-task-reveal 150ms ease-out; }
+}
+@media (max-width: 850px) { .wb-shell { grid-template-rows: auto 1fr; } }
+@media (max-width: 820px) {
+  .wb-org-back { display: inline-flex; min-height: 44px; justify-self: start; }
+}
+@media (max-width: 640px) {
+  .wb-org-metrics > div { display: grid; gap: 2px; padding: 7px 8px; }
+  .wb-org-row { min-height: 52px; }
+  #firm-list, #org-list { --org-value: minmax(52px,.48fr); --org-state: 56px; }
+  #firm-list .wb-org-row, #org-list .wb-org-row, .wb-org-columns { grid-template-columns: 25px minmax(0,1fr) var(--org-value) var(--org-state) 10px; gap: 5px; padding-inline: 8px; }
+  .wb-org-row .wb-org-monogram { width: 25px; height: 28px; font-size: 12px; }
+  .wb-org-row .wb-chip { padding-inline: 4px; font-size: 11px; }
+  .wb-org-control .wb-toolbar:has(.wb-org-filter-toggle), .wb-org-control:has(#firm-search) { display: grid; grid-template-columns: minmax(0,1fr) auto; }
+  .wb-org-filter-toggle { display: inline-flex; }
+  .wb-org-control:has(.wb-org-filter-toggle[aria-expanded="false"]) #org-fields { display: none; }
+  #org-filter-summary { display: block; }
+  .wb-org-control:has(#firm-search) .wb-search { min-width: 0; }
+  .wb-org-cases a, .wb-org-view-links a { min-height: 44px; }
+}

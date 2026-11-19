@@ -1,180 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我的案件 - 商标管理系统</title>
-<link rel="stylesheet" href="../css/common.css">
-<style>
-.form-section { margin-bottom: 16px; }
-.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-.form-label .required { color: var(--danger); margin-left: 2px; }
-.form-input, .form-select, .form-textarea {
-  width: 100%; padding: 9px 12px; border: 1px solid var(--border-color);
-  border-radius: var(--radius-md); font-size: 13px; color: var(--text-primary);
-  background: var(--bg-card); outline: none; transition: var(--transition);
-}
-.form-input:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-.form-textarea { min-height: 80px; resize: vertical; }
-.form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-.form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.cat-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; }
-.cat-chip {
-  padding: 5px 2px; text-align: center; border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm); font-size: 11px; cursor: pointer; transition: var(--transition);
-}
-.cat-chip:hover { border-color: var(--primary); color: var(--primary); }
-.cat-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f6fa">
+  <title>我的案件 · 小米商标管理系统</title>
+  <link rel="stylesheet" href="../css/case-workspace.css">
+  <link rel="stylesheet" href="../css/workspace-register.css">
+  <script defer src="../js/data-service.js"></script>
+  <script defer src="../js/case-workspace.js"></script>
+  <script defer src="../js/workbench-cases.js"></script>
 </head>
-<body>
-<div class="app-layout">
-  <aside class="sidebar"></aside>
-  <div class="main-content">
-    <header class="top-header"></header>
-    <div class="page-container">
-      <div class="page-header">
-        <div>
-          <div class="page-title">我的案件</div>
-          <div class="page-desc" id="pageDesc">负责或参与的案件共 15 件</div>
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-secondary btn-sm">📥 导出</button>
-          <button class="btn btn-primary btn-sm" onclick="location.href='case-new.html'">➕ 新建案件</button>
-        </div>
-      </div>
-      
-      <div class="filter-bar">
-        <div class="filter-item active" data-filter="all" onclick="filterCases(this,'all')">全部</div>
-        <div class="filter-item" data-filter="国内案件" onclick="filterCases(this,'国内案件')">国内案件</div>
-        <div class="filter-item" data-filter="海外案件" onclick="filterCases(this,'海外案件')">海外案件</div>
-        <div class="filter-item" data-filter="审查中" onclick="filterCases(this,'审查中')">审查中</div>
-        <div class="filter-item" data-filter="答辩期" onclick="filterCases(this,'答辩期')">答辩期</div>
-        <div style="margin-left:auto; display:flex; gap:8px;">
-          <input type="text" class="search-input" placeholder="搜索案件编号或商标名称..." id="caseSearch" oninput="searchCases(this.value)">
-        </div>
-      </div>
-      
-      <div class="card">
-        <div class="card-body" style="padding:0;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width:40px;"><input type="checkbox"></th>
-                <th>案件编号</th>
-                <th>商标名称</th>
-                <th>商标号</th>
-                <th>国家</th>
-                <th>业务类型</th>
-                <th>当前节点</th>
-                <th>官方绝限</th>
-                <th>内部期限</th>
-                <th>责任人</th>
-                <th style="text-align:right;">进度</th>
-              </tr>
-            </thead>
-            <tbody id="caseList"></tbody>
-          </table>
-        </div>
-      </div>
+<body data-view="mine">
+  <a class="wb-skip wb-btn" href="#main">跳到正文</a>
+  <div class="wb-shell">
+    <aside class="wb-side" id="workbench-sidebar"></aside>
+    <div>
+      <header class="wb-top" id="workbench-header"></header>
+      <main class="wb-main" id="main" tabindex="-1">
+        <h1>我的案件</h1>
+        <noscript>开启 JavaScript 后即可使用这套商标演示。</noscript>
+      </main>
     </div>
   </div>
-</div>
-
-<script src="../js/data.js?v=2.5"></script>
-<script src="../js/app.js?v=2.5"></script>
-<script src="../js/data-service.js?v=2.5"></script>
-<script>
-initApp('my-cases');
-
-let currentCases = [...AppData.cases];
-let currentFilter = 'all';
-function renderCases(list) {
-  const tbody = document.getElementById('caseList');
-  tbody.innerHTML = '';
-  if (list.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">暂无符合条件的案件</td></tr>';
-    return;
-  }
-  list.forEach(c => {
-    const internalDl = new Date(c.deadline);
-    internalDl.setDate(internalDl.getDate() - 3);
-    const intStr = c.deadline ? internalDl.toISOString().slice(0,10) : '-';
-    const urgent = c.deadline && c.deadline <= '2026-05-07';
-    // 尝试从 DataService 获取商标号和国家
-    let regNum = '-';
-    let country = '-';
-    try {
-      const dsCase = DataService && DataService.getCaseById ? DataService.getCaseById(c.id) : null;
-      if (dsCase) {
-        regNum = dsCase.registrationNumber || (dsCase.applicationNumber ? dsCase.applicationNumber : '-');
-        country = dsCase.country || '-';
-      }
-    } catch (e) {}
-    tbody.innerHTML += `
-      <tr>
-        <td><input type="checkbox"></td>
-        <td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">${c.id}</span></td>
-        <td><strong>${c.name}</strong></td>
-        <td><span style="font-size:12px;color:var(--text-secondary);">${regNum}</span></td>
-        <td><span style="font-size:12px;">${country}</span></td>
-        <td><span class="tag tag-blue">${c.type}</span></td>
-        <td>${getStatusTag(c.status)}</td>
-        <td style="color:${urgent?'#f87171':''};font-weight:${urgent?'600':'400'};">${c.deadline || '-'}</td>
-        <td>${intStr}</td>
-        <td>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span>${c.owner}</span>
-            <span style="width:20px;height:20px;border-radius:4px;background:#3370ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;" title="飞书联系">飞</span>
-          </div>
-        </td>
-        <td style="text-align:right;">
-          <div style="display:flex; align-items:center; gap:8px; justify-content:flex-end;">
-            <div class="progress-bar" style="width:60px;">
-              <div class="progress-fill" style="width:${c.progress}%; background:${c.progress>80?'#34d399':c.progress>40?'#3b82f6':'#fbbf24'};"></div>
-            </div>
-            <span style="font-size:12px;font-weight:500;">${c.progress}%</span>
-          </div>
-        </td>
-      </tr>
-    `;
-  });
-  document.getElementById('pageDesc').textContent = `负责或参与的案件共 ${list.length} 件`;
-}
-
-renderCases(currentCases);
-
-function filterCases(el, type) {
-  document.querySelectorAll('.filter-bar .filter-item[data-filter]').forEach(item => item.classList.remove('active'));
-  el.classList.add('active');
-  currentFilter = type;
-  applyFilters();
-}
-
-function searchCases(keyword) {
-  applyFilters();
-}
-
-function applyFilters() {
-  let result = [...AppData.cases];
-  
-  if (currentFilter !== 'all') {
-    if (['国内案件','海外案件'].includes(currentFilter)) {
-      result = result.filter(c => c.category === currentFilter);
-    } else {
-      result = result.filter(c => c.status === currentFilter);
-    }
-  }
-  
-  const keyword = document.getElementById('caseSearch').value.trim().toLowerCase();
-  if (keyword) {
-    result = result.filter(c => c.id.toLowerCase().includes(keyword) || c.name.toLowerCase().includes(keyword));
-  }
-  
-  currentCases = result;
-  renderCases(result);
-}
-
-</script>
 </body>
 </html>

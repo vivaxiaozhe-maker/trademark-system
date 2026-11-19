@@ -1,0 +1,47 @@
+/* Draft registers and completed-record detail, layered on the shared register. */
+#record-count { margin-inline-end: auto; background: #edf2f7; color: #425771; border-radius: 4px; padding: 1px 6px; }
+.wb-record-filter .wb-search { flex: 1 1 210px; max-width: 560px; }
+.wb-draft-row, .wb-draft-columns {
+  grid-template-columns: 34px minmax(0,1fr) minmax(0,1.2fr) minmax(0,.8fr) 84px;
+  padding-inline: 16px; column-gap: 12px;
+}
+.wb-draft-columns { display: grid; padding-block: 7px; background: #eaf0f6; color: #485c73; font-size: 12px; font-weight: 600; }
+.wb-draft-columns > :first-child { grid-column: span 2; }
+.wb-draft-columns > :last-child { text-align: end; }
+.wb-draft-row { min-height: 66px; }
+.wb-record-icon { width: 33px; height: 36px; border-color: #d5dfe9; background: #f2f5f9; color: #4b6784; border-radius: 6px; }
+.wb-draft-row .wb-record-cta { font-size: 12px; }
+.wb-draft-row .wb-record-saved time { color: #415875; font-variant-numeric: tabular-nums; }
+.wb-record-detail { background: #fbfcfe; }
+.wb-record-detail > .wb-panel-head { border-radius: 8px 8px 0 0; background: #eaf0f6; }
+.wb-record-detail .wb-key-values .wb-note-block {
+  border: 0; border-inline-start: 2px solid #9aafc4; border-radius: 5px; padding: 10px 12px; background: #eff3f7;
+}
+.wb-record-note { line-height: 1.65; }
+.wb-completed-row { min-height: 72px; grid-template-columns: 33px minmax(0,1fr) auto auto; }
+.wb-completed-row[aria-pressed=true] { background: #f0f5fa; }
+.wb-note-preview { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: #526578; }
+.wb-record-icon-complete { color: #41655f; background: #eef4f2; border-color: #dbe6e3; }
+.wb-record-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; }
+.wb-record-return { display: none; }
+.wb-record-detail:not(.is-opened) .wb-record-content { animation: none; }
+@media (min-width: 761px) {
+  .wb-draft-row :is(.wb-record-applicant,.wb-record-saved) > .wb-small { position: absolute; clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; }
+}
+@media (max-width: 760px) {
+  .wb-draft-columns { display: none; }
+  .wb-draft-row { grid-template-columns: 32px minmax(0,1fr) auto; padding: 10px; gap: 4px 8px; }
+  .wb-draft-row .wb-record-cta { align-self: center; }
+  .wb-draft-row .wb-record-applicant, .wb-draft-row .wb-record-saved { font-size: 12px; }
+  .wb-record-detail h2 { scroll-margin-top: 55px; }
+  .wb-record-return { display: inline-flex; min-height: 44px; }
+  .wb-record-filter { gap: 4px 9px; }
+  .wb-record-metrics .wb-metric:nth-child(3) { border-left: 0; }
+}
+@media (max-width: 640px) {
+  .wb-main .wb-record-metrics { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media (max-width: 430px) {
+  .wb-completed-row { grid-template-columns: 31px minmax(0,1fr) auto; }
+  .wb-record-filter .wb-search { flex-basis: 175px; }
+}

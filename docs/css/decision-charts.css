@@ -1,0 +1,189 @@
+.wb-fin-nav {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 4px;
+  margin-bottom: 14px; padding: 4px; border: 1px solid var(--stroke); border-radius: 9px; background: #edf1f7;
+  width: fit-content; max-width: 100%;
+}
+.wb-fin-nav a {
+  display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; min-height: 34px;
+  border: 1px solid transparent; border-radius: 6px; text-decoration: none; color: var(--muted); font-weight: 650; font-size: 13px;
+}
+.wb-fin-nav a:hover { color: var(--accent-hover); background: #f7f9fd; }
+.wb-fin-nav a[aria-current] { color: var(--accent-hover); background: var(--paper); border-color: #d1def1; }
+.wb-fin-metrics { display: grid; grid-template-columns: repeat(4,minmax(0, 1fr)); margin-bottom: 14px; }
+.wb-fin-metrics div { min-width: 0; padding: 12px 16px; display: grid; align-content: start; gap: 4px; }
+.wb-fin-metrics div + div { border-left: 1px solid var(--stroke); }
+.wb-fin-metrics dt { color: var(--muted); font-size: 12px; font-weight: 650; }
+.wb-fin-metrics dd { font-size: 21px; font-weight: 750; letter-spacing: -.025em; overflow-wrap: anywhere; }
+.wb-fin-metrics dd a { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 5px; text-decoration: none; }
+.wb-fin-metrics dd a:hover { text-decoration: underline; }
+.wb-fin-grid, .wb-fin-split, .wb-report-grid { display: grid; align-items: start; gap: 14px; }
+.wb-fin-grid { grid-template-columns: repeat(2,minmax(0,1fr)); align-items: stretch; }
+.wb-fin-split { grid-template-columns: minmax(0,1.5fr) minmax(285px,1fr); }
+.wb-fin-split:has(> [hidden]) { grid-template-columns: minmax(0,1fr); }
+.wb-report-grid { grid-template-columns: minmax(245px,.65fr) minmax(0,1.75fr); }
+.wb-fin-stack { display: grid; gap: 14px; min-width: 0; }
+.wb-fin-panel-body { display: grid; gap: 12px; padding: 14px 16px; }
+.wb-fin-pair .wb-fin-panel-body { min-height: 178px; align-content: start; }
+.wb-fin-caption { padding-top: 8px; margin-top: 2px; border-top: 1px solid var(--stroke); color: var(--muted); font-size: 12px; }
+.wb-fin-pair { display: grid; grid-template-rows: auto 1fr auto; }
+.wb-fin-pair > .wb-fin-caption { padding: 9px 16px; margin: 0; }
+.wb-fin-ranks { display: grid; gap: 10px; list-style: none; }
+.wb-fin-ranks li { display: grid; grid-template-columns: minmax(68px,1fr) minmax(45px,1.2fr) minmax(34px,auto); gap: 9px; align-items: center; font-size: 13px; }
+.wb-fin-ranks strong { text-align: right; }
+.wb-fin-table td:last-child, .wb-fin-table th:last-child { text-align: right; }
+.wb-fin-ledger-row { padding: 9px 16px; display: grid; gap: 8px; grid-template-columns: minmax(0,1fr) auto auto; align-items: center; }
+.wb-fin-ledger-row + .wb-fin-ledger-row { border-top: 1px solid var(--stroke); }
+.wb-fin-queue { list-style: none; }
+.wb-fin-queue li + li { border-top: 1px solid var(--stroke); }
+.wb-fin-record {
+  display: grid; width: 100%; align-items: center; gap: 10px; grid-template-columns: minmax(0,1fr) auto;
+  min-height: 62px; padding: 9px 13px; border: 0; background: var(--paper); text-align: left;
+}
+.wb-fin-record:hover { background: #f7f9fd; }
+.wb-fin-record[aria-pressed="true"] { background: var(--accent-soft); }
+.wb-fin-queue li:last-child button { border-radius: 0 0 11px 11px; }
+.wb-fin-record:focus-visible { outline-offset: -3px; }
+.wb-fin-record-label { display: grid; gap: 3px; min-width: 0; }
+.wb-fin-record-side { display: grid; justify-items: end; gap: 3px; }
+.wb-fin-flow { list-style: none; display: grid; gap: 7px; }
+.wb-fin-flow li { display: grid; grid-template-columns: 15px minmax(0,1fr) auto; align-items: center; gap: 8px; font-size: 13px; }
+.wb-fin-flow li > svg { color: var(--accent); }
+.wb-fin-form { display: grid; gap: 16px; }
+.wb-fin-lines { display: grid; gap: 8px; }
+.wb-fin-line { display: grid; grid-template-columns: minmax(98px,.85fr) minmax(94px,.8fr) minmax(100px,1.3fr) auto; gap: 8px; align-items: end; }
+.wb-fin-line button { min-width: 36px; }
+.wb-fin-line-header { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-bottom: 8px; }
+.wb-fin-form footer { border-top: 1px solid var(--stroke); padding-top: 12px; }
+.wb-fin-form .wb-form-actions { margin-top: 0; }
+.wb-fin-total { font-size: 25px; font-weight: 750; color: var(--accent-hover); overflow-wrap: anywhere; }
+.wb-report-config { padding: 14px 16px; display: grid; gap: 12px; }
+.wb-report-preview .wb-panel-head { align-items: center; }
+.wb-report-sheet { padding: clamp(16px,3vw,32px); }
+.wb-report-sheet > header { border-bottom: 1px solid var(--stroke); padding-bottom: 14px; margin-bottom: 13px; }
+.wb-report-sheet > header h2 { font-size: 24px; margin-bottom: 5px; }
+.wb-report-sheet .wb-fin-metrics { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.wb-report-sheet .wb-fin-metrics dd { font-size: 18px; }
+.wb-report-sheet h3 { margin: 13px 0 6px; }
+.wb-report-sheet .wb-table { border: 1px solid var(--stroke); overflow-wrap: anywhere; }
+.wb-dc-budget { display: grid; gap: 8px; list-style: none; }
+.wb-dc-budget li { display: grid; grid-template-columns: 70px minmax(0,1fr) 64px; gap: 8px; align-items: center; font-size: 13px; }
+.wb-dc-budget li strong { text-align: right; }
+.wb-dc-budget-track { position: relative; height: 18px; background: #f1f4f9; border-radius: 4px; }
+.wb-dc-budget-track::after { content: ""; position: absolute; inset: 0 auto 0 50%; width: 1px; background: #6a7890; }
+.wb-dc-budget-track i { position: absolute; inset: 3px auto 3px var(--start); width: var(--span); border-radius: 2px; background: #547dc3; }
+.wb-dc-budget-track[data-over="true"] i { background: #ac752a; }
+.wb-dc-trend { width: 100%; height: 230px; min-width: 0; }
+.wb-dc-trend svg { display: block; width: 100%; height: 100%; }
+.wb-dc-trend text { font: 11px system-ui,sans-serif; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.wb-dc-trend .wb-dc-value { fill: var(--accent-hover); font-weight: 700; }
+.wb-dc-budget-shell { min-height: 230px; }
+.wb-dc-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.wb-dc-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.wb-dc-legend span::before { content: ""; width: 18px; border-top: 2px solid #2254b9; }
+.wb-dc-legend span + span::before { border-top-style: dashed; }
+@media (prefers-reduced-motion: no-preference) {
+  .wb-fin-nav a, .wb-fin-record { transition: background-color var(--interaction-time) ease, color var(--interaction-time) ease, border-color var(--interaction-time) ease; }
+  .wb-fin-reveal, .wb-report-sheet { animation: wb-feedback var(--reveal-time) ease-out both; }
+}
+@media (max-width: 820px) {
+  .wb-fin-grid, .wb-fin-split, .wb-report-grid { grid-template-columns: minmax(0,1fr); }
+  .wb-fin-pair .wb-fin-panel-body { min-height: auto; }
+}
+@media (max-width: 610px) {
+  .wb-fin-metrics, .wb-report-sheet .wb-fin-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .wb-fin-metrics div:nth-child(n+3) { border-top: 1px solid var(--stroke); }
+  .wb-fin-metrics div:nth-child(odd) { border-left: 0; }
+  .wb-fin-metrics dd { font-size: 18px; }
+  .wb-fin-line { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .wb-fin-line button { justify-self: start; }
+  .wb-fin-table .wb-fin-extra { display: none; }
+}
+@media print {
+  body[data-view="report"], body[data-view="report"] .wb-shell, body[data-view="report"] .wb-main { display: block; padding: 0; background: #fff; }
+  body[data-view="report"] :is(.wb-side,.wb-top,.wb-head,.wb-report-config,.wb-report-preview > .wb-panel-head,.wb-status) { display: none !important; }
+  .wb-report-grid { display: block; }
+  .wb-report-preview { border: none; }
+  .wb-report-sheet { animation: none; padding: 0; }
+  .wb-report-sheet a { text-decoration: none; color: inherit; }
+  .wb-report-sheet tr { break-inside: avoid; }
+}
+
+/* The ledger, decision views and report sheets share the register palette. */
+.wb-fin-nav {
+  width: 100%; padding: 0; gap: 3px 8px; border: 0; border-bottom: 1px solid #ccd7e3;
+  border-radius: 0; background: transparent;
+}
+.wb-fin-nav a { min-height: 39px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; }
+.wb-fin-nav a[aria-current] { background: transparent; border-color: var(--accent); }
+.wb-fin-metrics { background: #f8fafc; border-color: #cdd8e3; }
+.wb-fin-metrics dd { color: #243e59; font-weight: 680; }
+.wb-fin-metrics dd a { color: var(--accent); }
+.wb-fin-table thead th, .wb-chart-data thead th { background: #eaf0f6; color: #435973; }
+.wb-fin-table tbody td { padding-block: 7px; }
+.wb-fin-table .wb-ledger-amount { color: #29445f; }
+.wb-fin-ranks .wb-bar-fill { background: #5e7d99; }
+.wb-fin-record[aria-pressed="true"] { background: #edf3f8; box-shadow: inset 2px 0 #597999; }
+#fee-application-detail > .wb-panel-head, .wb-fin-form > .wb-panel-head, #report-config > .wb-panel-head { background: #edf2f7; }
+.wb-dc-pair { column-gap: 16px; row-gap: 0; }
+.wb-dc-pair > .wb-fin-pair { grid-row: span 3; grid-template-rows: subgrid; }
+.wb-dc-pair .wb-fin-panel-body {
+  align-content: stretch; grid-template-rows: auto 1fr; gap: 8px; padding-block: 12px;
+}
+.wb-plot-label { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; justify-content: space-between; color: var(--muted); font-size: 12px; }
+.wb-plot-label strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+.wb-dc-budget-shell, .wb-dc-trend { height: 184px; min-height: 0; min-width: 0; }
+.wb-dc-budget { height: 100%; align-content: space-around; }
+.wb-dc-budget li { grid-template-columns: max-content minmax(0,1fr) max-content; display: grid; grid-column: 1/-1; }
+.wb-dc-budget { grid-template-columns: max-content minmax(0,1fr) max-content; }
+.wb-dc-budget li { grid-template-columns: subgrid; }
+.wb-dc-budget-track { height: 14px; background: #eef2f6; }
+.wb-dc-budget-track i { background: #62819d; }
+.wb-dc-trend { color: #385d80; }
+.wb-dc-trend text { font-size: 12px; }
+.wb-dc-legend span::before { border-color: #385d80; }
+.wb-dc-pair > .wb-fin-pair > .wb-fin-caption { display: flex; align-items: center; }
+.wb-chart-data { margin: 12px 0 6px; }
+.wb-chart-data summary { padding: 10px 14px; cursor: pointer; color: var(--accent); font-weight: 620; }
+.wb-chart-data .wb-fin-grid { padding: 0 14px 14px; }
+.wb-chart-data caption { text-align: left; font-weight: 650; padding-block: 7px; }
+.wb-chart-data td, .wb-chart-data th { text-align: end; }
+.wb-chart-data :is(td,th):first-child { text-align: start; }
+.wb-report-grid.has-report { grid-template-columns: minmax(0,2.1fr) minmax(236px,.72fr); }
+.wb-report-preview > .wb-panel-head { background: #edf2f7; }
+.wb-report-sheet > header { border-bottom-color: #b9cad9; }
+.wb-report-sheet > header h2 { color: #263f5c; font-size: 21px; }
+.wb-report-meta { display: flex; flex-wrap: wrap; gap: 7px 18px; margin-top: 10px; }
+.wb-report-meta > div { display: grid; gap: 2px; }
+.wb-report-meta dt { color: var(--muted); font-size: 12px; }
+.wb-report-meta dd { font-size: 13px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: no-preference) {
+  .wb-dc-budget-track i { transform-origin: right; animation: fin-budget-in 200ms ease-out; }
+  .wb-dc-budget-track[data-over="true"] i { transform-origin: left; }
+  @keyframes fin-budget-in { from { transform: scaleX(.87); } }
+}
+@media (max-width: 850px) {
+  .wb-shell { grid-template-rows: auto 1fr; }
+}
+@media (max-width: 820px) {
+  .wb-report-grid.has-report { grid-template-columns: minmax(0,1fr); }
+  .wb-dc-pair { row-gap: 12px; }
+  .wb-dc-pair > .wb-fin-pair { grid-row: auto; grid-template-rows: auto 1fr auto; }
+}
+@media (max-width: 610px) {
+  .wb-fin-nav { gap: 1px 3px; }
+  .wb-fin-nav a { padding-inline: 5px; min-height: 44px; }
+  .wb-fin-metrics div { padding: 8px 10px; }
+  .wb-dc-budget-shell, .wb-dc-trend { height: 152px; }
+  .wb-dc-pair .wb-fin-panel-body { padding-inline: 12px; }
+  .wb-chart-data .wb-fin-grid { padding-inline: 8px; }
+  .wb-chart-data .wb-table :is(td,th) { padding-inline: 4px; }
+  .wb-report-sheet { padding: 12px; }
+  .wb-report-sheet .wb-fin-metrics { grid-template-columns: 1fr; }
+  .wb-report-sheet .wb-fin-metrics div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-left: 0; }
+  .wb-report-sheet .wb-fin-metrics div + div { border-top: 1px solid var(--stroke); }
+  .wb-report-sheet .wb-fin-metrics dd { font-size: 15px; }
+}
+@media print {
+  #report-config, #report-adjust { display: none !important; }
+  .wb-main .wb-report-preview { box-shadow: none; }
+}

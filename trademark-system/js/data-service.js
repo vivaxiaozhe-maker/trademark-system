@@ -10,11 +10,16 @@ const DataService = (function() {
   const STORAGE_KEYS = {
     VERSION: 'tm_data_version',
     CASES: 'tm_data_cases',
+    SEAL_REQUESTS: 'tm_seal_requests',
+    CASE_COPIES: 'tm_case_copies',
     BRANDS: 'tm_data_brands',
+    BRAND_AUTHORIZATIONS: 'tm_brand_authorizations',
     TODOS: 'tm_data_todos',
     FEES: 'tm_data_fees',
     FEE_APPS: 'tm_data_fee_apps',
+    REPORTS: 'tm_reports',
     LAW_FIRMS: 'tm_data_law_firms',
+    STAFF: 'tm_data_staff',
     MONITOR_TASKS: 'tm_data_monitor_tasks',
     MONITOR_RESULTS: 'tm_data_monitor_results',
     NOTIFICATIONS: 'tm_data_notifications',
@@ -23,7 +28,65 @@ const DataService = (function() {
     DRAFTS: 'tm_drafts'
   };
 
-  const CURRENT_VERSION = '2.3';
+  const CURRENT_VERSION = '2.5';
+  const CURRENT_USER = Object.freeze({ id: 'zhang', name: 'Missy' });
+  const STAFF_ROLES = Object.freeze({
+    legal_manager: { name: '高级法务经理', kind: 'internal', scope: '全部案卷', description: '统筹商标案件和律所协作。', permissions: [['案件管理', '建案、分派与复核'], ['律所协作', '审阅回传材料'], ['费用中心', '提交及部门审批'], ['决策与报告', '查看及生成报告']] },
+    legal: { name: '法务专员', kind: 'internal', scope: '本部门案卷', description: '办理日常案件与证据材料。', permissions: [['案件管理', '办理本部门案卷'], ['律所协作', '查阅回传材料'], ['费用中心', '提交费用申请']] },
+    process: { name: '流程专员', kind: 'internal', scope: '本部门案卷', description: '跟进期限、待办与文件归档。', permissions: [['案件管理', '查看本部门案卷'], ['待办事项', '跟进期限及记录进度'], ['案卷材料', '整理及归档材料']] },
+    director: { name: '部门总监', kind: 'internal', scope: '本部门及下属案卷', description: '跟进团队进度与部门审批。', permissions: [['案件管理', '复核部门案卷'], ['费用中心', '部门审批'], ['决策与报告', '查看部门报表']] },
+    brand: { name: '品牌经理', kind: 'internal', scope: '负责品牌的案卷', description: '维护关联品牌与风险预警。', permissions: [['品牌管理', '维护品牌资料'], ['监测中心', '复核品牌预警'], ['检索案卷', '检索负责品牌的案卷']] },
+    finance: { name: '费用审核', kind: 'internal', scope: '待审核的费用记录', description: '核对账单与费用明细。', permissions: [['费用中心', '审核费用申请及核对账单'], ['报告中心', '查看费用报告']] },
+    admin: { name: '系统管理员', kind: 'internal', scope: '全部演示数据', description: '维护演示工作区的账号与角色。', permissions: [['账号与权限', '查阅账号及角色目录'], ['员工管理', '维护员工角色'], ['工作区', '查阅所有模块']] },
+    external: { name: '外部律所', kind: 'external', scope: '被委托的案卷', description: '处理委托案卷并回传代理材料。', permissions: [['律所协作', '回传委托材料'], ['案卷详情', '查阅受委托案卷']] }
+  });
+  const STAFF_DEMO = [
+    ['zhang', 'Missy', '知识产权部', 'legal_manager'],
+    ['li', '李流程', '流程管理部', 'process'],
+    ['wang', '王流程', '流程管理部', 'process'],
+    ['zhao', '赵法务', '知识产权部', 'legal'],
+    ['sun', '孙流程', '流程管理部', 'process'],
+    ['qian', '钱经理', '品牌管理部', 'brand'],
+    ['zhou', '周财务', '财务部', 'finance'],
+    ['wu-firm', '吴律所', '金诚律师事务所', 'external'],
+    ['zheng', '郑实习', '知识产权部', 'legal', 'disabled'],
+    ['chen', '陈流程', '流程管理部', 'process', 'disabled']
+  ];
+
+  function getStaff() {
+    const stored = storageGet(STORAGE_KEYS.STAFF);
+    return Array.isArray(stored) ? stored : STAFF_DEMO.map(([id, name, department, roleId, status = 'active']) => ({
+      id, name, department, roleId, kind: STAFF_ROLES[roleId].kind, status
+    }));
+  }
+
+  function setStaffRole(id, roleId, previousRoleId) {
+    const role = Object.hasOwn(STAFF_ROLES, roleId) && STAFF_ROLES[roleId];
+    const staff = getStaff();
+    const index = staff.findIndex(employee => employee.id === id);
+    const current = staff[index];
+    if (!current || !role || role.kind !== current.kind || current.roleId !== previousRoleId) return null;
+    if (current.roleId === roleId) return current;
+    staff[index] = {
+      ...current, roleId,
+      roleChange: { previousRoleId, changedAt: new Date().toISOString(), actor: CURRENT_USER.name }
+    };
+    return setEntity(STORAGE_KEYS.STAFF, staff) ? staff[index] : null;
+  }
+
+  const SAMPLE_APPLICATION_NUMBERS = {
+    'TM-2026-0042': '20260115001',
+    'TM-2026-0031': '20251110002',
+    'TM-2026-0056': '20260320003',
+    'TM-2026-0028': '20260201004',
+    'TM-2025-0098': '20160110005',
+    'TM-2026-0071': '20240601006',
+    'TM-2026-0012': '20260120007'
+  };
+  const SAMPLE_CASE_DETAILS = {
+    applicant: '深圳市唯德科创信息有限公司',
+    goodsServices: '计算机软件出租、计算机软件维护和更新、为他人提供计算机软件设计、计算机数据恢复、数据加密服务与网站维护。'
+  };
 
   const NICE_CLASS_NAMES = {
     1: '化工原料', 2: '颜料油漆', 3: '日化用品', 4: '燃料油脂',
@@ -76,7 +139,10 @@ const DataService = (function() {
     const parseCalendarDate = value => {
       const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || '');
       if (!match) return NaN;
-      return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      const [, year, month, day] = match.map(Number);
+      const date = new Date(Date.UTC(year, month - 1, day));
+      if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return NaN;
+      return date.getTime();
     };
     return Math.round((parseCalendarDate(date2) - parseCalendarDate(date1)) / 86400000);
   }
@@ -129,7 +195,7 @@ const DataService = (function() {
     const todayDate = new Date(today);
     const dateOffset = (days) => {
       const d = new Date(todayDate);
-      d.setDate(d.getDate() + days);
+      d.setUTCDate(d.getUTCDate() + days);
       return d.toISOString().split('T')[0];
     };
 
@@ -310,7 +376,8 @@ const DataService = (function() {
       {
         id: 'TM-2026-0042', brandId: 'yunzhi', brandName: '云智',
         trademarkImage: '../assets/tm-yunzhi.png',
-        type: 'domestic', country: '中国', businessType: '驳回', businessTypeCode: 'rejection', registrationNumber: '20260115001',
+        type: 'domestic', country: '中国', businessType: '驳回', businessTypeCode: 'rejection', applicationNumber: SAMPLE_APPLICATION_NUMBERS['TM-2026-0042'],
+        ...SAMPLE_CASE_DETAILS,
         status: '已驳回', statusCode: 'rejected',
         niceClasses: [9, 35, 38, 42],
         niceClassNames: '9, 35, 38, 42',
@@ -325,14 +392,14 @@ const DataService = (function() {
           { id: 'tl-1', title: '案件创建', date: '2026-01-15', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '知识产权部发起"云智"商标第35类新申请，指定金诚律所为代理机构' },
           { id: 'tl-2', title: '委托代理确认', date: '2026-01-18', actor: '金诚律师事务所', actorType: 'lawfirm', status: 'completed', detail: '陈律师确认接受委托，代理费报价¥85,000（一审），官费预估¥1,500' },
           { id: 'tl-3', title: '申请材料准备', date: '2026-01-20', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '完成商标图样优化、商品/服务分类细化（35类：广告、商业管理、零售服务等）' },
-          { id: 'tl-4', title: '提交新申请', date: '2026-01-22', actor: '商标局受理处', actorType: 'system', status: 'completed', detail: '申请号：TM-2026-0042，申请类别：第35类，规费已缴纳' },
+          { id: 'tl-4', title: '提交新申请', date: '2026-01-22', actor: '商标局受理处', actorType: 'system', status: 'completed', detail: '申请号：20260115001，申请类别：第35类，规费已缴纳' },
           { id: 'tl-5', title: '形式审查通过', date: '2026-02-01', actor: '商标局审查一部', actorType: 'system', status: 'completed', detail: '申请文件齐全、图样清晰、类别划分符合要求，进入实质审查阶段' },
           { id: 'tl-6', title: '实质审查驳回', date: '2026-03-15', actor: '商标局审查二部', actorType: 'system', status: 'rejected', detail: '驳回理由：与在先注册商标"云智科技"（注册号78954321，第9类）构成近似商标，违反《商标法》第三十条' },
           { id: 'tl-7', title: '案件分析会议', date: '2026-03-20', actor: 'Missy / 陈律师', actorType: 'lawfirm', status: 'completed', detail: '会议结论：第9类与第35类商品/服务关联度较低，可尝试通过"商品/服务不类似"+"商标不近似"双路径论证' },
           { id: 'tl-8', title: '类似案例检索', date: '2026-03-25', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '检索到3件支持性判例：（2024）京73行终1234号、（2023）京73行终5678号、（2023）商标异字第9012号' },
           { id: 'tl-9', title: '驳回复审理由书 v1', date: '2026-04-10', actor: '金诚律所', actorType: 'lawfirm', status: 'completed', detail: '完成初稿，重点论证：① 第9类与第35类商品/服务不构成类似；② "云智"与"云智科技"在呼叫、含义上存在差异' },
           { id: 'tl-10', title: '法务批注反馈', date: '2026-04-15', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '反馈意见：整体逻辑通顺，但需补充第35类近三年实际使用证据（合同、发票、宣传材料），增强"实际使用+知名度"论证' },
-          { id: 'tl-11', title: '驳回复审材料准备', date: '2026-04-20', actor: '金诚律所', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-05-06 | 正在进行：补充使用证据、市场调研报告、理由书v2修订' },
+          { id: 'tl-11', title: '驳回复审材料准备', date: '2026-04-20', actor: '金诚律所', actorType: 'lawfirm', status: 'current', detail: '正在进行：补充使用证据、市场调研报告、理由书v2修订' },
           { id: 'tl-12', title: '复审提交', date: '', actor: '', actorType: '', status: 'pending', detail: '待进行：理由书v2批注通过后，向商评委提交复审申请' }
         ],
         documents: [
@@ -348,11 +415,11 @@ const DataService = (function() {
           { id: 'doc-10', name: '驳回复审理由书_v2.docx', type: 'lawfirm', typeLabel: '律所提交', size: '950KB', uploadDate: '2026-05-03', status: 'pending_review', statusLabel: '待批注', url: '#' }
         ],
         messages: [
-          { id: 'msg-1', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '商标新申请已提交，申请号：TM-2026-0042，申请类别：第35类，当前状态：受理中', date: '2026-01-22 09:00', type: 'message' },
+          { id: 'msg-1', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '商标新申请已提交，申请号：20260115001，申请类别：第35类，当前状态：受理中', date: '2026-01-22 09:00', type: 'message' },
           { id: 'msg-2', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '已确认接受委托，开始准备申请材料。预计1月20日前完成材料准备，请确认商品/服务清单。', date: '2026-01-18 14:30', type: 'message' },
           { id: 'msg-3', sender: 'Missy', senderAvatar: 'M', senderType: 'internal', content: '商品/服务清单已确认，第35类包含：广告、商业管理辅助、替他人推销、零售服务等。请按此清单准备。', date: '2026-01-19 10:15', type: 'message' },
           { id: 'msg-4', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '形式审查已通过，申请文件齐全，图样清晰，进入实质审查阶段。预计审查周期：3-4个月。', date: '2026-02-01 11:00', type: 'message' },
-          { id: 'msg-5', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '⚠️ 收到驳回通知书！商标局认定与在先商标"云智科技"（78954321，第9类）近似，违反《商标法》第三十条。官方绝限：2026-05-06。', date: '2026-04-03 16:20', type: 'message' },
+          { id: 'msg-5', sender: '系统通知', senderAvatar: '系', senderType: 'system', content: '⚠️ 收到驳回通知书！商标局认定与在先商标"云智科技"（78954321，第9类）近似，违反《商标法》第三十条。', date: '2026-04-03 16:20', type: 'message' },
           { id: 'msg-6', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '建议尽快召开案件分析会议。初步判断：第9类（科学仪器）与第35类（广告销售）关联度较低，可尝试双路径论证。', date: '2026-04-03 17:00', type: 'message' },
           { id: 'msg-7', sender: 'Missy', senderAvatar: 'M', senderType: 'internal', content: '同意召开分析会议。请提前准备：① 类似案例检索；② 商品/服务类似性判断依据；③ 复审成功率评估。会议时间：3月20日14:00。', date: '2026-04-03 18:30', type: 'message' },
           { id: 'msg-8', sender: '陈律师 · 金诚律所', senderAvatar: '陈', senderType: 'lawfirm', content: '驳回复审理由书v1已提交，请审核。核心论点：第9类与第35类不构成类似商品/服务，且两商标在呼叫、含义上存在显著差异。', date: '2026-04-10 11:00', type: 'message' },
@@ -367,7 +434,7 @@ const DataService = (function() {
       {
         id: 'TM-2026-0031', brandId: 'zhilian', brandName: '智联',
         trademarkImage: '../assets/tm-zhilian.png',
-        type: 'domestic', country: '中国', businessType: '维权相关', businessTypeCode: 'rights_protection', registrationNumber: '20251110002',
+        type: 'domestic', country: '中国', businessType: '维权相关', businessTypeCode: 'rights_protection', applicationNumber: SAMPLE_APPLICATION_NUMBERS['TM-2026-0031'],
         status: '答辩期', statusCode: 'defense_period',
         niceClasses: [9, 35, 38],
         niceClassNames: '9, 35, 38',
@@ -381,7 +448,7 @@ const DataService = (function() {
         timeline: [
           { id: 'tl-1', title: '案件创建', date: '2025-11-10', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '' },
           { id: 'tl-2', title: '收到异议申请', date: '2026-02-20', actor: '中誉知识产权', actorType: 'lawfirm', status: 'completed', detail: '第三方提出异议' },
-          { id: 'tl-3', title: '异议答辩准备', date: '2026-03-01', actor: '中誉知识产权', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-05-07' }
+          { id: 'tl-3', title: '异议答辩准备', date: '2026-03-01', actor: '中誉知识产权', actorType: 'lawfirm', status: 'current', detail: '准备异议答辩材料，办理日期见案卷期限。' }
         ],
         documents: [
           { id: 'doc-1', name: '异议答辩书.pdf', type: 'lawfirm', typeLabel: '律所提交', size: '1.8MB', uploadDate: '2026-04-25', status: 'pending_review', statusLabel: '待批注', url: '#' }
@@ -395,7 +462,7 @@ const DataService = (function() {
       {
         id: 'TM-2026-0056', brandId: 'yuedong', brandName: '悦动',
         trademarkImage: '../assets/tm-yuedong.png',
-        type: 'domestic', country: '中国', businessType: '新申请补位申请', businessTypeCode: 'new_apply', registrationNumber: '20260320003',
+        type: 'domestic', country: '中国', businessType: '新申请补位申请', businessTypeCode: 'new_apply', applicationNumber: SAMPLE_APPLICATION_NUMBERS['TM-2026-0056'],
         status: '受理中', statusCode: 'pending',
         niceClasses: [25, 35],
         niceClassNames: '25, 35',
@@ -418,13 +485,13 @@ const DataService = (function() {
       {
         id: 'TM-2026-0028', brandId: 'mingda', brandName: '明达',
         trademarkImage: '../assets/tm-mingda.png',
-        type: 'domestic', country: '中国', businessType: '驳回', businessTypeCode: 'rejection', registrationNumber: '20260201004',
+        type: 'domestic', country: '中国', businessType: '驳回', businessTypeCode: 'rejection', applicationNumber: SAMPLE_APPLICATION_NUMBERS['TM-2026-0028'],
         status: '准备材料', statusCode: 'preparing',
         niceClasses: [35, 36, 42],
         niceClassNames: '35, 36, 42',
         applicationDate: '2026-02-01',
-        officialDeadline: dateOffset(18),
-        internalDeadline: dateOffset(14),
+        officialDeadline: dateOffset(0),
+        internalDeadline: dateOffset(-3),
         currentProgress: 35,
         lawFirmId: 'jincheng', lawFirmName: '金诚律师事务所',
         responsibleUser: 'Missy', responsibleUserId: 'zhang',
@@ -432,7 +499,7 @@ const DataService = (function() {
         timeline: [
           { id: 'tl-1', title: '案件创建', date: '2026-02-01', actor: 'Missy', actorType: 'internal', status: 'completed', detail: '' },
           { id: 'tl-2', title: '收到不予注册决定', date: '2026-04-01', actor: '商标局', actorType: 'system', status: 'completed', detail: '引证商标：明达照明' },
-          { id: 'tl-3', title: '复审材料准备', date: '2026-04-05', actor: '金诚律所', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-05-22' }
+          { id: 'tl-3', title: '复审材料准备', date: '2026-04-05', actor: '金诚律所', actorType: 'lawfirm', status: 'current', detail: '准备复审材料，办理日期见案卷期限。' }
         ],
         documents: [],
         messages: [],
@@ -442,7 +509,7 @@ const DataService = (function() {
       {
         id: 'TM-2025-0098', brandId: 'xinglian', brandName: '星联',
         trademarkImage: '../assets/tm-xinglian.png',
-        type: 'domestic', country: '中国', businessType: '变转续补', businessTypeCode: 'transfer_renewal', registrationNumber: '20160110005',
+        type: 'domestic', country: '中国', businessType: '变转续补', businessTypeCode: 'transfer_renewal', applicationNumber: SAMPLE_APPLICATION_NUMBERS['TM-2025-0098'],
         status: '待缴费', statusCode: 'waiting_payment',
         niceClasses: [9, 35, 38, 41, 42, 45],
         niceClassNames: '9, 35, 38, 41, 42, 45',
@@ -466,20 +533,20 @@ const DataService = (function() {
       {
         id: 'TM-2026-0071', brandId: 'ruisi', brandName: '睿思',
         trademarkImage: '../assets/tm-ruisi.png',
-        type: 'domestic', country: '中国', businessType: '维权相关', businessTypeCode: 'rights_protection', registrationNumber: '20240601006',
+        type: 'domestic', country: '中国', businessType: '维权相关', businessTypeCode: 'rights_protection', applicationNumber: SAMPLE_APPLICATION_NUMBERS['TM-2026-0071'],
         status: '证据收集', statusCode: 'evidence',
         niceClasses: [9, 35, 38, 42],
         niceClassNames: '9, 35, 38, 42',
         applicationDate: '2024-06-01',
-        officialDeadline: dateOffset(36),
-        internalDeadline: dateOffset(30),
+        officialDeadline: dateOffset(-2),
+        internalDeadline: dateOffset(-5),
         currentProgress: 40,
         lawFirmId: 'zhongyu', lawFirmName: '中誉知识产权',
         responsibleUser: 'Missy', responsibleUserId: 'zhang',
         feeTotal: 55000, feePaid: 10000, feePending: 45000,
         timeline: [
           { id: 'tl-1', title: '收到撤三通知', date: '2026-03-15', actor: '商标局', actorType: 'system', status: 'completed', detail: '被申请撤销第38类注册' },
-          { id: 'tl-2', title: '证据收集', date: '2026-04-01', actor: '中誉知识产权', actorType: 'lawfirm', status: 'current', detail: '绝限 2026-06-10' }
+          { id: 'tl-2', title: '证据收集', date: '2026-04-01', actor: '中誉知识产权', actorType: 'lawfirm', status: 'current', detail: '收集使用证据，办理日期见案卷期限。' }
         ],
         documents: [],
         messages: [],
@@ -489,7 +556,7 @@ const DataService = (function() {
       {
         id: 'TM-2026-0012', brandId: 'yuanjian', brandName: '远见',
         trademarkImage: '../assets/tm-yuanjian.png',
-        type: 'domestic', country: '中国', businessType: '异议申请', businessTypeCode: 'opposition', registrationNumber: '20260120007',
+        type: 'domestic', country: '中国', businessType: '异议申请', businessTypeCode: 'opposition', applicationNumber: SAMPLE_APPLICATION_NUMBERS['TM-2026-0012'],
         status: '准备材料', statusCode: 'preparing',
         niceClasses: [35, 42],
         niceClassNames: '35, 42',
@@ -531,17 +598,27 @@ const DataService = (function() {
         messages: [],
         tags: ['海外', '美国', '行政诉讼'],
         createdAt: '2025-08-15', updatedAt: '2026-01-15'
+      },
+      {
+        id: 'TM-2025-0189', brandId: 'haiyi', brandName: '海翼',
+        trademarkImage: '../assets/tm-haiyi.png', type: 'overseas', country: '马德里体系',
+        businessType: '国际申请', businessTypeCode: 'madrid', applicationNumber: '20250815002',
+        status: '审查中', statusCode: 'examining', niceClasses: [9, 35, 42],
+        applicationDate: '2025-08-15', officialDeadline: dateOffset(15), internalDeadline: dateOffset(9),
+        responsibleUser: '李流程', responsibleUserId: 'li', lawFirmName: '金诚律师事务所',
+        timeline: [{ id: 'tl-madrid', title: '国际申请审查', date: '2026-04-25', actor: '李流程', status: 'current', detail: '核对指定成员范围并确认费用凭证。' }],
+        documents: [], messages: [], createdAt: '2025-08-15', updatedAt: '2026-04-25'
       }
     ];
 
     // --- 待办数据 ---
     const todos = [
-      { id: 'todo-1', title: "商标'云智'驳回复审材料准备", caseId: 'TM-2026-0042', caseName: '云智-驳回复审', type: '案件处理', typeLabel: '案件处理', priority: 'urgent', priorityLabel: '紧急', deadline: dateOffset(2), status: 'pending', statusLabel: '待处理', createdAt: '2026-04-20', assignee: 'Missy' },
+      { id: 'todo-1', title: "商标'云智'驳回复审材料准备", caseId: 'TM-2026-0042', caseName: '云智-驳回复审', description: '汇总商标使用证据和理由书修订意见，记录本次材料复核结论。', type: '案件处理', typeLabel: '案件处理', priority: 'urgent', priorityLabel: '紧急', deadline: dateOffset(-1), status: 'pending', statusLabel: '待处理', createdAt: '2026-04-20', assignee: 'Missy' },
       { id: 'todo-2', title: '马德里国际申请WIPO费用支付确认', caseId: 'TM-2025-0189', caseName: '海翼-马德里申请', type: '费用审批', typeLabel: '费用审批', priority: 'high', priorityLabel: '高', deadline: dateOffset(3), status: 'pending', statusLabel: '待审批', createdAt: '2026-04-25', assignee: 'Missy' },
-      { id: 'todo-3', title: '律所提交的异议答辩书审核', caseId: 'TM-2026-0031', caseName: '智联-异议答辩', type: '文件批注', typeLabel: '文件批注', priority: 'high', priorityLabel: '高', deadline: dateOffset(4), status: 'pending', statusLabel: '待批注', createdAt: '2026-04-28', assignee: 'Missy' },
+      { id: 'todo-3', title: '律所提交的异议答辩书审核', caseId: 'TM-2026-0031', caseName: '智联-异议答辩', type: '文件批注', typeLabel: '文件批注', priority: 'high', priorityLabel: '高', deadline: dateOffset(1), status: 'pending', statusLabel: '待批注', createdAt: '2026-04-28', assignee: 'Missy' },
       { id: 'todo-4', title: '品牌A 第35类补充注册评估', caseId: null, caseName: null, type: '风险评估', typeLabel: '风险评估', priority: 'medium', priorityLabel: '中', deadline: dateOffset(8), status: 'pending', statusLabel: '待评估', createdAt: '2026-04-15', assignee: 'Missy' },
       { id: 'todo-5', title: '年度商标续展预算编制', caseId: null, caseName: null, type: '预算编制', typeLabel: '预算编制', priority: 'medium', priorityLabel: '中', deadline: dateOffset(11), status: 'pending', statusLabel: '待编制', createdAt: '2026-04-01', assignee: 'Missy' },
-      { id: 'todo-6', title: "'星联'商标使用证据收集", caseId: 'TM-2025-0098', caseName: '星联-续展', type: '证据管理', typeLabel: '证据管理', priority: 'normal', priorityLabel: '普通', deadline: dateOffset(16), status: 'pending', statusLabel: '待收集', createdAt: '2026-04-10', assignee: 'Missy' },
+      { id: 'todo-6', title: "'星联'商标使用证据收集", caseId: 'TM-2025-0098', caseName: '星联-续展', type: '证据管理', typeLabel: '证据管理', priority: 'normal', priorityLabel: '普通', deadline: dateOffset(4), status: 'pending', statusLabel: '待收集', createdAt: '2026-04-10', assignee: 'Missy' },
       { id: 'todo-7', title: '金诚律所Q2服务评价', caseId: null, caseName: null, type: '服务评价', typeLabel: '服务评价', priority: 'normal', priorityLabel: '普通', deadline: dateOffset(21), status: 'pending', statusLabel: '待评价', createdAt: '2026-04-05', assignee: 'Missy' },
       { id: 'todo-8', title: '商标监测周报确认', caseId: null, caseName: null, type: '监测报告', typeLabel: '监测报告', priority: 'low', priorityLabel: '低', deadline: dateOffset(26), status: 'pending', statusLabel: '待确认', createdAt: '2026-04-20', assignee: 'Missy' }
     ];
@@ -617,12 +694,14 @@ const DataService = (function() {
       { id: 'act-8', type: 'collaboration', typeLabel: '协作', icon: '💬', title: '美国Horizon商标行政诉讼开庭通知', content: 'TTAB已排期，预计2026-06-15开庭', caseId: 'TM-2025-0156', caseName: 'Horizon-行政诉讼', createdAt: '2026-04-18 09:30' }
     ];
 
+    const personal = demoPersonalRecords(cases, todos, storageGet(STORAGE_KEYS.DRAFTS) || {});
     // 演示数据只允许通过显式 seedData() 写入；任一写入失败都不报告成功。
     const writeResults = [
       storageSet(STORAGE_KEYS.BRANDS, brands),
       storageSet(STORAGE_KEYS.LAW_FIRMS, lawFirms),
       storageSet(STORAGE_KEYS.CASES, cases),
-      storageSet(STORAGE_KEYS.TODOS, todos),
+      storageSet(STORAGE_KEYS.TODOS, personal.todos),
+      storageSet(STORAGE_KEYS.DRAFTS, personal.drafts),
       storageSet(STORAGE_KEYS.FEES, fees),
       storageSet(STORAGE_KEYS.FEE_APPS, feeApps),
       storageSet(STORAGE_KEYS.MONITOR_TASKS, monitorTasks),
@@ -661,7 +740,27 @@ const DataService = (function() {
     }
     if (!version && !hasStoredData) return seedData();
     if (version !== CURRENT_VERSION) {
-      // 2.x → 2.3 仅升级元数据；字段迁移必须增量执行，禁止重建样例。
+      const cases = storageGet(STORAGE_KEYS.CASES);
+      if (Array.isArray(cases)) {
+        // Correct only the original sample numbers. Keep user-created and edited records.
+        let changed = false;
+        const migrated = cases.map(record => {
+          const applicationNumber = SAMPLE_APPLICATION_NUMBERS[record.id];
+          if (!applicationNumber || record.applicationNumber || record.registrationNumber !== applicationNumber) return record;
+          changed = true;
+          const details = record.id === 'TM-2026-0042' ? SAMPLE_CASE_DETAILS : {};
+          return { ...details, ...record, applicationNumber, registrationNumber: '' };
+        });
+        if (changed && !storageSet(STORAGE_KEYS.CASES, migrated)) return false;
+      }
+      // Only add personal workspace examples to a store that contains the original demo.
+      if (Array.isArray(cases) && cases.some(record => record.id === 'TM-2026-0042' && record.brandName === '云智')) {
+        const todos = getEntity(STORAGE_KEYS.TODOS);
+        const drafts = storageGet(STORAGE_KEYS.DRAFTS) || {};
+        const personal = demoPersonalRecords(cases, todos, drafts);
+        if (personal.todos.length !== todos.length && !storageSet(STORAGE_KEYS.TODOS, personal.todos)) return false;
+        if (Object.keys(personal.drafts).length !== Object.keys(drafts).length && !storageSet(STORAGE_KEYS.DRAFTS, personal.drafts)) return false;
+      }
       return storageSet(STORAGE_KEYS.VERSION, CURRENT_VERSION);
     }
     return true;
@@ -716,6 +815,33 @@ const DataService = (function() {
 
   // ==================== 案件相关 ====================
   const casesCRUD = createCRUD(STORAGE_KEYS.CASES);
+
+  function nextCaseNumber() {
+    const prefix = 'TM-' + getToday().slice(0, 4) + '-';
+    const existing = casesCRUD.getAll().filter(item => String(item.id).startsWith(prefix));
+    const sequence = existing.reduce((max, item) => {
+      const suffix = item.id.slice(prefix.length);
+      return /^\d+$/.test(suffix) ? Math.max(max, Number(suffix)) : max;
+    }, 0) + 1;
+    return prefix + String(sequence).padStart(4, '0');
+  }
+
+  function addCaseDocument(caseId, document) {
+    const record = casesCRUD.getById(caseId);
+    if (!record || !document.id || !document.name) return null;
+    const documents = record.documents || [];
+    if (documents.some(item => item.id === document.id)) return null;
+    const version = documents.filter(item => item.name === document.name && item.firmId === document.firmId).length + 1;
+    const saved = { ...document, uploadDate: getToday(), version };
+    const manual = saved.source === 'manual';
+    const event = {
+      id: 'tl-' + document.id, title: manual ? '归档文档' : '律所回传材料', date: saved.uploadDate,
+      actor: manual ? CURRENT_USER.name : saved.firmName, status: 'completed', detail: saved.name
+    };
+    return casesCRUD.update(caseId, {
+      documents: [...documents, saved], timeline: [...(record.timeline || []), event]
+    }) ? saved : null;
+  }
 
   function getCases(filters = {}) {
     let results = casesCRUD.getAll();
@@ -775,8 +901,201 @@ const DataService = (function() {
     };
   }
 
+  const SEAL_STATES = Object.freeze({
+    pending_approval: '待企业审批', approving: '企业审批中', sealed: '已登记盖章版',
+    pending_confirm: '待律所确认', completed: '已完成'
+  });
+  const SEAL_DEMO = [
+    ['TM-2026-0042', '驳回复审委托书.pdf', 'pending_approval'],
+    ['TM-2026-0031', '异议答辩授权书.pdf', 'approving'],
+    ['TM-2025-0156', '美国商标诉讼委托书.pdf', 'sealed'],
+    ['TM-2025-0098', '续展申请书.pdf', 'pending_confirm'],
+    ['TM-2026-0028', '不予注册复审委托书.pdf', 'completed'],
+    ['TM-2025-0189', '马德里申请委托书.pdf', 'pending_approval'],
+    ['TM-2026-0071', '撤三答辩委托书.pdf', 'sealed']
+  ];
+
+  function getSealRequests(caseId) {
+    const stored = storageGet(STORAGE_KEYS.SEAL_REQUESTS);
+    const rows = Array.isArray(stored) ? stored : SEAL_DEMO.map(([id, title, status], index) => ({
+      id: 'SP-2026-' + String(index + 1).padStart(4, '0'), caseId: id, title, status,
+      requester: CURRENT_USER.name, createdAt: '2026-05-0' + (8 - index),
+      ...(status !== 'pending_approval' ? { reference: 'AP-2026-' + String(index + 1).padStart(4, '0') } : {}),
+      ...(status === 'completed' ? { confirmNote: '已核对盖章版。' } : {})
+    })).filter(row => casesCRUD.getById(row.caseId));
+    return caseId ? rows.filter(row => row.caseId === caseId) : rows;
+  }
+
+  function createSealRequest({ caseId, title, purpose, documentId, attachment } = {}) {
+    const record = casesCRUD.getById(caseId);
+    title = String(title || '').trim();
+    purpose = String(purpose || '').trim();
+    const material = documentId ? (record?.documents || []).find(doc => doc.id === documentId) : null;
+    if (!record || !title || title.length > 120 || purpose.length > 500 ||
+      (documentId && !material) || (material && attachment) ||
+      (attachment && (!attachment.fileKey || !attachment.name))) return null;
+    const rows = getSealRequests();
+    const today = getToday();
+    const prefix = 'SP-' + today.slice(0, 4) + '-';
+    const sequence = rows.reduce((max, row) => {
+      const suffix = String(row.id).slice(prefix.length);
+      return String(row.id).startsWith(prefix) && /^\d+$/.test(suffix) ? Math.max(max, Number(suffix)) : max;
+    }, 0) + 1;
+    const saved = {
+      id: prefix + String(sequence).padStart(4, '0'), caseId, title, purpose,
+      requester: CURRENT_USER.name, createdAt: today, status: 'pending_approval',
+      source: material ? { documentId, name: material.name, fileKey: material.fileKey || '' } : attachment || null
+    };
+    return setEntity(STORAGE_KEYS.SEAL_REQUESTS, [...rows, saved]) ? saved : null;
+  }
+
+  function advanceSealRequest(id, expected, input = {}) {
+    const rows = getSealRequests();
+    const index = rows.findIndex(row => row.id === id && row.status === expected);
+    if (index < 0) return null;
+    const today = getToday();
+    const reference = String(input.reference || '').trim();
+    const note = String(input.note || '').trim();
+    if (reference.length > 80 || note.length > 500) return null;
+    const updates = {
+      pending_approval: reference ? { reference, status: 'approving' } : null,
+      approving: input.attachment?.fileKey && input.attachment.name
+        ? { stamped: input.attachment, status: 'pending_confirm', sealedAt: today } : null,
+      sealed: { status: 'pending_confirm' },
+      pending_confirm: ['complete','return'].includes(input.decision)
+        ? { confirmNote: note, confirmedAt: today, status: input.decision === 'complete' ? 'completed' : 'pending_approval' } : null
+    };
+    if (!Object.hasOwn(updates, expected) || !updates[expected]) return null;
+    rows[index] = { ...rows[index], ...updates[expected], lastChangedAt: today, lastChangedBy: CURRENT_USER.name };
+    return setEntity(STORAGE_KEYS.SEAL_REQUESTS, rows) ? rows[index] : null;
+  }
+
+  const COPY_DEMO = [
+    ['TM-2026-0056', '王流程', '2026-04-28', true],
+    ['TM-2026-0071', '流程管理部', '2026-04-25', false],
+    ['TM-2025-0189', '李流程', '2026-04-20', false],
+    ['TM-2026-0012', '赵法务', '2026-04-15', false]
+  ];
+
+  function caseCopyRecords() {
+    const rows = storageGet(STORAGE_KEYS.CASE_COPIES);
+    return Array.isArray(rows) ? rows : COPY_DEMO.map(([caseId, sender, copiedAt, following]) => ({
+      caseId, sender, copiedAt, following, recipientId: CURRENT_USER.id, readAt: ''
+    }));
+  }
+
+  function getCopiedCases() {
+    return caseCopyRecords().filter(row => row.recipientId === CURRENT_USER.id)
+      .map(row => ({ ...row, record: casesCRUD.getById(row.caseId) })).filter(row => row.record);
+  }
+
+  function updateCaseCopy(caseId, field, value) {
+    if (!casesCRUD.getById(caseId)) return null;
+    const rows = caseCopyRecords();
+    const index = rows.findIndex(row => row.caseId === caseId && row.recipientId === CURRENT_USER.id);
+    if (index < 0) return null;
+    const current = rows[index];
+    if (current[field] === value || (field === 'readAt' && current.readAt)) return current;
+    rows[index] = { ...current, [field]: value };
+    return setEntity(STORAGE_KEYS.CASE_COPIES, rows) ? rows[index] : null;
+  }
+
   // ==================== 品牌相关 ====================
   const brandsCRUD = createCRUD(STORAGE_KEYS.BRANDS);
+
+  function getBrandCases(brandId) {
+    const brands = brandsCRUD.getAll();
+    const brand = brands.find(item => item.id === brandId);
+    if (!brand) return [];
+    const normalize = value => String(value || '').trim().toLocaleLowerCase('zh-CN');
+    const name = normalize(brand.name);
+    const uniqueName = name && brands.filter(item => normalize(item.name) === name).length === 1;
+    return getCases().filter(record => record.brandId
+      ? record.brandId === brand.id
+      : uniqueName && normalize(record.brandName) === name);
+  }
+
+  const AUTHORIZATION_DEMO = [
+    ['external', 'yunzhi', '品牌管理部', '深圳云智科技有限公司', '产品包装、官网展示、线下门店物料', ['中国', '欧盟'], 'pending'],
+    ['external', 'zhilian', '海外市场部', 'Horizon Tech Inc.', '海外展会宣传册、产品说明书', ['美国', '日本'], 'reviewing'],
+    ['external', 'haiyi', '产品研发部', '北京海翼出行科技有限公司', '智能出行产品线品牌联名', ['中国'], 'approved'],
+    ['external', 'xinglian', '法务部', '深圳星联通信有限公司', '卫星通信设备外包装', ['中国', '美国', '欧盟'], 'rejected'],
+    ['external', 'yuedong', '品牌管理部', '上海悦动服饰有限公司', '运动服饰联名款吊牌、包装盒', ['中国', '韩国'], 'pending'],
+    ['internal', 'yunzhi', '人力资源部', '小米集团人力资源部', '员工工牌、内部培训资料', ['中国'], 'approved'],
+    ['internal', 'zhilian', '行政部', '小米集团行政部', '办公区域标识、会议室命名', ['中国'], 'reviewing'],
+    ['internal', 'haiyi', '财务部', '小米集团财务部', '年度财报封面、内部演示文稿', ['中国'], 'pending'],
+    ['internal', 'xinglian', '知识产权部', '小米集团知识产权部', '内部专利墙展示、技术评审材料', ['中国'], 'rejected'],
+    ['internal', 'yuedong', '市场部', '小米集团市场部', '内部活动策划、员工运动会物料', ['中国'], 'pending']
+  ];
+
+  const LICENSE_PREFIX = Object.freeze({ external: 'AE', internal: 'AI' });
+
+  function demoBrandAuthorizations() {
+    const ids = new Set(brandsCRUD.getAll().map(record => record.id));
+    return AUTHORIZATION_DEMO.map(([kind, brandId, department, holder, purpose, territories, status], index) => {
+      const number = index % 5 + 1;
+      return {
+        id: LICENSE_PREFIX[kind] + '-2026-' + String(number).padStart(4, '0'),
+        kind, brandId, department, holder, purpose, territories: [...territories], status,
+        startDate: '2026-' + String(number + 5).padStart(2, '0') + '-01',
+        endDate: ['2027-05-31', '2027-06-30', '2027-07-31', '2027-08-31', '2027-09-30'][number - 1],
+        createdAt: '2026-05-0' + number, caseId: '', needsCertificate: kind === 'external' && number !== 3,
+        ...(status === 'approved' || status === 'rejected' ? {
+          reviewedBy: CURRENT_USER.name, reviewedAt: '2026-05-0' + number,
+          reviewNote: status === 'approved' ? '同意在登记范围内使用。' : '请缩小使用范围后重新申请。'
+        } : {})
+      };
+    }).filter(record => ids.has(record.brandId));
+  }
+
+  function getBrandAuthorizations(kind) {
+    const stored = storageGet(STORAGE_KEYS.BRAND_AUTHORIZATIONS);
+    const records = Array.isArray(stored) ? stored : demoBrandAuthorizations();
+    return kind ? records.filter(record => record.kind === kind) : records;
+  }
+
+  function createBrandAuthorization(kind, values) {
+    if (!Object.hasOwn(LICENSE_PREFIX, kind) || !values) return null;
+    const field = key => String(values[key] ?? '').trim();
+    const brandId = field('brandId');
+    const caseId = field('caseId');
+    const holder = field('holder');
+    const department = field('department');
+    const purpose = field('purpose');
+    const startDate = field('startDate');
+    const endDate = field('endDate');
+    const territories = [...new Set(field('territories').split(/[、，,；;]+/).map(value => value.trim()).filter(Boolean))];
+    const term = daysBetween(startDate, endDate);
+
+    if (!brandsCRUD.getById(brandId) || (caseId && !getBrandCases(brandId).some(record => record.id === caseId)) ||
+      !holder || holder.length > 120 || !department || department.length > 80 ||
+      !purpose || purpose.length > 500 || !territories.length || territories.length > 20 ||
+      territories.join('、').length > 140 || !Number.isFinite(term) || term < 0) return null;
+
+    const records = getBrandAuthorizations();
+    const today = getToday();
+    const prefix = LICENSE_PREFIX[kind] + '-' + today.slice(0, 4) + '-';
+    const next = records.reduce((max, record) => {
+      const suffix = String(record.id).slice(prefix.length);
+      return String(record.id).startsWith(prefix) && /^\d+$/.test(suffix) ? Math.max(max, Number(suffix)) : max;
+    }, 0) + 1;
+    const record = {
+      id: prefix + String(next).padStart(4, '0'), kind, brandId, caseId, department, holder, purpose,
+      territories, startDate, endDate, status: 'pending', createdAt: today, createdBy: CURRENT_USER.name,
+      reference: field('reference').slice(0, 80), needsCertificate: values.needsCertificate === true
+    };
+    return setEntity(STORAGE_KEYS.BRAND_AUTHORIZATIONS, [...records, record]) ? record : null;
+  }
+
+  function reviewBrandAuthorization(kind, id, status, opinion) {
+    const reviewNote = String(opinion || '').trim();
+    if (!['approved', 'rejected'].includes(status) || !reviewNote || reviewNote.length > 500) return null;
+    const records = getBrandAuthorizations();
+    const index = records.findIndex(record => record.id === id && record.kind === kind);
+    if (index === -1 || !['pending', 'reviewing'].includes(records[index].status)) return null;
+    records[index] = { ...records[index], status, reviewNote, reviewedAt: getToday(), reviewedBy: CURRENT_USER.name };
+    return setEntity(STORAGE_KEYS.BRAND_AUTHORIZATIONS, records) ? records[index] : null;
+  }
 
   function getBrandMatrix() {
     const brands = brandsCRUD.getAll();
@@ -784,7 +1103,7 @@ const DataService = (function() {
     brands.forEach(brand => {
       matrix[brand.id] = {};
       for (let i = 1; i <= 45; i++) {
-        const cls = brand.classMatrix[String(i)];
+        const cls = brand.classMatrix?.[String(i)];
         if (cls) {
           matrix[brand.id][i] = cls.status;
         } else {
@@ -800,7 +1119,7 @@ const DataService = (function() {
     const gaps = [];
     brands.forEach(brand => {
       for (let i = 1; i <= 45; i++) {
-        const cls = brand.classMatrix[String(i)];
+        const cls = brand.classMatrix?.[String(i)];
         if (!cls || cls.status === 'gap') {
           const isCore = [9, 35, 38, 42].includes(i);
           gaps.push({
@@ -826,18 +1145,151 @@ const DataService = (function() {
     });
   }
 
-  function completeTodo(id) {
-    return todosCRUD.update(id, { status: 'completed', completedAt: getToday() });
+  function completeTodo(id, note) {
+    return todosCRUD.update(id, {
+      ...(note === undefined ? {} : { note }),
+      status: 'completed', statusLabel: '已完成', completedAt: getToday(),
+      completedTimestamp: new Date().toISOString(), completedById: CURRENT_USER.id, completedBy: CURRENT_USER.name
+    });
   }
 
   // ==================== 费用相关 ====================
   const feesCRUD = createCRUD(STORAGE_KEYS.FEES);
   const feeAppsCRUD = createCRUD(STORAGE_KEYS.FEE_APPS);
 
+  const reportsCRUD = createCRUD(STORAGE_KEYS.REPORTS);
+  const FEE_APPLICATION_TYPES = Object.freeze({ budget: '预算申请', reimburse: '费用报销', supplement: '追加预算', advance: '预付款申请' });
+  const FEE_TYPES = Object.freeze(['代理费', '官费', '翻译费', '公证认证费', '差旅费', '其他']);
+  const FEE_CURRENCIES = Object.freeze(['CNY', 'USD', 'EUR', 'JPY']);
+  const REPORT_TYPES = Object.freeze({ overview: '商标全局概览报告', risk: '品牌风险分析报告', fee: '费用管理分析报告', firm: '律所绩效评估报告' });
+  const ANNUAL_BUDGET = 2800000;
+
+  function amountInMinorUnits(value, currency) {
+    const amount = String(value ?? '').trim();
+    const pattern = currency === 'JPY' ? /^\d{1,8}$/ : /^\d{1,8}(?:\.\d{1,2})?$/;
+    return pattern.test(amount) ? Math.round(Number(amount) * 100) : 0;
+  }
+
+  function submitFeeApplication({ title, type, currency, caseId, department, description, items }) {
+    title = String(title || '').trim();
+    if (!title || title.length > 100 || !Object.hasOwn(FEE_APPLICATION_TYPES, type) ||
+        !FEE_CURRENCIES.includes(currency) || !Array.isArray(items) || !items.length || items.length > 20) return null;
+    const linked = caseId ? casesCRUD.getById(caseId) : null;
+    if (caseId && !linked) return null;
+    const details = items.map(item => ({ type: item.type, note: String(item.note || '').trim().slice(0, 120), cents: amountInMinorUnits(item.amount, currency) }));
+    if (details.some(item => !FEE_TYPES.includes(item.type) || item.cents <= 0)) return null;
+    const prefix = 'FA-' + getToday().slice(0, 4) + '-';
+    const next = feeAppsCRUD.getAll().reduce((max, app) => {
+      const suffix = String(app.id).slice(prefix.length);
+      return String(app.id).startsWith(prefix) && /^\d+$/.test(suffix) ? Math.max(max, Number(suffix)) : max;
+    }, 0) + 1;
+    department = String(department || '知识产权部').trim().slice(0, 60);
+    const now = new Date().toISOString();
+    return feeAppsCRUD.create({
+      id: prefix + String(next).padStart(4, '0'), title, applicationType: type,
+      caseId: linked?.id || null, caseName: linked?.brandName || null, firmName: linked?.lawFirmName || '',
+      applicant: CURRENT_USER.name, applicantDept: department, currency,
+      amount: details.reduce((total, item) => total + item.cents, 0) / 100,
+      items: details.map(({ type, note, cents }) => ({ type, typeLabel: type, note, amount: cents / 100 })),
+      description: String(description || '').trim().slice(0, 500),
+      status: 'pending', statusLabel: '待审批', submittedAt: now,
+      flow: [
+        { level: 1, role: '提交申请', name: CURRENT_USER.name, dept: department, status: 'completed', actionAt: now },
+        { level: 2, role: '部门审批', dept: department, status: 'current', actionAt: null },
+        { level: 3, role: '财务审批', dept: '财务部', status: 'pending', actionAt: null }
+      ]
+    });
+  }
+
+  function amountByCurrency(records, amount = record => record.amount) {
+    const totals = new Map();
+    for (const record of records) {
+      const currency = record.currency || 'CNY';
+      const cents = Math.round(Number(amount(record)) * 100);
+      if (Number.isFinite(cents)) totals.set(currency, (totals.get(currency) || 0) + cents);
+    }
+    return [...totals].map(([currency, cents]) => ({ currency, amount: cents / 100 }));
+  }
+
+  const feeLedgerDate = fee => String(fee.paidAt || fee.createdAt || '').slice(0, 10);
+
+  function getFinanceOverview() {
+    const today = getToday();
+    const year = today.slice(0, 4);
+    const elapsed = Number(today.slice(5, 7));
+    const pending = feeAppsCRUD.getAll().filter(app => app.status === 'pending');
+    const paid = feesCRUD.getAll().filter(fee => fee.status === 'paid' && feeLedgerDate(fee).startsWith(year + '-') && feeLedgerDate(fee) <= today &&
+      (fee.currency || 'CNY') === 'CNY');
+    let cumulative = 0;
+    const monthData = Array.from({ length: elapsed }, (_, index) => {
+      const month = index + 1;
+      const prefix = year + '-' + String(month).padStart(2, '0') + '-';
+      const cents = paid.filter(fee => feeLedgerDate(fee).startsWith(prefix))
+        .reduce((sum, fee) => sum + Math.round(Number(fee.paid ?? fee.amount) * 100), 0);
+      cumulative += cents;
+      return { month, amount: cents / 100, cumulative: cumulative / 100, budget: ANNUAL_BUDGET / 12 };
+    });
+    const quarterData = [];
+    for (let index = 0; index < monthData.length; index += 3) {
+      const slice = monthData.slice(index, index + 3);
+      quarterData.push({
+        label: '第 ' + (index / 3 + 1) + ' 季度',
+        amount: slice.reduce((sum, month) => sum + Math.round(month.amount * 100), 0) / 100,
+        budget: slice.length * ANNUAL_BUDGET / 12
+      });
+    }
+    const totalSpent = cumulative / 100;
+    return {
+      year, annualBudget: ANNUAL_BUDGET, totalSpent, remaining: ANNUAL_BUDGET - totalSpent,
+      executionRate: totalSpent / ANNUAL_BUDGET * 100, pendingCount: pending.length,
+      pendingTotals: amountByCurrency(pending), monthData, quarterData
+    };
+  }
+
+  function createManagementReport({ type, period = 'all', from = '', to = '' }) {
+    if (!Object.hasOwn(REPORT_TYPES, type)) return null;
+    const today = getToday();
+    if (period === 'year') {
+      from = today.slice(0, 4) + '-01-01';
+      to = today;
+    } else if (period === 'month') {
+      from = today.slice(0, 7) + '-01';
+      to = today;
+    } else if (period === 'all') {
+      from = to = '';
+    } else if (period !== 'custom' || !Number.isFinite(daysBetween(from, to)) || from > to) {
+      return null;
+    }
+    const inRange = date => !from || (date && date.slice(0, 10) >= from && date.slice(0, 10) <= to);
+    const cases = getCases().filter(record => inRange(record.createdAt || record.applicationDate));
+    const alerts = monitorResultsCRUD.getAll().filter(record => inRange(record.monitorDate));
+    const apps = feeAppsCRUD.getAll().filter(record => inRange(record.createdAt));
+    const bills = feesCRUD.getAll().filter(record => inRange(feeLedgerDate(record)));
+    const firms = lawFirmsCRUD.getAll().map(firm => ({
+      id: firm.id, name: firm.name, rating: firm.rating, responseTime: firm.responseTimeFormatted,
+      cases: getLawFirmCases(firm.id, cases).length
+    })).filter(firm => period === 'all' || firm.cases > 0);
+    const snapshot = {
+      caseCount: cases.length,
+      jurisdictionCount: new Set(cases.map(record => record.country).filter(Boolean)).size,
+      upcomingCount: cases.filter(record => isDeadlineWithin(record.officialDeadline, today, 7)).length,
+      cases: cases.map(({ id, brandName, country, status, officialDeadline }) => ({ id, brandName, country, status, officialDeadline })),
+      alerts: alerts.map(({ id, matchedName, keyword, riskLevel, monitorDate }) => ({ id, matchedName, keyword, riskLevel, monitorDate })),
+      applications: apps.map(({ id, title, status, amount, currency, createdAt }) => ({ id, title, status, amount, currency, createdAt })),
+      pendingTotals: amountByCurrency(apps.filter(app => app.status === 'pending')),
+      paidTotals: amountByCurrency(bills.filter(fee => fee.status === 'paid'), fee => fee.paid ?? fee.amount),
+      billCount: bills.length, firms
+    };
+    return reportsCRUD.create({
+      id: generateId('RPT'), title: REPORT_TYPES[type], type, period, from, to,
+      generatedAt: new Date().toISOString(), snapshot
+    });
+  }
+
   function getFeeStats() {
     const fees = feesCRUD.getAll();
     const apps = feeAppsCRUD.getAll();
-    const annualBudget = 2800000;
+    const annualBudget = ANNUAL_BUDGET;
     const totalSpent = fees.filter(f => f.status === 'paid').reduce((s, f) => s + f.amount, 0);
     const totalPending = apps.filter(a => a.status === 'pending').reduce((s, a) => s + a.amount, 0);
     const remaining = annualBudget - totalSpent;
@@ -861,6 +1313,44 @@ const DataService = (function() {
   // ==================== 律所相关 ====================
   const lawFirmsCRUD = createCRUD(STORAGE_KEYS.LAW_FIRMS);
 
+  const normalizeFirmName = value => String(value || '').trim().normalize('NFKC').toLocaleLowerCase('zh-CN');
+  const firmNames = firm => [firm.name, ...(firm.formerNames || [])].map(normalizeFirmName);
+
+  function resolveCaseLawFirm(record, firms = lawFirmsCRUD.getAll()) {
+    if (record.lawFirmId) return firms.find(firm => firm.id === record.lawFirmId);
+    const name = normalizeFirmName(record.lawFirmName);
+    if (!name) return undefined;
+    const matches = firms.filter(firm => firmNames(firm).includes(name));
+    return matches.length === 1 ? matches[0] : undefined;
+  }
+
+  function getLawFirmCases(id, records = getCases()) {
+    const firms = lawFirmsCRUD.getAll();
+    if (!firms.some(firm => firm.id === id)) return [];
+    return records.filter(record => resolveCaseLawFirm(record, firms)?.id === id);
+  }
+
+  function saveLawFirmProfile(id, values) {
+    const name = String(values.name || '').trim();
+    const renewDate = String(values.renewDate || '');
+    if (!name || name.length > 100 || !['active', 'paused'].includes(values.status) ||
+        (renewDate && !Number.isFinite(daysBetween(renewDate, renewDate)))) return null;
+    const firms = lawFirmsCRUD.getAll();
+    const firm = firms.find(record => record.id === id);
+    if (id && !firm) return null;
+    if (firms.some(record => record.id !== id && firmNames(record).includes(normalizeFirmName(name)))) return null;
+
+    const profile = {
+      name, status: values.status, renewDate,
+      contact: String(values.contact || '').trim().slice(0, 80),
+      email: String(values.email || '').trim().slice(0, 150),
+      feeRange: String(values.feeRange || '').trim().slice(0, 80)
+    };
+    if (!firm) return lawFirmsCRUD.create({ id: generateId('firm'), ...profile, casesCount: 0, reviews: [], expertise: {} });
+    const formerNames = [...new Set([...(firm.formerNames || []), firm.name])].filter(alias => normalizeFirmName(alias) !== normalizeFirmName(name));
+    return lawFirmsCRUD.update(id, { ...profile, formerNames });
+  }
+
   function getLawFirmStats() {
     const firms = lawFirmsCRUD.getAll();
     return {
@@ -873,6 +1363,33 @@ const DataService = (function() {
 
   // ==================== 监测相关 ====================
   const monitorResultsCRUD = createCRUD(STORAGE_KEYS.MONITOR_RESULTS);
+
+  function getMonitorTodo(resultId) {
+    return todosCRUD.getAll().find(task => task.sourceMonitorResultId === resultId) || null;
+  }
+
+  function createMonitorTodo(resultId, { caseId = '', deadline = '' } = {}) {
+    const result = monitorResultsCRUD.getById(resultId);
+    if (!result) return null;
+    const existing = getMonitorTodo(resultId);
+    if (existing) return existing;
+    const related = caseId ? casesCRUD.getById(caseId) : null;
+    if (caseId && !related) return null;
+    if (deadline && !Number.isFinite(daysBetween(getToday(), deadline))) return null;
+    const type = '风险评估';
+    return todosCRUD.create({
+      id: 'todo-monitor-' + result.id,
+      title: '复核监测预警 · ' + result.matchedName,
+      sourceMonitorResultId: result.id, caseId: related?.id || null, caseName: related?.brandName || null,
+      type, typeLabel: type, priority: result.riskLevel === 'high' ? 'high' : 'medium',
+      deadline, assignee: CURRENT_USER.name, status: 'pending', statusLabel: '待处理',
+      description: [
+        '监测关键词：' + result.keyword, '近似商标：' + result.matchedName,
+        '申请号：' + (result.appNo || '未登记'),
+        result.niceClass ? '尼斯分类：第 ' + result.niceClass + ' 类' : ''
+      ].filter(Boolean).join(' · ')
+    });
+  }
 
   function getMonitorStats() {
     const results = monitorResultsCRUD.getAll();
@@ -919,7 +1436,68 @@ const DataService = (function() {
   function saveDraft(key, data) {
     const drafts = storageGet(STORAGE_KEYS.DRAFTS) || {};
     drafts[key] = { data, savedAt: new Date().toISOString() };
-    storageSet(STORAGE_KEYS.DRAFTS, drafts);
+    return storageSet(STORAGE_KEYS.DRAFTS, drafts);
+  }
+
+  function isCaseDraftId(key) {
+    return key === 'workbench-case-create' || /^case-draft-[a-z0-9-]+$/i.test(key || '');
+  }
+
+  function getCaseDrafts() {
+    const drafts = storageGet(STORAGE_KEYS.DRAFTS) || {};
+    const submitted = new Set(casesCRUD.getAll().map(record => record.sourceDraftId));
+    return Object.entries(drafts)
+      .filter(([id, draft]) => isCaseDraftId(id) && draft?.data && !submitted.has(id))
+      .map(([id, draft]) => ({ ...draft, id }));
+  }
+
+  function getCaseFromDraft(id) {
+    if (!isCaseDraftId(id)) return null;
+    return casesCRUD.getAll().find(record => record.sourceDraftId === id) || null;
+  }
+
+  function createCaseFromDraft(id, record) {
+    const existing = getCaseFromDraft(id);
+    if (existing) return existing;
+    if (!isCaseDraftId(id) || !getDraft(id)) return null;
+    const saved = casesCRUD.create({ ...record, sourceDraftId: id });
+    if (saved) clearDraft(id);
+    return saved;
+  }
+
+  function demoPersonalRecords(cases, todos, drafts) {
+    function daysAgo(days) {
+      const date = new Date(getToday() + 'T04:00:00Z');
+      date.setUTCDate(date.getUTCDate() - days);
+      return date.toISOString();
+    }
+    const nextDrafts = { ...drafts };
+    const examples = [
+      ['case-draft-demo-aurora', daysAgo(0), { brandName: '极光', applicant: '北京极光智能科技有限公司', country: '中国', businessTypeCode: 'new_apply', niceClasses: '9、42', goodsServices: '可下载的应用软件、软件即服务（SaaS）' }],
+      ['case-draft-demo-farshore', daysAgo(2), { brandName: '远汐', applicant: '深圳远汐科技有限公司', country: '欧盟', businessTypeCode: 'new_apply', niceClasses: '9', goodsServices: '智能家居控制设备' }]
+    ];
+    for (const [id, savedAt, data] of examples) {
+      if (Object.hasOwn(nextDrafts, id) || cases.some(record => record.sourceDraftId === id)) continue;
+      nextDrafts[id] = { savedAt, data: { ...data, responsibleUserId: CURRENT_USER.id, statusCode: 'preparing' } };
+    }
+
+    const nextTodos = [...todos];
+    const history = [
+      ['todo-demo-completed-evidence', 'TM-2026-0042', 1, '云智使用证据初核', '证据管理', '已核对发票、带标商品图片与对应日期，供复审材料引用。'],
+      ['todo-demo-completed-review', 'TM-2026-0031', 3, '智联异议答辩材料归档', '文件审阅', '已整理答辩底稿及附件清单。']
+    ];
+    for (const [id, caseId, days, title, type, note] of history) {
+      const record = cases.find(item => item.id === caseId);
+      if (!record || nextTodos.some(task => task.id === id)) continue;
+      const timestamp = daysAgo(days);
+      nextTodos.push({
+        id, caseId, caseName: record.brandName, title, type, typeLabel: type, priority: 'normal',
+        status: 'completed', statusLabel: '已完成', assignee: CURRENT_USER.name,
+        completedById: CURRENT_USER.id, completedBy: CURRENT_USER.name,
+        completedAt: timestamp.slice(0, 10), completedTimestamp: timestamp, note
+      });
+    }
+    return { todos: nextTodos, drafts: nextDrafts };
   }
 
   function getDraft(key) {
@@ -930,7 +1508,7 @@ const DataService = (function() {
   function clearDraft(key) {
     const drafts = storageGet(STORAGE_KEYS.DRAFTS) || {};
     delete drafts[key];
-    storageSet(STORAGE_KEYS.DRAFTS, drafts);
+    return storageSet(STORAGE_KEYS.DRAFTS, drafts);
   }
 
   // ==================== 导出接口 ====================
@@ -942,6 +1520,15 @@ const DataService = (function() {
     // 常量
     NICE_CLASS_NAMES,
     STATUS_MAP,
+    CURRENT_USER,
+    FEE_APPLICATION_TYPES,
+    FEE_TYPES,
+    FEE_CURRENCIES,
+    REPORT_TYPES,
+    STAFF_ROLES,
+    STAFF_STORAGE_KEY: STORAGE_KEYS.STAFF,
+    getStaff,
+    setStaffRole,
 
     // 工具
     generateId,
@@ -954,16 +1541,33 @@ const DataService = (function() {
     getCases,
     getCaseById: casesCRUD.getById,
     createCase: casesCRUD.create,
+    createCaseFromDraft,
+    getCaseFromDraft,
+    getCaseDrafts,
+    nextCaseNumber,
+    addCaseDocument,
     updateCase: casesCRUD.update,
     deleteCase: casesCRUD.delete,
     batchSetCaseEnabled,
     getCaseStats,
+    SEAL_STATES,
+    getSealRequests,
+    createSealRequest,
+    advanceSealRequest,
+    getCopiedCases,
+    markCaseCopyRead: caseId => updateCaseCopy(caseId, 'readAt', getToday()),
+    setCaseCopyFollowing: (caseId, following) => updateCaseCopy(caseId, 'following', Boolean(following)),
 
     // 品牌
     getBrands: brandsCRUD.getAll,
     getBrandById: brandsCRUD.getById,
+    createBrand: brandsCRUD.create,
+    getBrandCases,
     getBrandMatrix,
     getGapAnalysis,
+    getBrandAuthorizations,
+    createBrandAuthorization,
+    reviewBrandAuthorization,
     updateBrand: brandsCRUD.update,
 
     // 待办
@@ -980,6 +1584,12 @@ const DataService = (function() {
     getFeeById: feesCRUD.getById,
     createFee: feesCRUD.create,
     getFeeStats,
+    getFinanceOverview,
+    amountInMinorUnits,
+    amountByCurrency,
+    submitFeeApplication,
+    createManagementReport,
+    getManagementReport: reportsCRUD.getById,
     getFeeApplications: feeAppsCRUD.getAll,
     getFeeAppById: feeAppsCRUD.getById,
     createFeeApplication: feeAppsCRUD.create,
@@ -1000,6 +1610,9 @@ const DataService = (function() {
     getLawFirms: lawFirmsCRUD.getAll,
     getLawFirmById: lawFirmsCRUD.getById,
     getLawFirmStats,
+    getLawFirmCases,
+    resolveCaseLawFirm,
+    saveLawFirmProfile,
     rateLawFirm: (id, score, comment) => {
       const firm = lawFirmsCRUD.getById(id);
       if (!firm) return null;
@@ -1014,6 +1627,8 @@ const DataService = (function() {
     getMonitorResults: monitorResultsCRUD.getAll,
     getMonitorResultById: monitorResultsCRUD.getById,
     getMonitorStats,
+    getMonitorTodo,
+    createMonitorTodo,
     handleMonitorResult: (id, action) => {
       const statusMap = { oppose: 'opposed', negotiate: 'negotiating', watch: 'watching' };
       return monitorResultsCRUD.update(id, { status: statusMap[action] || 'handled' });

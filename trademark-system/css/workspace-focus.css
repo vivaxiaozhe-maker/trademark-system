@@ -1,0 +1,191 @@
+/* First-screen styles used by the workbench and case detail. */
+:is([data-view="home"], [data-view="detail"]) .wb-main {
+  --accent: #345477;
+  --accent-hover: #1c365f;
+  --accent-soft: #eaf0f9;
+  --focus-navy: #1b304e;
+  --focus-tint: #eff4fb;
+  --focus-density: #e3e9f1;
+  --focus-radius: 10px;
+}
+
+.wb-focus-head { margin-bottom: 16px; }
+.wb-focus-head h1 { letter-spacing: -.035em; }
+.wb-focus-panel { border-radius: var(--focus-radius); }
+.wb-focus-panel .wb-panel-head { padding: 14px 17px; }
+.wb-desk {
+  display: grid;
+  margin-bottom: 16px; border-radius: var(--focus-radius);
+  border-color: #d4deec; box-shadow: 0 1px 3px rgb(25 47 82 / .05);
+}
+.wb-desk > section { min-width: 0; padding: 13px 17px 10px; }
+.wb-desk .wb-focus-horizon { border-top: 1px solid var(--focus-density); }
+.wb-desk-head, .wb-desk-title { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 9px; }
+.wb-desk-head { justify-content: space-between; min-height: 47px; margin-bottom: 8px; }
+.wb-desk-title { min-width: 0; }
+.wb-desk-all, .wb-desk-overdue { display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 650; }
+.wb-desk-all { min-height: 44px; font-size: 12px; }
+.wb-desk-overdue { min-height: 26px; border-radius: 5px; padding: 2px 6px; color: var(--danger); background: var(--danger-soft); font-size: 12px; white-space: nowrap; }
+.wb-desk-all:hover, .wb-desk-overdue:hover { text-decoration: underline; }
+.wb-focus-reminders .wb-home-list > li + li, .wb-focus-recent .wb-home-list > li + li { border-color: var(--focus-density); }
+.wb-desk-more { border-top: 1px solid var(--focus-density); }
+.wb-desk-more summary { min-height: 36px; align-content: center; color: var(--accent); font-size: 12px; font-weight: 650; }
+.wb-desk-more summary:hover { text-decoration: underline; text-underline-offset: 3px; }
+.wb-desk-meta { display: flex; gap: 1px 15px; flex-wrap: wrap; padding-top: 4px; border-top: 1px solid var(--focus-density); }
+.wb-desk-meta a { display: inline-flex; align-items: center; min-height: 30px; text-decoration: none; color: var(--muted); font-size: 12px; }
+.wb-desk-meta a:hover { color: var(--accent-hover); text-decoration: underline; }
+.wb-desk-case-meta #home-upcoming-link { color: var(--accent); font-weight: 650; }
+.wb-desk-case-meta .wb-desk-alert-link { color: var(--danger); }
+
+.wb-desk-horizon { container-type: inline-size; }
+.wb-focus-horizon .wb-steps { flex-wrap: nowrap; background: var(--focus-tint); }
+.wb-focus-horizon .wb-steps button { min-height: 44px; min-width: 53px; }
+.wb-desk-rail { display: grid; grid-template-columns: repeat(8, minmax(0,1fr)); gap: 3px; }
+.wb-desk-rail[data-range="30"] { grid-template-columns: repeat(6, minmax(0,1fr)); }
+.wb-period {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-width: 0; min-height: 63px; padding: 4px 2px;
+  border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--ink); text-align: center;
+}
+.wb-period:hover { background: #f5f8fd; }
+.wb-period[aria-pressed="true"] { background: var(--focus-tint); border-color: #ceddf2; color: var(--accent-hover); }
+.wb-period-weekday, .wb-period-count { color: var(--muted); font-size: 11px; }
+.wb-period-day { font-size: 15px; font-weight: 700; }
+.wb-period-mark {
+  color: var(--accent); font-size: 10px; font-variant-numeric: tabular-nums;
+  font-weight: 720; line-height: 1.2; min-height: 12px;
+}
+.wb-period-endpoints { font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.wb-desk-results { min-height: 70px; padding: 7px 0 4px; }
+.wb-period-result-head { display: flex; justify-content: space-between; align-items: baseline; gap: 5px 8px; flex-wrap: wrap; margin-bottom: 1px; }
+.wb-period-result-head h3 { font-size: 12px; color: var(--muted); font-weight: 630; }
+.wb-period-records { list-style: none; margin: 0; padding: 0; }
+.wb-period-records li + li { border-top: 1px solid var(--focus-density); }
+.wb-period-record {
+  display: grid; grid-template-columns: minmax(0,1fr) auto auto auto; gap: 6px; align-items: center;
+  min-height: 41px; padding: 3px 5px; border-radius: 6px; color: var(--focus-navy); text-decoration: none;
+}
+.wb-period-record:hover { background: var(--focus-tint); }
+.wb-period-record .wb-mono, .wb-period-record time { color: var(--muted); font-size: 11px; white-space: nowrap; }
+.wb-period-record time { font-variant-numeric: tabular-nums; }
+.wb-period-record > svg { justify-self: end; color: var(--accent); }
+.wb-period-empty { color: var(--muted); font-size: 13px; padding: 8px 4px; }
+@container (max-width: 397px) {
+  .wb-desk-rail { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 3px 5px; }
+  .wb-desk-rail[data-range="30"] { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .wb-period { min-height: 51px; }
+}
+.wb-focus-home-grid { grid-template-columns: minmax(0,1.15fr) minmax(295px,1fr); gap: 15px; align-items: start; }
+.wb-focus-types .wb-donut-layout { gap: 17px; padding: 1px; }
+.wb-focus-types .wb-donut { border: 1px solid #dbe5f3; }
+.wb-focus-types .wb-donut strong { color: var(--focus-navy); }
+.wb-focus-types .wb-chart-legend a:hover { background: var(--focus-tint); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .wb-period, .wb-period-record { transition: background-color var(--interaction-time) ease, color var(--interaction-time) ease, border-color var(--interaction-time) ease; }
+  .wb-period-readout.is-updated { animation: wb-period-reveal var(--reveal-time) cubic-bezier(.2,.65,.34,1) both; }
+}
+@keyframes wb-period-reveal { from { opacity: .68; transform: translateY(2px); } }
+
+/* The work list and its column labels share one grid. Each row is one link. */
+.wb-focus-head > div:first-child { display: flex; align-items: baseline; flex-wrap: wrap; gap: 3px 14px; }
+.wb-focus-head h1 { font-size: 24px; }
+.wb-focus-head .wb-subtitle { margin: 0; }
+.wb-queue-labels, .wb-focus-reminders .wb-home-reminder {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(110px, 1fr) minmax(70px,.65fr) 110px 54px;
+  gap: 12px; align-items: center; padding: 7px 12px;
+}
+.wb-queue-labels { color: var(--muted); background: #f2f5f8; border-radius: 5px; font-size: 12px; }
+.wb-focus-reminders .wb-home-reminder { position: relative; min-height: 51px; border-radius: 4px; }
+.wb-compact-owner { display: none; }
+.wb-queue-go { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-size: 12px; font-weight: 650; }
+.wb-queue-case, .wb-queue-owner { color: var(--muted); overflow-wrap: anywhere; }
+.wb-focus-reminders .wb-reminder-date { justify-self: start; text-align: start; }
+.wb-focus-reminders .wb-date-state { margin-left: 0; }
+.wb-home-reminder[data-deadline-tone="danger"]::before {
+  content: ''; position: absolute; inset: 13px auto 13px 0; width: 3px; border-radius: 2px; background: var(--danger);
+}
+.wb-home-reminder[data-deadline-tone="danger"] .wb-date { color: var(--danger); }
+.wb-desk-rail { border-block: 1px solid var(--focus-density); padding-block: 4px; }
+.wb-period[aria-pressed="true"] { box-shadow: inset 0 -2px #53759b; }
+.wb-focus-horizon .wb-desk-head { margin-bottom: 3px; }
+.wb-period-record { background: #f7f9fc; padding-inline: 10px; }
+
+/* A single folio surface under identity, deadlines and reference fields. */
+.wb-folio {
+  --gutter: clamp(16px, 2.1vw, 31px);
+  position: relative; isolation: isolate; display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(265px, 1fr);
+  grid-template-areas: "identity action" "dates action" "facts action";
+  column-gap: 22px; margin: 5px 0 20px;
+}
+.wb-folio::before {
+  content: ''; grid-area: 1 / 1 / 4 / 2; z-index: -1;
+  background: #fff; border: 1px solid #d1dae5; border-radius: 10px;
+  box-shadow: 2px -3px 0 -1px #c7d6e7, 0 2px 5px rgb(31 48 70 / .06);
+}
+.wb-folio > * { min-width: 0; }
+.wb-folio-identity { grid-area: identity; padding: 24px var(--gutter) 18px; }
+.wb-folio-identity h1 { font-size: 25px; line-height: 1.3; }
+.wb-folio-identity .wb-thumb { width: 52px; height: 52px; border: 1px solid #e1e6eb; border-radius: 9px; }
+.wb-folio-identity .wb-chip { background: #edf0f3; color: #475568; }
+.wb-folio-dates { grid-area: dates; margin-inline: var(--gutter); border-radius: 6px; scroll-margin-top: 12px; }
+.wb-official-band { display: flex; align-items: center; gap: 14px; padding: 14px 17px; border-radius: 6px; background: #edf2f8; color: var(--focus-navy); border-inline-start: 2px solid #95abc4; }
+.wb-date-symbol { display: grid; place-items: center; color: #526d8a; }
+.wb-official-date dt, .wb-procedure-date dt, .wb-task-owner span { font-size: 12px; color: #4d6077; font-weight: 560; }
+.wb-official-date dd, .wb-procedure-date, .wb-procedure-date dd, .wb-task-owner { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 10px; }
+.wb-official-date dd { margin-top: 3px; }
+.wb-official-day { font-size: clamp(20px,1.65vw,25px); line-height: 1.4; font-weight: 690; }
+.wb-internal-date { padding: 13px 3px; }
+.wb-procedure-date time { font-weight: 650; }
+.wb-folio-info { grid-area: facts; padding: 0 var(--gutter) 21px; }
+.wb-folio-info-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 6px; padding-block: 16px; border-top: 1px solid var(--focus-density); }
+.wb-folio-info .wb-key-values { padding: 0; gap: 13px 24px; }
+.wb-folio-info .wb-field-wide { border: 0; padding: 0; }
+.wb-folio-info dd { font-weight: 540; }
+.wb-docket {
+  grid-area: action; align-self: start; border: 1px solid #d0dae6; border-radius: 9px;
+  background: #f8fafc; box-shadow: 0 1px 3px rgb(31 48 70 / .04);
+}
+.wb-docket h2 { display: flex; align-items: center; gap: 9px; padding: 14px 19px; border-bottom: 1px solid #dae2ec; background: #eaf0f6; color: #304b6b; border-radius: 8px 8px 0 0; }
+.wb-docket-body { display: grid; gap: 11px; padding: 19px; }
+.wb-docket-title { font-size: 17px; font-weight: 680; line-height: 1.55; }
+.wb-docket .wb-node { color: var(--muted); font-size: 12px; }
+.wb-docket-go { justify-content: space-between; min-height: 44px; margin-top: 4px; padding-inline: 15px; }
+.wb-docket-tools { margin-inline: 19px; border-top: 1px solid var(--focus-density); padding: 8px 0; }
+.wb-docket-tools .wb-btn { background: transparent; border-color: transparent; color: #405773; }
+.wb-docket-tools .wb-btn:hover { background: var(--focus-tint); }
+[data-view="detail"] .wb-section-nav a:hover { text-decoration: underline; }
+@media (max-width: 920px) {
+  .wb-focus-home-grid { grid-template-columns: minmax(0,1fr); }
+}
+@media (max-width: 760px) {
+  .wb-folio { grid-template-columns: minmax(0,1fr); grid-template-areas: "identity" "dates" "action" "facts"; }
+  .wb-folio::before { grid-area: 1 / 1 / 5 / 2; }
+  .wb-docket { margin: 0 var(--gutter) 1em; }
+}
+@media (max-width: 640px) {
+  .wb-queue-labels { display: none; }
+  .wb-focus-reminders .wb-home-reminder {
+    grid-template-columns: minmax(0,1fr) auto; grid-template-areas: "item due" "number due";
+    gap: 1px 6px; min-height: 57px; padding-inline: 9px;
+  }
+  .wb-queue-name { grid-area: item; }
+  .wb-queue-case { grid-area: number; font-size: 11px; }
+  .wb-focus-reminders .wb-reminder-date { grid-area: due; text-align: end; }
+  .wb-focus-reminders .wb-date-state { margin-left: auto; }
+  .wb-compact-owner { display: inline; font-family: system-ui, sans-serif; }
+  .wb-queue-owner, .wb-queue-go, .wb-queue-name .wb-workspace-meta { display: none; }
+  .wb-desk > section { padding: 8px 11px; }
+  .wb-desk-more summary, .wb-period-record, .wb-docket-tools .wb-btn { min-height: 44px; }
+  .wb-desk-head { margin-bottom: 3px; }
+  .wb-focus-head { margin-bottom: 10px; }
+  .wb-folio { --gutter: 14px; margin-bottom: 12px; }
+  .wb-folio-identity { padding-block: 15px; }
+  .wb-folio-info-head { padding-block: 11px; }
+  .wb-docket h2, .wb-docket-body { padding: 11px 13px; }
+  .wb-docket-body { gap: 7px; }
+  .wb-docket-tools { margin-inline: 13px; padding-block: 1px; }
+  .wb-official-band { gap: 9px; padding: 10px 12px; }
+}

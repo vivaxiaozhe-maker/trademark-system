@@ -28,7 +28,7 @@ const breadcrumbMap = {
   'law-firm-management': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '律所管理' }],
   'staff-management': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '员工管理' }],
   'monitor': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '监测中心' }],
-  'tools': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '商标工具Link' }],
+  'tools': [{ label: '首页', href: 'index.html' }, { label: '决策与监测' }, { label: '商标工具 Link' }],
   'admin-users': [{ label: '首页', href: 'index.html' }, { label: '账号与权限' }],
   'report': [{ label: '首页', href: 'index.html' }, { label: '生成报告' }],
   'search-new': [{ label: '首页', href: 'index.html' }, { label: '商标检索' }],
@@ -41,7 +41,7 @@ const menuConfig = [
     { label: "待办事项", icon: "list-todo", page: "todo", href: "pages/todo.html" },
     { label: "已办事项", icon: "check-circle", page: "done", href: "pages/done.html" },
     { label: "我的案件", icon: "folder", page: "my-cases", href: "pages/my-cases.html" },
-    { label: "抄送案件", icon: "mail", page: "cc", href: "pages/cc.html" },
+    { label: "抄送案件", icon: "mail", page: "cc", href: "pages/cc.html?ui=workbench" },
     { label: "我的草稿", icon: "file-text", page: "drafts", href: "pages/drafts.html" }
   ]},
   { group: "管理中心", items: [
@@ -62,7 +62,7 @@ const menuConfig = [
   ]},
   { group: "协作与费用", items: [
     { label: "律所协作中心", icon: "handshake", page: "collab", href: "pages/collab.html", children: [
-      { label: "用印流程", page: "seal-process", href: "pages/seal-process.html" }
+      { label: "用印流程", page: "seal-process", href: "pages/seal-process.html?ui=workbench" }
     ] },
     { label: "费用中心", icon: "wallet", page: "fees", href: "pages/fees.html", children: [
       { label: "费用总览", page: "fees-overview", href: "pages/fees.html?tab=overview" },
@@ -76,8 +76,8 @@ const menuConfig = [
     { label: "管理决策中心", icon: "trending-up", page: "decision", href: "pages/decision.html" },
     { label: "律所管理", icon: "building-2", page: "law-firm-management", href: "pages/law-firm-management.html" },
     { label: "员工管理", icon: "users", page: "staff-management", href: "pages/staff-management.html" },
-    { label: "监测中心", icon: "radar", page: "monitor", href: "pages/monitor.html" },
-    { label: "商标工具Link", icon: "link", page: "tools", href: "pages/tools.html" }
+    { label: "监测中心", icon: "radar", page: "monitor", href: "pages/monitor.html?ui=workbench" },
+    { label: "商标工具 Link", icon: "link", page: "tools", href: "pages/tools.html?ui=workbench" }
   ]},
   { group: "系统管理", items: [
     { label: "账号与权限", icon: "shield", page: "admin-users", href: "pages/admin-users.html" }
