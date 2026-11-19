@@ -462,23 +462,7 @@ const params = new URLSearchParams(location.search);
 const caseId = params.get('id') || 'TM-2026-0042';
 const isEditMode = params.get('mode') === 'edit';
 let caseData = DataService.getCaseById(caseId);
-
-// 如果无法获取案件数据，尝试重新初始化
-if (!caseData) {
-  console.warn('[CaseDetail] Case not found, re-seeding data...');
-  try {
-    DataService.seedData();
-    caseData = DataService.getCaseById(caseId);
-  } catch (e) {
-    console.error('[CaseDetail] Failed to seed data:', e);
-  }
-}
-
-// 仍然为空，尝试获取第一个案件
-if (!caseData) {
-  const allCases = DataService.getCases();
-  caseData = allCases && allCases.length > 0 ? allCases[0] : null;
-}
+// 详情读取不产生写入；未知案卷由 renderAll() 显示明确的 404 状态。
 
 if (isEditMode && caseData) {
   document.title = `案件详情 - 编辑中 · ${caseData.brandName}（${caseData.id}）- 商标管理系统`;
@@ -510,7 +494,7 @@ function renderStatusTag(statusCode) {
 function getDeadlineInfo(deadline) {
   const days = DataService.daysBetween(DataService.getToday(), deadline);
   let color = '#667085', badgeClass = '';
-  let text = days <= 0 ? '已逾期' : `剩余 ${days} 天`;
+  let text = days < 0 ? '已逾期' : days === 0 ? '今日到期' : `剩余 ${days} 天`;
   if (days <= 3 && days > 0) { color = '#f04438'; badgeClass = 'urgent-pulse'; }
   else if (days <= 7 && days > 0) color = '#d98a06';
   return { days, color, text, badgeClass };
@@ -1270,15 +1254,17 @@ function renderAll() {
   if (!caseData) {
     const container = document.querySelector('.page-container');
     if (container) {
-      container.innerHTML = `
-        <div style="text-align:center;padding:60px 20px;">
-          <div style="font-size:48px;margin-bottom:16px;">📭</div>
-          <div style="font-size:18px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">案件数据加载失败</div>
-          <div style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;">无法找到案件 ${caseId} 的数据，请尝试刷新页面或清除浏览器缓存。</div>
-          <button class="btn btn-primary" onclick="location.reload()" style="margin-right:8px;">刷新页面</button>
-          <button class="btn btn-secondary" onclick="DataService.seedData();location.reload()">重新初始化数据</button>
-        </div>
+      const emptyState = document.createElement('div');
+      emptyState.style.cssText = 'text-align:center;padding:60px 20px;';
+      emptyState.innerHTML = `
+        <div style="font-size:48px;margin-bottom:16px;">📭</div>
+        <div style="font-size:18px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">未找到案件</div>
+        <div style="font-size:14px;color:var(--text-secondary);margin-bottom:20px;">案卷 <code></code> 不存在或已移除。系统未重置或加载其他案件数据。</div>
+        <a class="btn btn-primary" href="cases.html">返回案件列表</a>
       `;
+      emptyState.querySelector('code').textContent = caseId;
+      document.title = '未找到案件 - 商标管理系统';
+      container.replaceChildren(emptyState);
     }
     return;
   }

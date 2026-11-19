@@ -294,7 +294,7 @@ function renderStatusTag(statusCode) {
 function getDeadlineInfo(deadline) {
   const days = DataService.daysBetween(DataService.getToday(), deadline);
   let color = '#667085';
-  let text = days <= 0 ? '已逾期' : `剩余 ${days} 天`;
+  let text = days < 0 ? '已逾期' : days === 0 ? '今日到期' : `剩余 ${days} 天`;
   if (days <= 3 && days > 0) color = '#f04438';
   else if (days <= 7 && days > 0) color = '#d98a06';
   return { days, color, text };
@@ -363,7 +363,7 @@ function renderTable() {
   if (currentStatusFilter === 'deadline_this_week') {
     data = data.filter(c => {
       if (!c.officialDeadline) return false;
-      return DataService.daysBetween(DataService.getToday(), c.officialDeadline) <= 7;
+      return DataService.isDeadlineWithin(c.officialDeadline, DataService.getToday(), 7);
     });
   }
   
@@ -419,7 +419,7 @@ function renderCell(key, c) {
       return `<td><input type="checkbox" data-case-id="${c.id}" onchange="toggleCaseSelection('${c.id}', this.checked)" ${checked}></td>`;
     
     case 'id':
-      return `<td><span style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;">${c.id}</span></td>`;
+      return `<td><a href="case-detail.html?id=${encodeURIComponent(c.id)}" style="font-family:monospace;font-size:12px;color:var(--primary);font-weight:500;text-decoration:none;">${c.id}</a></td>`;
     
     case 'brandName':
       return `<td><strong>${c.brandName}</strong></td>`;
@@ -528,22 +528,18 @@ function bulkExport() { alert('批量导出 ' + selectedCaseIds.size + ' 个案�
 function bulkChangeOwner() { alert('批量修改责任人：' + Array.from(selectedCaseIds).join(', ')); }
 function bulkRemind() { alert('已发送催办通知给 ' + selectedCaseIds.size + ' 个案件的责任人'); }
 function bulkEnable() {
-  selectedCaseIds.forEach(id => {
-    const c = DataService.getCaseById(id);
-    if (c) { c.enabled = true; DataService.updateCase(c); }
-  });
+  const result = DataService.batchSetCaseEnabled(Array.from(selectedCaseIds), true);
   clearSelection();
   renderTable();
-  showToast('已批量启用 ' + selectedCaseIds.size + ' 个案件', 'success');
+  const suffix = result.failureCount ? `，${result.failureCount} 个失败` : '';
+  showToast(`已批量启用 ${result.successCount} 个案件${suffix}`, result.failureCount ? 'warning' : 'success');
 }
 function bulkDisable() {
-  selectedCaseIds.forEach(id => {
-    const c = DataService.getCaseById(id);
-    if (c) { c.enabled = false; DataService.updateCase(c); }
-  });
+  const result = DataService.batchSetCaseEnabled(Array.from(selectedCaseIds), false);
   clearSelection();
   renderTable();
-  showToast('已批量禁用 ' + selectedCaseIds.size + ' 个案件', 'warning');
+  const suffix = result.failureCount ? `，${result.failureCount} 个失败` : '';
+  showToast(`已批量禁用 ${result.successCount} 个案件${suffix}`, result.failureCount ? 'warning' : 'success');
 }
 function bulkDelete() {
   if (!confirm('确定要删除选中的 ' + selectedCaseIds.size + ' 个案件吗？')) return;

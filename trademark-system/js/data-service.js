@@ -23,7 +23,7 @@ const DataService = (function() {
     DRAFTS: 'tm_drafts'
   };
 
-  const CURRENT_VERSION = '2.2';
+  const CURRENT_VERSION = '2.3';
 
   const NICE_CLASS_NAMES = {
     1: '化工原料', 2: '颜料油漆', 3: '日化用品', 4: '燃料油脂',
@@ -60,14 +60,39 @@ const DataService = (function() {
     return `${prefix}-${ts}-${rand}`;
   }
 
-  function getToday() {
-    return new Date().toISOString().split('T')[0];
+  function getToday(timeZone = 'Asia/Shanghai') {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).formatToParts(new Date());
+    const values = {};
+    parts.forEach(part => { values[part.type] = part.value; });
+    return `${values.year}-${values.month}-${values.day}`;
   }
 
   function daysBetween(date1, date2) {
-    const d1 = new Date(date1);
-    const d2 = new Date(date2);
-    return Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24));
+    const parseCalendarDate = value => {
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || '');
+      if (!match) return NaN;
+      return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    };
+    return Math.round((parseCalendarDate(date2) - parseCalendarDate(date1)) / 86400000);
+  }
+
+  function getDeadlineBucket(deadline, today = getToday()) {
+    const days = daysBetween(today, deadline);
+    if (!Number.isFinite(days)) return 'unknown';
+    if (days < 0) return 'overdue';
+    if (days === 0) return 'today';
+    if (days <= 7) return 'upcoming';
+    return 'later';
+  }
+
+  function isDeadlineWithin(deadline, today = getToday(), days = 7) {
+    const distance = daysBetween(today, deadline);
+    return Number.isFinite(distance) && distance > 0 && distance <= days;
   }
 
   function storageGet(key) {
@@ -95,7 +120,7 @@ const DataService = (function() {
   }
 
   function setEntity(key, data) {
-    storageSet(key, data);
+    return storageSet(key, data);
   }
 
   // ==================== 种子数据 ====================
@@ -592,44 +617,54 @@ const DataService = (function() {
       { id: 'act-8', type: 'collaboration', typeLabel: '协作', icon: '💬', title: '美国Horizon商标行政诉讼开庭通知', content: 'TTAB已排期，预计2026-06-15开庭', caseId: 'TM-2025-0156', caseName: 'Horizon-行政诉讼', createdAt: '2026-04-18 09:30' }
     ];
 
-    // 存储所有种子数据
-    storageSet(STORAGE_KEYS.BRANDS, brands);
-    storageSet(STORAGE_KEYS.LAW_FIRMS, lawFirms);
-    storageSet(STORAGE_KEYS.CASES, cases);
-    storageSet(STORAGE_KEYS.TODOS, todos);
-    storageSet(STORAGE_KEYS.FEES, fees);
-    storageSet(STORAGE_KEYS.FEE_APPS, feeApps);
-    storageSet(STORAGE_KEYS.MONITOR_TASKS, monitorTasks);
-    storageSet(STORAGE_KEYS.MONITOR_RESULTS, monitorResults);
-    storageSet(STORAGE_KEYS.NOTIFICATIONS, notifications);
-    storageSet(STORAGE_KEYS.ACTIVITIES, activities);
-    storageSet(STORAGE_KEYS.USER_PREFS, {
-      columnSettings: {},
-      searchHistory: [],
-      lastVisited: {}
-    });
-    storageSet(STORAGE_KEYS.VERSION, CURRENT_VERSION);
-
+    // 演示数据只允许通过显式 seedData() 写入；任一写入失败都不报告成功。
+    const writeResults = [
+      storageSet(STORAGE_KEYS.BRANDS, brands),
+      storageSet(STORAGE_KEYS.LAW_FIRMS, lawFirms),
+      storageSet(STORAGE_KEYS.CASES, cases),
+      storageSet(STORAGE_KEYS.TODOS, todos),
+      storageSet(STORAGE_KEYS.FEES, fees),
+      storageSet(STORAGE_KEYS.FEE_APPS, feeApps),
+      storageSet(STORAGE_KEYS.MONITOR_TASKS, monitorTasks),
+      storageSet(STORAGE_KEYS.MONITOR_RESULTS, monitorResults),
+      storageSet(STORAGE_KEYS.NOTIFICATIONS, notifications),
+      storageSet(STORAGE_KEYS.ACTIVITIES, activities),
+      storageSet(STORAGE_KEYS.USER_PREFS, {
+        columnSettings: {},
+        searchHistory: [],
+        lastVisited: {}
+      }),
+      storageSet(STORAGE_KEYS.VERSION, CURRENT_VERSION)
+    ];
+    if (writeResults.some(result => !result)) {
+      throw new Error('[DataService] Failed to persist all seed data');
+    }
     console.log('[DataService] Seed data initialized successfully');
+    return true;
   }
 
-  // ==================== 初始化 ====================
+  // ==================== 初始化与增量迁移 ====================
   function init() {
     const version = storageGet(STORAGE_KEYS.VERSION);
-    if (!version || version !== CURRENT_VERSION) {
-      // 清理旧数据或迁移
-      if (version && version !== CURRENT_VERSION) {
-        console.log('[DataService] Data version mismatch, re-seeding...');
-        // 可选择性保留用户偏好
-        const prefs = storageGet(STORAGE_KEYS.USER_PREFS);
-        seedData();
-        if (prefs) {
-          storageSet(STORAGE_KEYS.USER_PREFS, prefs);
-        }
-      } else {
-        seedData();
-      }
+    const dataKeys = [
+      STORAGE_KEYS.CASES, STORAGE_KEYS.BRANDS, STORAGE_KEYS.TODOS, STORAGE_KEYS.FEES,
+      STORAGE_KEYS.FEE_APPS, STORAGE_KEYS.LAW_FIRMS, STORAGE_KEYS.MONITOR_TASKS,
+      STORAGE_KEYS.MONITOR_RESULTS, STORAGE_KEYS.NOTIFICATIONS, STORAGE_KEYS.ACTIVITIES
+    ];
+    let hasStoredData = true;
+    try {
+      hasStoredData = dataKeys.some(key => localStorage.getItem(key) !== null);
+    } catch (e) {
+      // 无法确认存储状态时不重建样例，避免覆盖已有数据。
+      console.error('[DataService] Storage availability check failed:', e);
+      return false;
     }
+    if (!version && !hasStoredData) return seedData();
+    if (version !== CURRENT_VERSION) {
+      // 2.x → 2.3 仅升级元数据；字段迁移必须增量执行，禁止重建样例。
+      return storageSet(STORAGE_KEYS.VERSION, CURRENT_VERSION);
+    }
+    return true;
   }
 
   // ==================== CRUD 工厂 ====================
@@ -659,24 +694,22 @@ const DataService = (function() {
         const items = getEntity(entityKey);
         const newItem = { ...data, createdAt: getToday(), updatedAt: getToday() };
         items.push(newItem);
-        setEntity(entityKey, items);
-        return newItem;
+        return setEntity(entityKey, items) ? newItem : null;
       },
       update: (id, data) => {
         const items = getEntity(entityKey);
         const idx = items.findIndex(item => item.id === id);
         if (idx >= 0) {
           items[idx] = { ...items[idx], ...data, updatedAt: getToday() };
-          setEntity(entityKey, items);
-          return items[idx];
+          return setEntity(entityKey, items) ? items[idx] : null;
         }
         return null;
       },
       delete: (id) => {
         const items = getEntity(entityKey);
         const filtered = items.filter(item => item.id !== id);
-        setEntity(entityKey, filtered);
-        return filtered.length < items.length;
+        if (filtered.length === items.length) return false;
+        return setEntity(entityKey, filtered);
       }
     };
   }
@@ -708,7 +741,7 @@ const DataService = (function() {
       const days = parseInt(filters.deadlineWithin);
       results = results.filter(c => {
         if (!c.officialDeadline) return false;
-        return daysBetween(getToday(), c.officialDeadline) <= days;
+        return isDeadlineWithin(c.officialDeadline, getToday(), days);
       });
     }
     if (filters.assignee) {
@@ -726,7 +759,19 @@ const DataService = (function() {
       defensePeriod: all.filter(c => c.statusCode === 'defense_period').length,
       registered: all.filter(c => c.statusCode === 'registered').length,
       rejected: all.filter(c => c.statusCode === 'rejected').length,
-      deadlineThisWeek: all.filter(c => c.officialDeadline && daysBetween(getToday(), c.officialDeadline) <= 7).length
+      deadlineThisWeek: all.filter(c => c.officialDeadline && isDeadlineWithin(c.officialDeadline, getToday(), 7)).length
+    };
+  }
+
+  function batchSetCaseEnabled(ids, enabled) {
+    const results = [...new Set(ids)].map(id => ({
+      id,
+      success: Boolean(casesCRUD.update(id, { enabled }))
+    }));
+    return {
+      successCount: results.filter(result => result.success).length,
+      failureCount: results.filter(result => !result.success).length,
+      results
     };
   }
 
@@ -902,6 +947,8 @@ const DataService = (function() {
     generateId,
     getToday,
     daysBetween,
+    getDeadlineBucket,
+    isDeadlineWithin,
 
     // 案件
     getCases,
@@ -909,6 +956,7 @@ const DataService = (function() {
     createCase: casesCRUD.create,
     updateCase: casesCRUD.update,
     deleteCase: casesCRUD.delete,
+    batchSetCaseEnabled,
     getCaseStats,
 
     // 品牌
